@@ -3,8 +3,6 @@ declare interface IPortfolio {
   name: string,
   depo: number,
   comm: number,
-  defaultSumm: number,
-  defaultCategory: string,
   positions: IPosition[]
 }
 

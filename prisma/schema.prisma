@@ -2,28 +2,76 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
-  binaryTargets =   ["native", "linux-musl", "linux-musl-openssl-3.0.x"]
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
   provider = "mongodb"
-  url = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
-/* model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+model User {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  name           String?
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
+  hashedPassword String?
+  createdAt      DateTime  @default(now())
+  updateddAt     DateTime  @default(now())
+
+  accounts Account[]
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean @default(false)
-  author    User    @relation(fields: [authorId], references: [id])
-  authorId  Int
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.String
+  access_token      String? @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.String
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
 }
+
+model Portfolio {
+  id                  String     @id @default(auto()) @map("_id") @db.ObjectId
+  name                String
+  depo                Int
+  comm                Int
+  positionsID         String[]   @db.ObjectId
+  portfolio_positions Position[] @relation(fields: [positionsID], references: [id])
+}
+
+model Position {
+  id                 String      @id @default(auto()) @map("_id") @db.ObjectId
+  ticker             String
+  porfolioID         String      @db.ObjectId
+  position_portfolio Portfolio[] @relation(fields: [porfolioID], references: [id])
+}
+
+/**
+ * model User {
+ * id    Int     @id @default(autoincrement())
+ * email String  @unique
+ * name  String?
+ * posts Post[]
+ * }
+ * model Post {
+ * id        Int     @id @default(autoincrement())
+ * title     String
+ * content   String?
+ * published Boolean @default(false)
+ * author    User    @relation(fields: [authorId], references: [id])
+ * authorId  Int
+ * }
  */
