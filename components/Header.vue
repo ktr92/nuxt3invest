@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <div
-      class="flex h-screen w-16 flex-col justify-between border-e border-gray-100 bg-white"
+      class="flex h-screen w-16 flex-col justify-between border-e border-gray-100 bg-white z-5 relative"
     >
       <div>
         <MenuTop />
@@ -132,7 +132,7 @@
 
     <Transition name="slide">
       <div
-        class="flex h-screen flex-1 flex-col justify-between border-e border-gray-100 bg-white"
+        class="flex h-screen flex-1 flex-col justify-between border-e border-gray-100 bg-white fixed top-0 ml-[63px] z-4"
         v-show="ismenushown"
       >
         <div class="px-4 py-6">
@@ -175,7 +175,7 @@ onBeforeMount(() => {
 .slide-enter-active,
 .slide-leave-active {
   transition: all 0.3s ease-out;
-  z-index: -999;
+
 }
 
 /* неактивное состояние */
