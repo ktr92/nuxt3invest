@@ -1,7 +1,10 @@
 <template>
   <div>
     <div class="flex gap-8">
-      <Header />
+      <ClientOnly>
+        <Header />
+      </ClientOnly>
+
       <Transition name="slide">
         <TableMain />
       </Transition>

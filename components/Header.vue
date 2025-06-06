@@ -1,5 +1,5 @@
 <template>
-  <div class="flex">
+  <div class="flex" >
     <div
       class="flex h-screen w-16 flex-col justify-between border-e border-gray-100 bg-white z-5 relative"
     >
@@ -131,9 +131,10 @@
     </div>
 
     <Transition name="slide">
-      <div
-        class="flex h-screen flex-1 flex-col justify-between border-e border-gray-100 bg-white fixed top-0 ml-[63px] z-4"
-        v-show="ismenushown"
+      <div 
+        class="flex h-screen flex-1 flex-col justify-between border-e border-gray-100 bg-white fixed top-0 ml-[63px] z-4" 
+        v-if="ismenushown"
+        v-click-outside
       >
         <div class="px-4 py-6">
           <ul class="mt-14 space-y-1">
@@ -154,6 +155,7 @@
         </div>
       </div>
     </Transition>
+
   </div>
 </template>
 <script setup lang="ts">
@@ -161,13 +163,17 @@
 const mainstore = useMainstore()
 
 
-const ismenushown = ref(false)
+const ismenushown = computed(() => mainstore.getMenu)
 const showMenu = (): void => {
-  ismenushown.value = !ismenushown.value
+  mainstore.toggleMenu()
 }
 
 onBeforeMount(() => {
   console.log(mainstore.getPorfolio)
+})
+
+onMounted(() => {
+ 
 })
 </script>
 

@@ -28,3 +28,6 @@ declare interface IPosition {
   saleNkd?: number
   isSold?: boolean
 }
+declare interface HTMLElement {
+  _unhandler?: (event: MouseEvent) => void
+}

@@ -2,6 +2,7 @@ import { defineStore } from "pinia"
 
 export const useMainstore = defineStore("mainstore", {
   state: () => ({
+    ismenushown: false,
     portfolio: [
       {
         id: "1",
@@ -133,5 +134,14 @@ export const useMainstore = defineStore("mainstore", {
   }),
   getters: {
     getPorfolio: (state) => state.portfolio,
+    getMenu: (state) => state.ismenushown
   },
+  actions: {
+    toggleMenu() {
+      this.ismenushown = !this.ismenushown
+    },
+    closeMenu() {
+      this.ismenushown = false
+    }
+  }
 })
