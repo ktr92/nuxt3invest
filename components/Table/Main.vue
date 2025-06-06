@@ -2,14 +2,25 @@
   <div class="overflow-x-auto w-full tablemain">
     <table class="min-w-full divide-y-2 divide-gray-200">
       <thead class="ltr:text-left rtl:text-right">
-        <tr class="*:font-medium *:text-gray-900">
-          <th v-for="item in tableHeader" :key="item" class="px-3 py-2 whitespace-nowrap">{{ item }}</th>
+        <tr class="*:font-semibold*:text-gray-900 text-md">
+          <th v-for="item in tableHeader" :key="item" class="p-2 whitespace-nowrap text-semibold">{{ item }}</th>
         </tr>
       </thead>
   
       <tbody class="divide-y divide-gray-200 *:even:bg-gray-50">
          <tr v-for="item in tableData" :key="item.ticker" class="*:text-gray-900 *:first:font-medium">
-         <td v-for="value in Object.values(item)" :key="value" class="px-3 py-2 whitespace-nowrap">{{ value }}</td>
+         <td class="p-2">
+            <TableAsset :name="item.name" :ticker="item.ticker" />
+         </td>
+         <td class="p-2">
+            <TableText :text="numberFormat(item.count)" />
+         </td>
+         <td class="p-2">
+            <TableText :text="numberFormat(item.price)" />
+         </td>
+         <td class="p-2">
+            <TableText :text="numberFormat(item.price * item.count)" />
+         </td>
        </tr>
        
       </tbody>
@@ -22,12 +33,14 @@
     "Актив",
     "Количество",
     "Средняя цена",
+    "Вложено",
     "Стоимость",
     "Прибыль"
   ]
   const tableData = [
     {
       ticker: "HYDR",
+      name: 'Русгидро',
       count: 1000,
       price: 0.5,
       total: 500,
@@ -35,22 +48,25 @@
     },
     {
       ticker: "ROSN",
-      count: 1000,
-      price: 0.5,
+        name: 'Роснефть',
+      count: 12323,
+      price: 420,
       total: 500,
       change: 5
     },
     {
       ticker: "LKOH",
-      count: 1000,
-      price: 0.5,
+        name: 'Лукойл',
+      count: 444,
+      price: 6500,
       total: 500,
       change: 5
     },
     {
       ticker: "ASTR",
-       count: 1000,
-      price: 0.5,
+        name: 'Астра',
+       count: 33213,
+      price: 545,
       total: 500,
       change: 5
     },

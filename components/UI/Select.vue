@@ -9,7 +9,7 @@
         class="mt-0.5 w-full border border-slate-200 shadow-sm sm:text-sm p-2 focus:border-blue-700 outline-0 rounded-md"
         @change="onChange"
       >
-        <option :value="item" v-for="item in items">{{item}}</option>
+        <option :value="item.id" v-for="item in items">{{item.name}}</option>
       </select>
     </label>
   </div>
@@ -22,7 +22,7 @@ const props = defineProps({
     required: true,
   },
   items: {
-    type: Array,
+    type: Array<IPortfolioDeal>,
     required: true
   },
   placeholder: {
@@ -48,7 +48,8 @@ const onChange = (event: Event) => {
   emits("update:modelValue", (<HTMLSelectElement>event.target).value)
 }
 onMounted(() => {
-  emits("update:modelValue", props.items[0])
+  
+  emits("update:modelValue", props.items[0].id)
 })
 </script>
 

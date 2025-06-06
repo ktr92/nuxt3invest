@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="onSubmit">
-     <div class="mb-4 w-full">
+    <div class="mb-4 w-full">
       <UISwitcher
         :items="deallist"
         v-model="dealtype"
@@ -10,9 +10,13 @@
       ></UISwitcher>
     </div>
     <div class="mb-4 w-full">
-      <UISelect labeltext="Портфель" v-model="selectportfolio" :items="items" />
+      <UISelect
+        labeltext="Портфель"
+        v-model="selectportfolio"
+        :items="portfolioList"
+      />
     </div>
-   
+
     <div class="mb-4 w-full">
       <UIInput
         name="company"
@@ -64,18 +68,7 @@ import * as yup from "yup"
 
 const mainstore = useMainstore()
 
-const deallist = [
-  {
-    id: "buy",
-    title: "Покупка",
-    info: "",
-  },
-  {
-    id: "sell",
-    title: "Продажа",
-    info: "",
-  },
-]
+const deallist = mainstore.getDealTypes
 const dealtype = ref("")
 const company = ref("")
 const count = ref("")
@@ -85,9 +78,10 @@ const selectportfolio = ref("")
 const isLoading = ref(false)
 const someError = ref("")
 
-const items = ["1", "2", "3"]
+const portfolioList = mainstore.getBrokerslist
 
-const schema = yup.object().shape({/* 
+const schema = yup.object().shape({
+  /* 
   company: yup.string().required(), */
 })
 const { handleSubmit, errors } = useForm({
@@ -107,7 +101,14 @@ const onSubmit = handleSubmit(async () => {
     isLoading.value = true
     someError.value = ""
 
-    const formData = {dealtype, selectportfolio, company, price, count, comment}
+    const formData = {
+      dealtype: dealtype.value,
+      selectportfolio: selectportfolio.value,
+      company: company.value,
+      price: price.value,
+      count: count.value,
+      comment: comment.value,
+    }
     console.log(formData)
     const { data, error } = await useFetch("/api/auth/deal", {
       method: "POST",

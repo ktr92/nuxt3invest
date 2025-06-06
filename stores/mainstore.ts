@@ -4,13 +4,25 @@ export const useMainstore = defineStore("mainstore", {
   state: () => ({
     ismenushown: false,
     ismodalshown: false,
+    logosource: "https://mybroker.storage.bcs.ru/FinInstrumentLogo/",
+    dealTypes: [
+      {
+        id: "buy",
+        title: "Покупка",
+        info: "",
+      },
+      {
+        id: "sell",
+        title: "Продажа",
+        info: "",
+      },
+    ],
     portfolio: [
       {
         id: "1",
         name: "Финам",
         depo: 500000,
-        comm: 0.09,
-        defaultSumm: 50000,
+        fee: 0.09,
         defaultCategory: "TQBR",
         positions: [
           {
@@ -30,8 +42,7 @@ export const useMainstore = defineStore("mainstore", {
         id: "2",
         name: "ВТБ",
         depo: 410000,
-        comm: 0.05,
-        defaultSumm: 50000,
+        fee: 0.05,
         defaultCategory: "TQBR",
         positions: [
           {
@@ -51,8 +62,7 @@ export const useMainstore = defineStore("mainstore", {
         id: "3",
         name: "БКС",
         depo: 410000,
-        comm: 0.3,
-        defaultSumm: 50000,
+        fee: 0.3,
         defaultCategory: "TQBR",
         positions: [
           {
@@ -72,8 +82,7 @@ export const useMainstore = defineStore("mainstore", {
         id: "4",
         name: "Сбер",
         depo: 450000,
-        comm: 0.06,
-        defaultSumm: 50000,
+        fee: 0.06,
         defaultCategory: "TQBR",
         positions: [
           {
@@ -93,8 +102,7 @@ export const useMainstore = defineStore("mainstore", {
         id: "5",
         name: "ИИС",
         depo: 200000,
-        comm: 0.06,
-        defaultSumm: 50000,
+        fee: 0.06,
         defaultCategory: "TQBR",
         positions: [
           {
@@ -114,8 +122,7 @@ export const useMainstore = defineStore("mainstore", {
         id: "6",
         name: "Альфа",
         depo: 27000,
-        comm: 0.06,
-        defaultSumm: 50000,
+        fee: 0.06,
         defaultCategory: "TQBR",
         positions: [
           {
@@ -137,6 +144,15 @@ export const useMainstore = defineStore("mainstore", {
     getPorfolio: (state) => state.portfolio,
     getMenu: (state) => state.ismenushown,
     getModal: (state) => state.ismodalshown,
+    getDealTypes: (state) => state.dealTypes,
+    getBrokerslist: (state) =>
+      state.portfolio.map((item) => {
+        return {
+          id: item.id,
+          name: item.name,
+          fee: item.fee,
+        }
+      }),
   },
   actions: {
     toggleMenu() {
@@ -150,6 +166,10 @@ export const useMainstore = defineStore("mainstore", {
     },
     closeModal() {
       this.ismodalshown = false
-    }
-  }
+    },
+    generateLogo(payload:string) {
+      return `${this.logosource}${payload}.png` 
+    } 
+
+  },
 })
