@@ -3,6 +3,7 @@ import { defineStore } from "pinia"
 export const useMainstore = defineStore("mainstore", {
   state: () => ({
     ismenushown: false,
+    ismodalshown: false,
     portfolio: [
       {
         id: "1",
@@ -134,14 +135,21 @@ export const useMainstore = defineStore("mainstore", {
   }),
   getters: {
     getPorfolio: (state) => state.portfolio,
-    getMenu: (state) => state.ismenushown
+    getMenu: (state) => state.ismenushown,
+    getModal: (state) => state.ismodalshown,
   },
   actions: {
     toggleMenu() {
       this.ismenushown = !this.ismenushown
     },
+    toggleModal() {
+      this.ismodalshown = !this.ismodalshown
+    },
     closeMenu() {
       this.ismenushown = false
+    },
+    closeModal() {
+      this.ismodalshown = false
     }
   }
 })

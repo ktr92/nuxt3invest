@@ -13,6 +13,7 @@
             <ul class="space-y-1 border-t border-gray-100 pt-4">
               <li>
                 <a
+                  @click.prevent.stop="mainstore.toggleModal()"
                   href="#"
                   class="group relative flex justify-center rounded-sm px-2 py-1.5 text-gray-500 hover:bg-gray-50 hover:text-gray-700"
                 >
@@ -34,7 +35,7 @@
                   <span
                     class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded-sm bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
                   >
-                    Teams
+                    Новая сделка
                   </span>
                 </a>
               </li>
@@ -134,7 +135,7 @@
       <div 
         class="flex h-screen flex-1 flex-col justify-between border-e border-gray-100 bg-white fixed top-0 ml-[63px] z-4" 
         v-if="ismenushown"
-        v-click-outside
+        v-click-outside="() => mainstore.closeMenu()"
       >
         <div class="px-4 py-6">
           <ul class="mt-14 space-y-1">
@@ -156,13 +157,13 @@
       </div>
     </Transition>
 
+
+
   </div>
 </template>
 <script setup lang="ts">
 
 const mainstore = useMainstore()
-
-
 const ismenushown = computed(() => mainstore.getMenu)
 const showMenu = (): void => {
   mainstore.toggleMenu()

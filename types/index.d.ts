@@ -31,3 +31,8 @@ declare interface IPosition {
 declare interface HTMLElement {
   _unhandler?: (event: MouseEvent) => void
 }
+declare interface ISwitcher {
+  id: string,
+  title: string,
+  info: string
+}

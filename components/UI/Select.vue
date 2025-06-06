@@ -9,14 +9,13 @@
         class="mt-0.5 w-full border border-slate-200 shadow-sm sm:text-sm p-2 focus:border-blue-700 outline-0 rounded-md"
         @change="onChange"
       >
-        <option value="" v-for="item in items">{{item}}</option>
+        <option :value="item" v-for="item in items">{{item}}</option>
       </select>
     </label>
   </div>
 </template>
 
 <script setup lang="ts">
-const emits = defineEmits(["update:modelValue", "onEnter"])
 const props = defineProps({
   modelValue: {
     type: String,
@@ -43,10 +42,14 @@ const props = defineProps({
     required: false
   }
 })
+
+const emits = defineEmits(["update:modelValue"])
 const onChange = (event: Event) => {
   emits("update:modelValue", (<HTMLSelectElement>event.target).value)
 }
-
+onMounted(() => {
+  emits("update:modelValue", props.items[0])
+})
 </script>
 
 <style scoped>
