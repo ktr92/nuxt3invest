@@ -28,6 +28,26 @@ declare interface IPosition {
   saleNkd?: number
   isSold?: boolean
 }
+declare interface IPositionView {
+  ticker: string
+  name: string
+  count: number
+  price: number
+  newprice: number
+  pricechange: number
+  total: number
+  change: number
+  yearchange: number
+  openDate: string
+}
+declare interface IDealView {
+  ticker: string
+  name: string
+  count: number
+  buyprice: number
+  saleprice: number
+  dealdate: string
+}
 declare interface HTMLElement {
   _unhandler?: (event: MouseEvent) => void
 }

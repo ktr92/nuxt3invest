@@ -19,6 +19,9 @@
           :key="item.ticker"
           class="*:text-gray-900 *:first:font-medium"
         >
+         <td class="p-2">
+            <TableText :text="numberFormat(item.dealdate)" />
+          </td>
           <td class="p-2">
             <TableAsset :name="item.name" :ticker="item.ticker" />
           </td>
@@ -26,26 +29,15 @@
             <TableText :text="numberFormat(item.count)" />
           </td>
           <td class="p-2">
-            <TableText :text="numberFormat(item.price)" />
+            <TableText :text="numberFormat(item.buyprice)" />
           </td>
           <td class="p-2">
-            <TableText :text="numberFormat(item.price * item.count)" />
+            <TableText :text="numberFormat(item.saleprice)" />
           </td>
           <td class="p-2">
-            <TableTextdouble :boldtext="numberFormat(item.newprice * item.count)" :text="numberFormat(item.newprice)" />
+            <TableText :text="numberFormat(item.saleprice * item.count)"  />
           </td>  
-          <td class="p-2">
-            <TableChange
-              :price="item.pricechange"
-              :change="item.change"
-              :date="item.openDate"
-            />
-          </td>
-          <td class="p-2">
-            <TableChange
-              :change="item.yearchange"
-            />
-          </td>
+         
         </tr>
       </tbody>
     </table>
@@ -61,7 +53,7 @@ const props = defineProps({
     required: true,
   },
   tabledata: {
-    type: Array<IPositionView>,
+    type: Array<IDealView>,
     required: true
   }
 })

@@ -1,19 +1,25 @@
 <template>
   <div class="w-full">
-    <TableMain :tableheader="tableHeader" :tabledata="tableData" />
+    <TableDeals :tableheader="tableHeader" :tabledata="tableData" />
   </div>
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  layout: "default",
+})
+const mainstore = useMainstore()
+
+onMounted(() => {})
 
 const tableHeader = [
+  "Дата",
+  "Операция",
   "Актив",
   "Количество",
-  "Средняя цена",
-  "Вложено",
-  "Стоимость",
+  "Цена",
+  "Сумма",
   "Прибыль",
-  "Доходность",
 ]
 
 const tableData = [
