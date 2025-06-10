@@ -13,7 +13,7 @@
         </tr>
       </thead>
 
-      <tbody class="divide-y divide-gray-200 *:even:bg-gray-50">
+      <tbody class="divide-y divide-gray-200 ">
         <tr
           v-for="item in tableData"
           :key="item.ticker"
@@ -32,13 +32,18 @@
             <TableText :text="numberFormat(item.price * item.count)" />
           </td>
           <td class="p-2">
-            <TableTextdouble :newtotal="numberFormat(item.newprice * item.count)" :newprice="numberFormat(item.newprice)" />
-          </td>
+            <TableTextdouble :boldtext="numberFormat(item.newprice * item.count)" :text="numberFormat(item.newprice)" />
+          </td>  
           <td class="p-2">
             <TableChange
               :price="item.pricechange"
-              change="23"
+              :change="item.change"
               :date="item.openDate"
+            />
+          </td>
+          <td class="p-2">
+            <TableChange
+              :change="item.yearchange"
             />
           </td>
         </tr>
@@ -56,6 +61,7 @@ const tableHeader = [
   "Вложено",
   "Стоимость",
   "Прибыль",
+  "Доходность",
 ];
 
 const tableData = [
@@ -67,7 +73,8 @@ const tableData = [
     newprice: 0.6,
     pricechange: 0.1,
     total: 500,
-    change: 5,
+    change: 11,
+    yearchange: 12,
     openDate: "02.01.2024",
   },
   {
@@ -78,7 +85,8 @@ const tableData = [
     newprice: 320,
     pricechange: -100,
     total: 500,
-    change: 5,
+    change: 13,
+    yearchange: 11,
     openDate: "02.03.2024",
   },
   {
@@ -89,7 +97,8 @@ const tableData = [
     newprice: 6700,
     pricechange: 200,
     total: 500,
-    change: 5,
+    change: 22,
+    yearchange: 32,
     openDate: "22.11.2024",
   },
   {
@@ -100,10 +109,12 @@ const tableData = [
     newprice: 567,
     pricechange: 22,
     total: 500,
-    change: 5,
+    change: -10,
+    yearchange: -20,
     openDate: "23.01.2025",
-  },
+  }
 ]
+
 </script>
 
 <style scoped>

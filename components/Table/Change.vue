@@ -68,7 +68,7 @@ const props = defineProps({
 })
 
 const isover = computed(() => {
-  let priceNumber = props.price
+  let priceNumber = props.change
   if (typeof priceNumber === "string") {
     priceNumber = parseFloat(priceNumber)
   }

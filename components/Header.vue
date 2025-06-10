@@ -35,7 +35,7 @@
                   <span
                     class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded-sm bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
                   >
-                    Новая сделка
+                    Новая&nbsp;сделка
                   </span>
                 </a>
               </li>
@@ -63,7 +63,7 @@
                   <span
                     class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded-sm bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
                   >
-                    Billing
+                    Журнал&nbsp;действий
                   </span>
                 </a>
               </li>
@@ -91,11 +91,12 @@
                   <span
                     class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded-sm bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
                   >
-                    Invoices
+                    Аналитика
                   </span>
                 </a>
               </li>
 
+             
               <li>
                 <a
                   href="#"
@@ -119,7 +120,7 @@
                   <span
                     class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded-sm bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
                   >
-                    Account
+                    Дивиденды&nbsp;и&nbsp;купоны
                   </span>
                 </a>
               </li>
@@ -142,9 +143,9 @@
             <li>
               <a
                 href="#"
-                class="block rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700"
+                class="block rounded-lg bg-blue-100 px-4 py-2 text-sm font-medium text-blue-700 hover:bg-blue-500 hover:text-white "
               >
-                Портфель
+                Посмотреть все 
               </a>
             </li>
 
