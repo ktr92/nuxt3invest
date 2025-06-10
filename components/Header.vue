@@ -146,7 +146,7 @@
               </a>
             </li>
 
-            <template v-for="item in mainstore.getPorfolio">
+            <template v-for="item in mainstore.getPorfolio" :key='item'>
               <MenuPortfolio :portfolioname="item.name"/>
             </template>
 
