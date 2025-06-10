@@ -1,7 +1,7 @@
 <template>
-  <div class="flex">
+  <div class="flex" >
     <div
-      class="flex h-screen w-16 flex-col justify-between border-e border-gray-100 bg-white"
+      class="flex h-screen w-16 flex-col justify-between border-e border-gray-100 bg-white z-5 relative"
     >
       <div>
         <MenuTop />
@@ -13,6 +13,7 @@
             <ul class="space-y-1 border-t border-gray-100 pt-4">
               <li>
                 <a
+                  @click.prevent.stop="mainstore.toggleModal()"
                   href="#"
                   class="group relative flex justify-center rounded-sm px-2 py-1.5 text-gray-500 hover:bg-gray-50 hover:text-gray-700"
                 >
@@ -34,7 +35,7 @@
                   <span
                     class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded-sm bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
                   >
-                    Teams
+                    Новая&nbsp;сделка
                   </span>
                 </a>
               </li>
@@ -62,7 +63,7 @@
                   <span
                     class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded-sm bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
                   >
-                    Billing
+                    Журнал&nbsp;действий
                   </span>
                 </a>
               </li>
@@ -90,11 +91,12 @@
                   <span
                     class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded-sm bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
                   >
-                    Invoices
+                    Аналитика
                   </span>
                 </a>
               </li>
 
+             
               <li>
                 <a
                   href="#"
@@ -118,7 +120,7 @@
                   <span
                     class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded-sm bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
                   >
-                    Account
+                    Дивиденды&nbsp;и&nbsp;купоны
                   </span>
                 </a>
               </li>
@@ -131,18 +133,19 @@
     </div>
 
     <Transition name="slide">
-      <div
-        class="flex h-screen flex-1 flex-col justify-between border-e border-gray-100 bg-white"
-        v-show="ismenushown"
+      <div 
+        class="flex h-screen flex-1 flex-col justify-between border-e border-gray-100 bg-white fixed top-0 ml-[63px] z-4" 
+        v-if="ismenushown"
+        v-click-outside="() => mainstore.closeMenu()"
       >
         <div class="px-4 py-6">
           <ul class="mt-14 space-y-1">
             <li>
               <a
                 href="#"
-                class="block rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700"
+                class="block rounded-lg bg-blue-100 px-4 py-2 text-sm font-medium text-blue-700 hover:bg-blue-500 hover:text-white "
               >
-                Портфель
+                Посмотреть все 
               </a>
             </li>
 
@@ -154,20 +157,25 @@
         </div>
       </div>
     </Transition>
+
+
+
   </div>
 </template>
 <script setup lang="ts">
 
 const mainstore = useMainstore()
-
-
-const ismenushown = ref(false)
+const ismenushown = computed(() => mainstore.getMenu)
 const showMenu = (): void => {
-  ismenushown.value = !ismenushown.value
+  mainstore.toggleMenu()
 }
 
 onBeforeMount(() => {
   console.log(mainstore.getPorfolio)
+})
+
+onMounted(() => {
+ 
 })
 </script>
 
@@ -175,7 +183,7 @@ onBeforeMount(() => {
 .slide-enter-active,
 .slide-leave-active {
   transition: all 0.3s ease-out;
-  z-index: -999;
+
 }
 
 /* неактивное состояние */

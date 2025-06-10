@@ -3,7 +3,7 @@
               <a
                 href="#"
                 class="t group relative flex justify-center rounded-sm bg-blue-50 px-2 py-1.5 text-blue-700"
-                @click="$emit('showMenu')"
+                @click.stop="$emit('showMenu')"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

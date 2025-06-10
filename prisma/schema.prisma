@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-musl", "linux-musl-openssl-3.0.x"]
@@ -45,18 +42,42 @@ model Account {
 
 model Portfolio {
   id                  String     @id @default(auto()) @map("_id") @db.ObjectId
+  user                String     @db.ObjectId
   name                String
   depo                Int
   comm                Int
   positionsID         String[]   @db.ObjectId
+  dealsID             String[]   @db.ObjectId
   portfolio_positions Position[] @relation(fields: [positionsID], references: [id])
+  portfolio_deals     Deal[]     @relation(fields: [dealsID], references: [id])
 }
 
 model Position {
   id                 String      @id @default(auto()) @map("_id") @db.ObjectId
   ticker             String
-  porfolioID         String      @db.ObjectId
+  count              Int
+  buyprice           Int
+  archive            Boolean
+  porfolioID         String[]    @db.ObjectId
   position_portfolio Portfolio[] @relation(fields: [porfolioID], references: [id])
+}
+
+model Deal {
+  id             String      @id @default(auto()) @map("_id") @db.ObjectId
+  comment        String
+  buyprice       Int
+  saleprice      Int
+  type           String
+  date           DateTime    @default(now())
+  porfolioID     String[]    @db.ObjectId
+  deal_portfolio Portfolio[] @relation(fields: [porfolioID], references: [id])
+}
+
+model Daily {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  date       DateTime @default(now())
+  startprice Int
+  endprice   Int
 }
 
 /**
