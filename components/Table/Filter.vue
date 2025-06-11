@@ -1,9 +1,15 @@
 <template>
   <div>
-    <div class="flex gap-15 my-4">
+    <div class="flex justify-start gap-4 my-4">
        <UISelect
-        v-model="selectType"
+        v-model="typeFilter"
         :items="dealType"
+      />
+
+      <UIInput
+        v-model="nameFilter"
+        type="text"
+        placeholder="Найти..."
       />
     </div>
   </div>
@@ -25,9 +31,10 @@
     },
   ]
 
-  const selectType = ref('')
+  const typeFilter = ref('')
+  const nameFilter = ref('')
 
-  watch(selectType, (newSelectType, oldSelectType) => {
+  watch(typeFilter, (newSelectType, oldSelectType) => {
     console.log(newSelectType)
   })
     
