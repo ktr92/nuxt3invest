@@ -42,6 +42,7 @@ declare interface IPositionView {
 }
 declare interface IDealView {
   ticker: string
+  type: string
   name: string
   count: number
   buyprice: number
@@ -59,5 +60,5 @@ declare interface ISwitcher {
 declare interface IPortfolioDeal {
   id: string
   name: string
-  fee: number
+  fee?: number
 }
