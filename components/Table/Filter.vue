@@ -8,7 +8,7 @@
             range
             auto-apply
             :enable-time-picker="false"
-            placeholder="Выберите дату"
+            placeholder="Выберите даты"
             locale="ru"
             cancelText="Отмена"
             selectText="Выбрать"            
@@ -16,6 +16,7 @@
             format="dd.MM.yyyy"    
             no-today
             :markers="markers" 
+            
           />
         </ClientOnly>
       </div>
@@ -54,9 +55,6 @@ const markers = ref()
 
 
 onMounted(() => {
-  const startDate = new Date()
-  const endDate = new Date()
-  datesFilter.value = [startDate, endDate]
 
   markers.value =[
   {

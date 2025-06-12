@@ -51,6 +51,9 @@
             />
 
           </td>
+           <td class="p-2 w-[240px] max-w-full">
+            <TableText :text="item.comment"  />
+          </td>
         </tr>
       </tbody>
     </table>

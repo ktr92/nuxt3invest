@@ -29,7 +29,8 @@ const tableData = [
     count: 1000,
     buyprice: 0.5,
     saleprice: 0.6,
-    dealdate: "02.01.2024",
+    dealdate: "02.04.2024",
+    comment: 'не знаю зачем я это купил'
   },
   {
     ticker: "ROSN",
@@ -38,7 +39,8 @@ const tableData = [
     count: 12323,
     buyprice: 500,
     saleprice: 550,
-    dealdate: "02.01.2024",
+    dealdate: "04.05.2024",
+    comment: "жду дивиденды",
   },
   {
     ticker: "LKOH",
@@ -47,7 +49,8 @@ const tableData = [
     count: 444,
     buyprice: 6000,
     saleprice: 6300,
-    dealdate: "02.01.2024",
+    dealdate: "02.04.2024",
+    comment: "не растет закрываю",
   },
   {
     ticker: "ASTR",
@@ -56,7 +59,8 @@ const tableData = [
     count: 22,
     buyprice: 500,
     saleprice: 420,
-    dealdate: "02.01.2024",
+    dealdate: "02.03.2024",
+    comment: "вдруг вырастет",
   },
 ]
 </script>

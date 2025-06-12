@@ -48,6 +48,7 @@ declare interface IDealView {
   buyprice: number
   saleprice: number
   dealdate: string
+  comment: string
 }
 declare interface HTMLElement {
   _unhandler?: (event: MouseEvent) => void
