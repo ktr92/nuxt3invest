@@ -1,6 +1,10 @@
 <template>
   <div>
     <div class="flex justify-start gap-4 my-4">
+
+      <VDatePicker v-model="datesFilter" :attributes="attrs" />
+
+
        <UISelect
         v-model="typeFilter"
         :items="dealType"
@@ -16,6 +20,8 @@
 </template>
 
 <script setup lang="ts">
+
+
   const dealType = [
     {
       id: 'all',
@@ -33,11 +39,24 @@
 
   const typeFilter = ref('')
   const nameFilter = ref('')
+  const datesFilter =  ref(new Date())
 
-  watch(typeFilter, (newSelectType, oldSelectType) => {
-    console.log(newSelectType)
+  watchEffect(() => {
+    console.log(typeFilter.value)
+    console.log(nameFilter.value)
+    // запрос на фильтрацию 
   })
     
+   const attrs = ref([
+    {
+      key: 'today',
+      highlight: {
+        color: 'green',
+        fillMode: 'solid'
+      },
+      dates: new Date()
+    }
+  ])
 
 </script>
 
