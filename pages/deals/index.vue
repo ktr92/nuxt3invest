@@ -1,69 +1,62 @@
 <template>
   <div class="w-full">
-    <TableMain :tableheader="tableHeader" :tabledata="tableData" />
+    <TableDeals :tableheader="tableHeader" :tabledata="tableData" />
   </div>
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  layout: "default",
+})
+
+onMounted(() => {})
 
 const tableHeader = [
+  "Дата",
+  "Операция",
   "Актив",
   "Количество",
-  "Средняя цена",
-  "Вложено",
-  "Стоимость",
+  "Цена покупки",
+  "Цена продажи",
   "Прибыль",
-  "Доходность",
 ]
 
 const tableData = [
   {
     ticker: "HYDR",
+    type: 'buy',
     name: "Русгидро",
     count: 1000,
-    price: 0.5,
-    newprice: 0.6,
-    pricechange: 0.1,
-    total: 500,
-    change: 11,
-    yearchange: 12,
-    openDate: "02.01.2024",
+    buyprice: 0.5,
+    saleprice: 0.6,
+    dealdate: "02.01.2024",
   },
   {
     ticker: "ROSN",
+    type: 'buy',
     name: "Роснефть",
     count: 12323,
-    price: 420,
-    newprice: 320,
-    pricechange: -100,
-    total: 500,
-    change: 13,
-    yearchange: 11,
-    openDate: "02.03.2024",
+    buyprice: 500,
+    saleprice: 550,
+    dealdate: "02.01.2024",
   },
   {
     ticker: "LKOH",
+    type: 'sell',
     name: "Лукойл",
     count: 444,
-    price: 6500,
-    newprice: 6700,
-    pricechange: 200,
-    total: 500,
-    change: 22,
-    yearchange: 32,
-    openDate: "22.11.2024",
+    buyprice: 6000,
+    saleprice: 6300,
+    dealdate: "02.01.2024",
   },
   {
     ticker: "ASTR",
+    type: 'buy',
     name: "Астра",
-    count: 33213,
-    price: 545,
-    newprice: 567,
-    pricechange: 22,
-    total: 500,
-    change: -10,
-    yearchange: -20,
-    openDate: "23.01.2025",
+    count: 22,
+    buyprice: 500,
+    saleprice: 420,
+    dealdate: "02.01.2024",
   },
 ]
 </script>

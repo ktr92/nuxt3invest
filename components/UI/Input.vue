@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full">
+  <div class="">
     <label class="text-sm font-medium text-gray-700" for="" v-if="labeltext">
       {{ labeltext }}
     </label>

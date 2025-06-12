@@ -6,10 +6,10 @@
       <select
         name="Headline"
         id="Headline"
-        class="mt-0.5 w-full border border-slate-200 shadow-sm sm:text-sm p-2 focus:border-blue-700 outline-0 rounded-md"
+        class="mt-0.5 w-full border border-slate-200 shadow-sm sm:text-sm p-2 outline-0 rounded-md cursor-pointer"
         @change="onChange"
       >
-        <option :value="item.id" v-for="item in items">{{item.name}}</option>
+        <option :value="item.id" v-for="item in items" class="cursor-pointer">{{item.name}}</option>
       </select>
     </label>
   </div>
@@ -48,7 +48,6 @@ const onChange = (event: Event) => {
   emits("update:modelValue", (<HTMLSelectElement>event.target).value)
 }
 onMounted(() => {
-  
   emits("update:modelValue", props.items[0].id)
 })
 </script>

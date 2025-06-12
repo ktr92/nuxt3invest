@@ -4,7 +4,7 @@
       <thead class="ltr:text-left rtl:text-right">
         <tr class="*:font-semibold*:text-gray-900 text-md">
           <th
-            v-for="item in tableHeader"
+            v-for="item in tableheader"
             :key="item"
             class="p-2 whitespace-nowrap text-semibold"
           >
@@ -15,7 +15,7 @@
 
       <tbody class="divide-y divide-gray-200 ">
         <tr
-          v-for="item in tableData"
+          v-for="item in tabledata"
           :key="item.ticker"
           class="*:text-gray-900 *:first:font-medium"
         >
@@ -54,66 +54,17 @@
 
 <script setup lang="ts">
 import { numberFormat } from '#imports';
-const tableHeader = [
-  "Актив",
-  "Количество",
-  "Средняя цена",
-  "Вложено",
-  "Стоимость",
-  "Прибыль",
-  "Доходность",
-];
 
-const tableData = [
-  {
-    ticker: "HYDR",
-    name: "Русгидро",
-    count: 1000,
-    price: 0.5,
-    newprice: 0.6,
-    pricechange: 0.1,
-    total: 500,
-    change: 11,
-    yearchange: 12,
-    openDate: "02.01.2024",
+const props = defineProps({
+  tableheader: {
+    type: Array<string>,
+    required: true,
   },
-  {
-    ticker: "ROSN",
-    name: "Роснефть",
-    count: 12323,
-    price: 420,
-    newprice: 320,
-    pricechange: -100,
-    total: 500,
-    change: 13,
-    yearchange: 11,
-    openDate: "02.03.2024",
-  },
-  {
-    ticker: "LKOH",
-    name: "Лукойл",
-    count: 444,
-    price: 6500,
-    newprice: 6700,
-    pricechange: 200,
-    total: 500,
-    change: 22,
-    yearchange: 32,
-    openDate: "22.11.2024",
-  },
-  {
-    ticker: "ASTR",
-    name: "Астра",
-    count: 33213,
-    price: 545,
-    newprice: 567,
-    pricechange: 22,
-    total: 500,
-    change: -10,
-    yearchange: -20,
-    openDate: "23.01.2025",
+  tabledata: {
+    type: Array<IPositionView>,
+    required: true
   }
-]
+})
 
 </script>
 
