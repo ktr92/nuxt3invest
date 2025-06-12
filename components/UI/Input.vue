@@ -14,7 +14,7 @@
       @keyup.enter="onEnter"
       @blur="handleBlur"
       autocomplete='off'
-        class="mt-0.5 w-full border border-slate-200 shadow-sm sm:text-sm p-2 focus:border-blue-700 outline-0 rounded-md"
+        class="m-0  w-full border border-[#ddd] sm:text-sm p-2 focus:border-blue-700 outline-0 rounded-md"
     />
     <span v-if="errorMessage && meta.touched" class="text-red-700 text-sm">{{
       errorMessage

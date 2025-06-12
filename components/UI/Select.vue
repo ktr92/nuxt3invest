@@ -6,7 +6,7 @@
       <select
         name="Headline"
         id="Headline"
-        class="mt-0.5 w-full border border-slate-200 shadow-sm sm:text-sm p-2 outline-0 rounded-md cursor-pointer"
+        class="m-0 w-full border border-[#ddd] sm:text-sm p-2 outline-0 rounded-md cursor-pointer"
         @change="onChange"
       >
         <option :value="item.id" v-for="item in items" class="cursor-pointer">{{item.name}}</option>
