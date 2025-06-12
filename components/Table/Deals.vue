@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-x-auto w-full tablemain">
+  <div class="overflow-x-auto w-full tablemain min-h-full">
 
     <TableFilter  />
 
