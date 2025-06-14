@@ -24,7 +24,6 @@
 
 <script setup lang="ts">
 import * as d3 from 'd3'
-import { ref, onMounted, watch, nextTick, reactive } from 'vue'
 
 interface DataItem {
   category: string
@@ -37,13 +36,16 @@ const props = defineProps<{
   height?: number
 }>()
 
+// параметры контейнера для графика
 const width = props.width ?? 500
 const height = props.height ?? 300
 const margin = { top: 20, right: 20, bottom: 40, left: 40 }
 
+// ссылки на элементы в шаблоне
 const chart = ref<SVGSVGElement | null>(null)
 const container = ref<HTMLDivElement | null>(null)
 
+// подсказки 
 const tooltip = reactive({
   visible: false,
   x: 0,
@@ -51,33 +53,38 @@ const tooltip = reactive({
   text: '',
 })
 
+/**
+ * Функция для рисования графика
+ */
 const renderChart = () => {
+  // проверяем есть ли в шаблоне нужные элементы для графика
   if (!chart.value || !container.value) return
 
+  // проверяем входные данные для графика
   if (!props.data || !Array.isArray(props.data) || props.data.length === 0) {
     d3.select(chart.value).selectAll('*').remove()
     tooltip.visible = false
     return
   }
 
+  // перед рисования графика очищаем контейнер
   d3.select(chart.value).selectAll('*').remove()
 
+  // выбор контейнера svg для графика и установка его размеров
   const svg = d3.select(chart.value)
     .attr('width', width)
     .attr('height', height)
 
+  // ширина и высота графика = размер контейнера - отступы с обеих сторон  
   const innerWidth = width - margin.left - margin.right
   const innerHeight = height - margin.top - margin.bottom
 
 
-  const piedata = [1, 1, 2, 3, 5, 8, 13, 21];
-  const pie = d3.pie().padAngle(0.4);
-  const arcs = pie(piedata);
-  console.log(arcs)
-
+  // добавляем группу g в наш контейнер svg
   const g = svg.append('g')
     .attr('transform', `translate(${margin.left},${margin.top})`)
 
+  // 
   const x = d3.scaleBand()
     .domain(props.data.map(d => d.category))
     .range([0, innerWidth])
@@ -130,13 +137,11 @@ const renderChart = () => {
 
 }
 
+
 onMounted(() => {
-  nextTick(() => renderChart())
+  renderChart()
 })
 
-watch(() => props.data, () => {
-  nextTick(() => renderChart())
-}, { deep: true, immediate: true })
 </script>
 
 <style scoped>
@@ -148,4 +153,5 @@ watch(() => props.data, () => {
 .chart-wrapper {
   user-select: none;
 }
+
 </style>
