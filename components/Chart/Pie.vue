@@ -1,29 +1,31 @@
 <template>
-  <div ref="container" class="chart-wrapper" style="position: relative;">
+  <div ref="container" class="chart-wrapper" style="position: relative">
     <svg ref="chart" :width="width" :height="height"></svg>
-    <div v-if="tooltip.visible" 
-         :style="{
-           position: 'absolute',
-           top: tooltip.y + 'px',
-           left: tooltip.x + 'px',
-           padding: '6px 8px',
-           background: 'rgba(0,0,0,0.7)',
-           color: 'white',
-           borderRadius: '4px',
-           pointerEvents: 'none',
-           fontSize: '12px',
-           whiteSpace: 'nowrap',
-           transform: 'translate(-50%, -100%)',
-           userSelect: 'none',
-           zIndex: 1000,
-         }">
+    <div
+      v-if="tooltip.visible"
+      :style="{
+        position: 'absolute',
+        top: tooltip.y + 'px',
+        left: tooltip.x + 'px',
+        padding: '6px 8px',
+        background: 'rgba(0,0,0,0.7)',
+        color: 'white',
+        borderRadius: '4px',
+        pointerEvents: 'none',
+        fontSize: '12px',
+        whiteSpace: 'nowrap',
+        transform: 'translate(-50%, -100%)',
+        userSelect: 'none',
+        zIndex: 1000,
+      }"
+    >
       {{ tooltip.text }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import * as d3 from 'd3'
+import * as d3 from "d3"
 
 interface DataItem {
   category: string
@@ -38,19 +40,24 @@ const props = defineProps<{
 
 // параметры контейнера для графика
 const width = props.width ?? 500
-const height = props.height ?? 300
-const margin = { top: 20, right: 20, bottom: 40, left: 40 }
+const height = props.height ?? 500
+const margin = 30
 
-// ссылки на элементы в шаблоне
+// для круговой диаграммы нужен радиус
+const radius = Math.min(width / 2 - margin * 2, height / 2  - 2 * margin)
+
+// цвета для диаграммы
+const color = d3.scaleOrdinal(d3.schemeSet3)
+
 const chart = ref<SVGSVGElement | null>(null)
 const container = ref<HTMLDivElement | null>(null)
 
-// подсказки 
+// подсказки
 const tooltip = reactive({
   visible: false,
   x: 0,
   y: 0,
-  text: '',
+  text: "",
 })
 
 /**
@@ -62,86 +69,62 @@ const renderChart = () => {
 
   // проверяем входные данные для графика
   if (!props.data || !Array.isArray(props.data) || props.data.length === 0) {
-    d3.select(chart.value).selectAll('*').remove()
+    d3.select(chart.value).selectAll("*").remove()
     tooltip.visible = false
     return
   }
 
   // перед рисования графика очищаем контейнер
-  d3.select(chart.value).selectAll('*').remove()
+  d3.select(chart.value)
+    .selectAll("*")
+    .remove();
+
+  // ширина и высота графика = размер контейнера - отступы с обеих сторон
+  const innerWidth = width - 2 * margin
+  const innerHeight = height - 2 * margin
+
+
+  // создаем генератор секций 
+  const pie = d3.pie<DataItem>()
+                .sort(null)
+                .value((d => d.value));
+
+
+                
+  // создаем графическое представление секций
+  const arc = d3.arc<d3.PieArcDatum<DataItem>>()
+                .outerRadius(radius)
+                .innerRadius(radius - 90);
+
+
+
 
   // выбор контейнера svg для графика и установка его размеров
   const svg = d3.select(chart.value)
-    .attr('width', width)
-    .attr('height', height)
+                .attr("width", width)
+                .attr("height", height)
+                .attr('class', 'axis')
+                .append("g")
+                .attr("transform", `translate(${width / 2 + margin * 2},${height / 2})`);
 
-  // ширина и высота графика = размер контейнера - отступы с обеих сторон  
-  const innerWidth = width - margin.left - margin.right
-  const innerHeight = height - margin.top - margin.bottom
 
+  // рисование секторов 
+  const g = svg.selectAll('.arc')
+                .data(pie(props.data))       
+                .enter()
+                .append("g")
+                .attr('class', 'arc')
+                .append('path')
+                .attr('d', d => arc(d))
+                .style('fill', (d) => color(d.data.category))        
+                     
 
-  // добавляем группу g в наш контейнер svg
-  const g = svg.append('g')
-    .attr('transform', `translate(${margin.left},${margin.top})`)
-
-  // 
-  const x = d3.scaleBand()
-    .domain(props.data.map(d => d.category))
-    .range([0, innerWidth])
-    .padding(0.1)
-
-  const y = d3.scaleLinear()
-    .domain([0, d3.max(props.data, d => d.value) ?? 0])
-    .nice()
-    .range([innerHeight, 0])
-
-  g.append('g')
-    .attr('transform', `translate(0,${innerHeight})`)
-    .call(d3.axisBottom(x))
-
-  g.append('g')
-    .call(d3.axisLeft(y))
-
-  // Bars with mouse events
-  g.selectAll('.bar')
-    .data(props.data)
-    .enter()
-    .append('rect')
-      .attr('class', 'bar')
-      .attr('x', d => x(d.category) ?? 0)
-      .attr('y', d => y(d.value))
-      .attr('width', x.bandwidth())
-      .attr('fill', '#3b82f6')
-      .on('mouseenter', function(event, d) {
-        d3.select(this).attr('fill', '#2563eb') // ярче цвет
-        tooltip.text = `${d.category}: ${d.value}`
-        tooltip.visible = true
-        const [mouseX, mouseY] = d3.pointer(event, container.value)
-        tooltip.x = mouseX
-        tooltip.y = mouseY
-      })
-      .on('mousemove', function(event) {
-        const [mouseX, mouseY] = d3.pointer(event, container.value)
-        tooltip.x = mouseX
-        tooltip.y = mouseY
-      })
-      .on('mouseleave', function() {
-        d3.select(this).attr('fill', '#3b82f6') // возвращаем обычный цвет
-        tooltip.visible = false
-      })
-      .transition()
-      .ease(d3.easeLinear)
-      .duration(500)
-      .delay(50)
-      .attr('height', d => innerHeight - y(d.value))
 
 }
-
 
 onMounted(() => {
   renderChart()
 })
-
 </script>
 
 <style scoped>
@@ -153,5 +136,4 @@ onMounted(() => {
 .chart-wrapper {
   user-select: none;
 }
-
 </style>
