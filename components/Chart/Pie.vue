@@ -27,6 +27,27 @@
 <script setup lang="ts">
 import * as d3 from "d3"
 
+const getMin = (arr: Array<DataItem>) => {
+  let min = 0
+  arr.forEach(item => {
+    if ((item.value) < min) {
+      min = item.value
+    }
+  });
+
+  return min
+}
+const getMax = (arr: Array<DataItem>) => {
+  let max = 0
+  arr.forEach(item => {
+    if ((item.value) > max) {
+      max = item.value
+    }
+  });
+
+  return max
+}
+
 interface DataItem {
   category: string
   value: number
@@ -46,8 +67,10 @@ const margin = 30
 // для круговой диаграммы нужен радиус
 const radius = Math.min(width / 2 - margin * 2, height / 2  - 2 * margin)
 
-// цвета для диаграммы
-const color = d3.scaleOrdinal(d3.schemeSet3)
+// цвета для диаграммы - между границ значений создаем шкалу цветов в пределах выбранных границ цветов
+const color = d3.scaleOrdinal(d3.schemePastel1)
+
+
 
 const chart = ref<SVGSVGElement | null>(null)
 const container = ref<HTMLDivElement | null>(null)
@@ -87,6 +110,7 @@ const renderChart = () => {
   // создаем генератор секций 
   const pie = d3.pie<DataItem>()
                 .sort(null)
+                .padAngle(0.03) // промежутки сежду секторами
                 .value((d => d.value));
 
 
@@ -103,6 +127,7 @@ const renderChart = () => {
   const svg = d3.select(chart.value)
                 .attr("width", width)
                 .attr("height", height)
+                .attr("padding", margin)
                 .attr('class', 'axis')
                 .append("g")
                 .attr("transform", `translate(${width / 2 + margin * 2},${height / 2})`);
@@ -116,7 +141,24 @@ const renderChart = () => {
                 .attr('class', 'arc')
                 .append('path')
                 .attr('d', d => arc(d))
-                .style('fill', (d) => color(d.data.category))        
+                .attr('fill', (d) => color(d.data.category))    
+                .on('mouseover', function(e, d) {
+                  const $el = d3.select(this)
+                  const currentColor = $el.attr('fill');
+                  if (currentColor && d3.color(currentColor)) {
+                    $el.attr('fill', 'red')
+                    $el.attr('style', 'transform: scale(1.05);  transition: all 0.3s ease;')
+                    $el.attr('exfill', currentColor)
+                  }
+                })
+                .on('mouseleave', function(e, d) {
+                  const $el = d3.select(this)
+                  const exColor = $el.attr('exfill');
+                  if (exColor && d3.color(exColor)) {
+                    $el.attr('fill', exColor)
+                    $el.attr('style', 'transform: scale(1);  transition: all 0.3s ease;')
+                  }
+                })
                      
 
 
@@ -128,10 +170,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.bar {
-  transition: fill 0.2s ease;
-  cursor: pointer;
-}
+
 
 .chart-wrapper {
   user-select: none;
