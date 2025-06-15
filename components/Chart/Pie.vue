@@ -1,6 +1,6 @@
 <template>
-  <div ref="container" class="chart-wrapper" style="position: relative">
-    <div class="flex">
+  <div ref="container" class="chart-wrapper w-full" style="position: relative">
+    <div class="flex w-full">
       <div class="chartblock">
         <svg ref="chart" :width="width" :height="height"></svg>
         <div
@@ -24,8 +24,18 @@
           {{ tooltip.text }}
         </div>
       </div>
-      <div class="legendblock" ref="legendblock">
-
+      <div class="legendblock w-full py-14 px-10" ref="legendblock">
+        <div class="flex items-center gap-20 w-full" v-for="(item, index) in props.data" :key="item.category">
+          <div 
+            :style="`background-color: ${colorSet[index]}`" 
+            :data-category="item.category"
+            :ref="item.category"
+            @mouseenter="hoverD3(item.category)"
+            @mouseleave="leaveD3(item.category)"
+            class="w-full  py-2 px-2">
+              {{ item.category }} {{ item.value }}
+            </div>
+        </div>
       </div>
     </div><!-- /.flex -->
     
@@ -75,8 +85,11 @@ const margin = 30
 // для круговой диаграммы нужен радиус
 const radius = Math.min(width / 2 - margin * 2, height / 2  - 2 * margin)
 
+const colorSet = ['#fbb4ae', '#b3cde3', '#ccebc5', '#decbe4', '#fed9a6', '#ffffcc', '#e5d8bd', '#fddaec', '#f2f2f2']
+const colorHover = ['rgb(59, 130, 246)']
 // цвета для диаграммы - между границ значений создаем шкалу цветов в пределах выбранных границ цветов
-const color = d3.scaleOrdinal(d3.schemePastel1)
+const color = d3.scaleOrdinal(colorSet)
+
 
 
 
@@ -91,6 +104,43 @@ const tooltip = reactive({
   y: 0,
   text: "",
 })
+
+const markPie = ($el: d3.Selection<d3.BaseType, unknown, HTMLElement, any>, d?: d3.PieArcDatum<DataItem>) => { 
+    const currentColor = $el.attr('fill');
+  if (currentColor) {
+    $el.attr('fill', colorHover)
+    $el.attr('style', 'transform: scale(1.05);  transition: all 0.3s ease;')
+    $el.attr('exfill', currentColor)
+    
+    if (d) {
+    d3.select(`[data-category=${d.data.category}]`)
+      .attr('style', `background-color: ${colorHover}`)
+          tooltip.text = `${d.data.category}: ${d.value}`
+
+    }
+    tooltip.visible = true
+    const [mouseX, mouseY] = d3.pointer(event, container.value)
+    tooltip.x = mouseX
+    tooltip.y = mouseY
+  }
+}
+
+const pie = d3.pie<DataItem>() // Объявление pie ПЕРЕД функциями
+  .sort(null)
+  .padAngle(0.03)
+  .value((d) => d.value);
+
+
+  const hoverD3 = (category: string) => { //event добавлен
+  const $el = d3.select(`path[data-id="${category}"]`);
+  if (!$el.empty()) {
+    const d = pie(props.data).find(item => item.data.category === category) as d3.PieArcDatum<DataItem>; // Находим данные для сектора
+    if(d) markPie($el, d); // передаем d в markPie
+  }
+};
+  const leaveD3 = (category: string) => {
+    d3.select('')
+  }
 
 /**
  * Функция для рисования графика
@@ -142,6 +192,9 @@ const renderChart = () => {
                 .attr("transform", `translate(${width / 2 },${height / 2})`);
 
 
+
+
+
   // рисование секторов 
   const g = svg.selectAll('.arc')
                 .data(pie(props.data))       
@@ -150,21 +203,26 @@ const renderChart = () => {
                 .attr('class', 'arc')
                 .append('path')
                 .attr('d', d => arc(d))
+                .attr('data-id', (d) => d.data.category)    
                 .attr('fill', (d) => color(d.data.category))    
                 .on('mouseover', function(e, d) {
                   const $el = d3.select(this)
-                  const currentColor = $el.attr('fill');
+                  markPie($el, d)
+                  /* const currentColor = $el.attr('fill');
                   if (currentColor) {
-                    $el.attr('fill', 'rgb(59, 130, 246)')
+                    $el.attr('fill', colorHover)
                     $el.attr('style', 'transform: scale(1.05);  transition: all 0.3s ease;')
                     $el.attr('exfill', currentColor)
+                    
+                    d3.select(`[data-category=${d.data.category}]`)
+                      .attr('style', `background-color: ${colorHover}`)
 
                     tooltip.text = `${d.data.category}: ${d.value}`
                     tooltip.visible = true
                     const [mouseX, mouseY] = d3.pointer(event, container.value)
                     tooltip.x = mouseX
                     tooltip.y = mouseY
-                  }
+                  } */
                 })
                 .on('mouseleave', function(e, d) {
                   const $el = d3.select(this)
@@ -173,11 +231,14 @@ const renderChart = () => {
                   if (exColor) {
                     $el.attr('fill', exColor)
                     $el.attr('style', 'transform: scale(1);  transition: all 0.3s ease;')
+
+                     d3.select(`[data-category=${d.data.category}]`)
+                      .attr('style', `background-color: ${exColor}`)
                   }
                 })
                      
     
-  const legend = d3.select(legendblock.value)
+ /*  const legend = d3.select(legendblock.value)
                 .attr('width', '100%')
                 .attr('height', '100%')
                 .attr('data-legend', 'legend')
@@ -190,7 +251,7 @@ const renderChart = () => {
                       .text((d) => d.category)
                       .append('div')
                       .style('font-weigth', 'bold')
-                      .text(d => d.value)
+                      .text(d => d.value) */
 
        
 

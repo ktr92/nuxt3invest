@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="w-full">
     <h1>Пример диаграммы на D3 с Nuxt 3 и Vue 3</h1>
     <ChartBar :data="chartData" />
     <ChartPie :data="chartData" />
