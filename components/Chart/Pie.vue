@@ -1,26 +1,34 @@
 <template>
   <div ref="container" class="chart-wrapper" style="position: relative">
-    <svg ref="chart" :width="width" :height="height"></svg>
-    <div
-      v-if="tooltip.visible"
-      :style="{
-        position: 'absolute',
-        top: tooltip.y + 'px',
-        left: tooltip.x + 'px',
-        padding: '6px 8px',
-        background: 'rgba(0,0,0,0.7)',
-        color: 'white',
-        borderRadius: '4px',
-        pointerEvents: 'none',
-        fontSize: '12px',
-        whiteSpace: 'nowrap',
-        transform: 'translate(-50%, -100%)',
-        userSelect: 'none',
-        zIndex: 1000,
-      }"
-    >
-      {{ tooltip.text }}
-    </div>
+    <div class="flex">
+      <div class="chartblock">
+        <svg ref="chart" :width="width" :height="height"></svg>
+        <div
+          v-if="tooltip.visible"
+          :style="{
+            position: 'absolute',
+            top: tooltip.y + 'px',
+            left: tooltip.x + 'px',
+            padding: '6px 8px',
+            background: 'rgba(0,0,0,0.7)',
+            color: 'white',
+            borderRadius: '4px',
+            pointerEvents: 'none',
+            fontSize: '12px',
+            whiteSpace: 'nowrap',
+            transform: 'translate(-50%, -100%)',
+            userSelect: 'none',
+            zIndex: 1000,
+          }"
+        >
+          {{ tooltip.text }}
+        </div>
+      </div>
+      <div class="legendblock" ref="legendblock">
+
+      </div>
+    </div><!-- /.flex -->
+    
   </div>
 </template>
 
@@ -74,6 +82,7 @@ const color = d3.scaleOrdinal(d3.schemePastel1)
 
 const chart = ref<SVGSVGElement | null>(null)
 const container = ref<HTMLDivElement | null>(null)
+const legendblock = ref<HTMLDivElement | null>(null)
 
 // подсказки
 const tooltip = reactive({
@@ -130,7 +139,7 @@ const renderChart = () => {
                 .attr("padding", margin)
                 .attr('class', 'axis')
                 .append("g")
-                .attr("transform", `translate(${width / 2 + margin * 2},${height / 2})`);
+                .attr("transform", `translate(${width / 2 },${height / 2})`);
 
 
   // рисование секторов 
@@ -145,21 +154,45 @@ const renderChart = () => {
                 .on('mouseover', function(e, d) {
                   const $el = d3.select(this)
                   const currentColor = $el.attr('fill');
-                  if (currentColor && d3.color(currentColor)) {
-                    $el.attr('fill', 'red')
+                  if (currentColor) {
+                    $el.attr('fill', 'rgb(59, 130, 246)')
                     $el.attr('style', 'transform: scale(1.05);  transition: all 0.3s ease;')
                     $el.attr('exfill', currentColor)
+
+                    tooltip.text = `${d.data.category}: ${d.value}`
+                    tooltip.visible = true
+                    const [mouseX, mouseY] = d3.pointer(event, container.value)
+                    tooltip.x = mouseX
+                    tooltip.y = mouseY
                   }
                 })
                 .on('mouseleave', function(e, d) {
                   const $el = d3.select(this)
                   const exColor = $el.attr('exfill');
-                  if (exColor && d3.color(exColor)) {
+                   tooltip.visible = false
+                  if (exColor) {
                     $el.attr('fill', exColor)
                     $el.attr('style', 'transform: scale(1);  transition: all 0.3s ease;')
                   }
                 })
                      
+    
+  const legend = d3.select(legendblock.value)
+                .attr('width', '100%')
+                .attr('height', '100%')
+                .attr('data-legend', 'legend')
+               
+  const legenditems = legend.selectAll('.datarow')
+                      .data(props.data)
+                      .enter()
+                      .append('div')
+                      .style('background-color', (d) => color(d.category))
+                      .text((d) => d.category)
+                      .append('div')
+                      .style('font-weigth', 'bold')
+                      .text(d => d.value)
+
+       
 
 
 }
