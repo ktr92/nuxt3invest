@@ -30,8 +30,8 @@
             :style="`background-color: ${colorSet[index]}`" 
             :data-category="item.category"
             :ref="item.category"
-            @mouseenter="hoverD3(item.category)"
-            @mouseleave="leaveD3(item.category)"
+            @mouseenter="hoverD3(item.category, colorSet[index])"
+            @mouseleave="leaveD3(item.category, colorSet[index])"
             class="w-full  py-2 px-2">
               {{ item.category }} {{ item.value }}
             </div>
@@ -105,42 +105,57 @@ const tooltip = reactive({
   text: "",
 })
 
-const markPie = ($el: d3.Selection<d3.BaseType, unknown, HTMLElement, any>, d?: d3.PieArcDatum<DataItem>) => { 
-    const currentColor = $el.attr('fill');
-  if (currentColor) {
-    $el.attr('fill', colorHover)
-    $el.attr('style', 'transform: scale(1.05);  transition: all 0.3s ease;')
-    $el.attr('exfill', currentColor)
-    
-    if (d) {
-    d3.select(`[data-category=${d.data.category}]`)
-      .attr('style', `background-color: ${colorHover}`)
-          tooltip.text = `${d.data.category}: ${d.value}`
 
-    }
-    tooltip.visible = true
-    const [mouseX, mouseY] = d3.pointer(event, container.value)
-    tooltip.x = mouseX
-    tooltip.y = mouseY
-  }
+const hoverD3 = (category: string, prevColor: string) => { 
+  const $el = d3.select(`path[data-id="${category}"]`);
+  changePieColor($el, 'fill')
+  changeItemColor(category, 'fill', prevColor)
+  showTooltip(category, category)
+}
+const leaveD3 = (category: string, prevColor: string) => {
+  const $el = d3.select(`path[data-id="${category}"]`);
+  changePieColor($el, 'exfill')
+  changeItemColor(category, 'exfill', prevColor)
+  hideTooltip()
 }
 
-const pie = d3.pie<DataItem>() // Объявление pie ПЕРЕД функциями
-  .sort(null)
-  .padAngle(0.03)
-  .value((d) => d.value);
+// смена цвета у элемента в таблице
+const changeItemColor = (category: string, colorAttr: string, prevColor?: string) => {
+  d3.select(`[data-category=${category}]`)
+    .attr('style', `background-color: ${colorAttr === 'fill' ? colorHover : prevColor}`)
+}
 
+// смена цвета у элемента в диаграмме
+const changePieColor = ($el: d3.Selection<d3.BaseType, unknown, HTMLElement, any> | d3.Selection<SVGPathElement, unknown, null, undefined>, colorAttr: 'fill' | 'exfill', d?: d3.PieArcDatum<DataItem>) => {
+  // извлекаем текущий цвет
+  const prevColor = $el.attr(colorAttr);
+    if (prevColor) {
+      // для таблицы - если fill - то применяем новый цвет для fill, а если exfill - возвращаем старый цвет 
+      $el.attr(colorAttr === 'fill' ? 'fill' : 'exfill', colorHover) 
+      $el.attr('style', 'transform: scale(1.05);  transition: all 0.3s ease;')
+      $el.attr(colorAttr === 'fill' ? 'exfill' : 'fill', prevColor)
+      
+      // для секций - если fill - то применяем новый цвет, а если exfill - возвращаем старый цвет
+      if (d) {
+        changeItemColor(d.data.category, colorAttr, prevColor)
+        const tooltipText = `${d.data.category}: ${d.value}`
+        showTooltip(d.data.category, tooltipText)
+      }
+    
+    }
+}
 
-  const hoverD3 = (category: string) => { //event добавлен
-  const $el = d3.select(`path[data-id="${category}"]`);
-  if (!$el.empty()) {
-    const d = pie(props.data).find(item => item.data.category === category) as d3.PieArcDatum<DataItem>; // Находим данные для сектора
-    if(d) markPie($el, d); // передаем d в markPie
-  }
-};
-  const leaveD3 = (category: string) => {
-    d3.select('')
-  }
+const showTooltip = (category: string, tooltipText: string) => {
+      tooltip.text = tooltipText
+      tooltip.visible = true
+     /*  const [mouseX, mouseY] = d3.pointer(event, container.value) */
+      tooltip.x = Number(d3.select(`path[data-id="${category}"]`).attr('data-centerX'))
+      tooltip.y = Number(d3.select(`path[data-id="${category}"]`).attr('data-centerY'))
+}
+
+const hideTooltip = () => {
+   tooltip.visible = false
+}
 
 /**
  * Функция для рисования графика
@@ -152,7 +167,7 @@ const renderChart = () => {
   // проверяем входные данные для графика
   if (!props.data || !Array.isArray(props.data) || props.data.length === 0) {
     d3.select(chart.value).selectAll("*").remove()
-    tooltip.visible = false
+    hideTooltip()
     return
   }
 
@@ -165,22 +180,16 @@ const renderChart = () => {
   const innerWidth = width - 2 * margin
   const innerHeight = height - 2 * margin
 
-
   // создаем генератор секций 
   const pie = d3.pie<DataItem>()
                 .sort(null)
                 .padAngle(0.03) // промежутки сежду секторами
                 .value((d => d.value));
-
-
                 
   // создаем графическое представление секций
   const arc = d3.arc<d3.PieArcDatum<DataItem>>()
                 .outerRadius(radius)
                 .innerRadius(radius - 90);
-
-
-
 
   // выбор контейнера svg для графика и установка его размеров
   const svg = d3.select(chart.value)
@@ -191,10 +200,6 @@ const renderChart = () => {
                 .append("g")
                 .attr("transform", `translate(${width / 2 },${height / 2})`);
 
-
-
-
-
   // рисование секторов 
   const g = svg.selectAll('.arc')
                 .data(pie(props.data))       
@@ -204,37 +209,17 @@ const renderChart = () => {
                 .append('path')
                 .attr('d', d => arc(d))
                 .attr('data-id', (d) => d.data.category)    
+                .attr('data-centerX', (d) => arc.centroid(d)[0])    
+                .attr('data-centerY', (d) => arc.centroid(d)[1])    
                 .attr('fill', (d) => color(d.data.category))    
                 .on('mouseover', function(e, d) {
                   const $el = d3.select(this)
-                  markPie($el, d)
-                  /* const currentColor = $el.attr('fill');
-                  if (currentColor) {
-                    $el.attr('fill', colorHover)
-                    $el.attr('style', 'transform: scale(1.05);  transition: all 0.3s ease;')
-                    $el.attr('exfill', currentColor)
-                    
-                    d3.select(`[data-category=${d.data.category}]`)
-                      .attr('style', `background-color: ${colorHover}`)
-
-                    tooltip.text = `${d.data.category}: ${d.value}`
-                    tooltip.visible = true
-                    const [mouseX, mouseY] = d3.pointer(event, container.value)
-                    tooltip.x = mouseX
-                    tooltip.y = mouseY
-                  } */
+                 /*  markPie($el, d) */
+                  changePieColor($el, 'fill', d)
                 })
                 .on('mouseleave', function(e, d) {
                   const $el = d3.select(this)
-                  const exColor = $el.attr('exfill');
-                   tooltip.visible = false
-                  if (exColor) {
-                    $el.attr('fill', exColor)
-                    $el.attr('style', 'transform: scale(1);  transition: all 0.3s ease;')
-
-                     d3.select(`[data-category=${d.data.category}]`)
-                      .attr('style', `background-color: ${exColor}`)
-                  }
+                  changePieColor($el, 'exfill', d)
                 })
                      
     
