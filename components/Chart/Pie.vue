@@ -30,7 +30,7 @@
             :style="`background-color: ${colorSet[index]}`" 
             :data-category="item.category"
             :ref="item.category"
-            @mouseenter="hoverD3(item.category, colorSet[index])"
+            @mouseenter="hoverD3(item.category, colorSet[index], item.value)"
             @mouseleave="leaveD3(item.category, colorSet[index])"
             class="w-full  py-2 px-2">
               {{ item.category }} {{ item.value }}
@@ -105,17 +105,35 @@ const tooltip = reactive({
   text: "",
 })
 
-
-const hoverD3 = (category: string, prevColor: string) => { 
+/**
+ * Событие при ховере на элемент таблицы с данными.
+ * @param {string} category - категория под ховером
+ * @param {string} prevColor - соотвествующий для данной категории цвет
+ */
+const hoverD3 = (category: string, prevColor: string, value: number) => { 
+  // выбираем из диаграммы  сектор, соотвествующий категории под ховером
   const $el = d3.select(`path[data-id="${category}"]`);
+  // меняем цвет выбранного сектора  
   changePieColor($el, 'fill')
+  // меняем цвет элемента в таблице под ховером
   changeItemColor(category, 'fill', prevColor)
-  showTooltip(category, category + ": " + props.data.filter(item => item.category === category)[0].value)
+  // определяем текст, который будет выводиться в подсказке - название категории и ее значение
+  const tooltiptext = category + ": " + value
+  // показываем подсказку на секторе диаграмме для соотвествующей категории под ховером
+  showTooltip(category, tooltiptext)
 }
+/**
+ * Событие при снятия ховера с элемента таблицы с данными.
+ * @param {string} category - категория которая была под ховером
+ * @param {string} prevColor - соотвествующий для данной категории цвет
+ */
 const leaveD3 = (category: string, prevColor: string) => {
   const $el = d3.select(`path[data-id="${category}"]`);
+  // возвращаем цвет выбранного сектора 
   changePieColor($el, 'exfill')
+  // возвращаем цвет элемента в таблице под ховером
   changeItemColor(category, 'exfill', prevColor)
+  // скрываем подсказку 
   hideTooltip()
 }
 
@@ -132,7 +150,7 @@ const changePieColor = ($el: d3.Selection<d3.BaseType, unknown, HTMLElement, any
     if (prevColor) {
       // для таблицы - если fill - то применяем новый цвет для fill, а если exfill - возвращаем старый цвет 
       $el.attr(colorAttr === 'fill' ? 'fill' : 'exfill', colorHover) 
-      $el.attr('style', 'transform: scale(1.05);  transition: all 0.3s ease;')
+      $el.attr('style', `transform: ${colorAttr === 'fill' ? 'scale(1.05)' : ''};  transition: all 0.3s ease;`)
       $el.attr(colorAttr === 'fill' ? 'exfill' : 'fill', prevColor)
       
       // для секций - если fill - то применяем новый цвет, а если exfill - возвращаем старый цвет
