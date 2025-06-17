@@ -139,10 +139,11 @@ const changeItemColor = (category: string, colorAttr: colorType, prevColor?: str
  */
 const changePieColor = ($el: d3.Selection<d3.BaseType, unknown, HTMLElement, any> | d3.Selection<SVGPathElement, unknown, null, undefined>, colorAttr: colorType, d?: d3.PieArcDatum<DataItem>) => {
   // извлекаем текущий цвет
-  const prevColor = $el.attr(colorAttr);
+  const targetAttr = colorAttr === 'hover' ? 'fill' : 'exfill'
+  const prevColor = $el.attr(targetAttr);
     if (prevColor) {
       // для таблицы - если hover - то применяем новый цвет для fill, а если unhover - возвращаем старый цвет 
-      $el.attr(colorAttr === 'hover' ? 'fill' : 'exfill', colorHover) 
+      $el.attr(targetAttr, colorHover) 
       $el.attr('style', `transform: ${colorAttr === 'hover' ? 'scale(1.05)' : ''};  transition: all 0.3s ease;`)
       $el.attr(colorAttr === 'hover' ? 'exfill' : 'fill', prevColor)
       
