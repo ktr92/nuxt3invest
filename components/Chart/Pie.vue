@@ -25,17 +25,40 @@
         </div>
       </div>
       <div class="legendblock w-full py-14 px-10" ref="legendblock">
-        <div class="flex items-center gap-20 w-full" v-for="(item, index) in props.data" :key="item.category">
-          <div 
-            :style="`background-color: ${colorSet[index]}`" 
-            :data-category="item.category"
-            :ref="item.category"
-            @mouseenter="hoverD3(item.category, colorSet[index], item.value)"
-            @mouseleave="leaveD3(item.category, colorSet[index])"
-            class="w-full  py-2 px-2">
-              {{ item.category }} {{ item.value }}
-            </div>
-        </div>
+        <table class="w-full">
+          <tbody>
+            <tr 
+              v-for="(item, index) in props.data" 
+              :key="item.category" 
+              :data-category="item.category"
+              :ref="item.category"
+              @mouseenter="hoverD3(item.category, colorSet[index], item.value)"
+              @mouseleave="leaveD3(item.category, colorSet[index])"
+              class="py-2 px-2 mb-10  border-b-1 border-gray-100">
+                <td class="p-1 rounded-xs w-2" :style="`background-color: ${colorSet[index]}`" data-color>
+                  
+                </td>
+                <td class="p-2" v-if="item.ticker">
+                  <TableAsset :name="item.category" :ticker="item.ticker" />
+                </td>
+                <td class="p-2" v-if="item.startvalue">
+                  <TableTextdouble :boldtext="numberFormat(item.value + ' ₽')" :text="numberFormat(item.startvalue + ' ₽')" />
+                </td>
+                <td class="p-2" v-else>
+                  <TableTextdouble :boldtext="numberFormat(item.value + ' ₽')" />
+                </td>
+                 <td class="p-2" v-if="item.pricechange">
+                  <TableChange
+                    :price="numberFormat(item.pricechange) + ' ₽'"
+                    :change="item.change"
+                  />
+                </td>
+            </tr>
+          </tbody>
+
+        </table>
+       
+      
       </div>
     </div><!-- /.flex -->
     
@@ -49,9 +72,13 @@
 import * as d3 from "d3"
 
 /** Интерфейс данных которые будут выводиться в диаграмме */
-interface DataItem {
+interface DataItem  {
   category: string
   value: number
+  startvalue?: number
+  ticker?: string
+  change?: number
+  pricechange?: number
 }
 
 const props = defineProps<{
@@ -101,7 +128,7 @@ const hoverD3 = (category: string, prevColor: string, value: number) => {
   /** @see changeItemColor */
   changeItemColor(category, 'hover', prevColor)
   // определяем текст, который будет выводиться в подсказке - название категории и ее значение
-  const tooltiptext = category + ": " + value
+  const tooltiptext = category + ": " + numberFormat(value.toFixed(2)) + " ₽"
   // показываем подсказку на секторе диаграмме для соотвествующей категории под ховером
   showTooltip(category, tooltiptext)
 }
@@ -127,7 +154,7 @@ const leaveD3 = (category: string, prevColor: string) => {
  * @param prevColor - соотвествующий для данной категории цвет 
  */
 const changeItemColor = (category: string, colorAttr: colorType, prevColor?: string) => {
-  d3.select(`[data-category=${category}]`)
+  d3.select(`[data-category=${category}] [data-color]`)
     .attr('style', `background-color: ${colorAttr === 'hover' ? colorHover : prevColor}`)
 }
 
@@ -150,7 +177,7 @@ const changePieColor = ($el: d3.Selection<d3.BaseType, unknown, HTMLElement, any
       // для секций - если hover - то применяем новый цвет, а если unhover - возвращаем старый цвет
       if (d) {
         changeItemColor(d.data.category, colorAttr, prevColor)
-        const tooltipText = `${d.data.category}: ${d.value}`
+        const tooltipText = `${d.data.category}: ${numberFormat(d.value.toFixed(2)) } ₽`
         showTooltip(d.data.category, tooltipText)
       }
     
@@ -217,6 +244,7 @@ const renderChart = () => {
                 .append("g")
                 .attr("transform", `translate(${width / 2 },${height / 2})`);
 
+                console.log(pie(props.data))
   // рисование секторов 
   const g = svg.selectAll('.arc')
                 .data(pie(props.data))       

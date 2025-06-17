@@ -1,7 +1,7 @@
 <template>
   <span  class="text-sm text-gray-700">
     <span class="font-semibold">{{ boldtext }}</span>
-    <span >{{ text }}</span>
+    <span class="text-gray-400">{{ text }}</span>
   </span>
 </template>
 
