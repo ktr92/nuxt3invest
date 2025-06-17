@@ -110,7 +110,7 @@ const hoverD3 = (category: string, prevColor: string) => {
   const $el = d3.select(`path[data-id="${category}"]`);
   changePieColor($el, 'fill')
   changeItemColor(category, 'fill', prevColor)
-  showTooltip(category, category)
+  showTooltip(category, category + ": " + props.data.filter(item => item.category === category)[0].value)
 }
 const leaveD3 = (category: string, prevColor: string) => {
   const $el = d3.select(`path[data-id="${category}"]`);
@@ -209,8 +209,8 @@ const renderChart = () => {
                 .append('path')
                 .attr('d', d => arc(d))
                 .attr('data-id', (d) => d.data.category)    
-                .attr('data-centerX', (d) => arc.centroid(d)[0])    
-                .attr('data-centerY', (d) => arc.centroid(d)[1])    
+                .attr('data-centerX', (d) => arc.centroid(d)[0] + width / 2)    
+                .attr('data-centerY', (d) => arc.centroid(d)[1] + height / 2)    
                 .attr('fill', (d) => color(d.data.category))    
                 .on('mouseover', function(e, d) {
                   const $el = d3.select(this)
