@@ -43,29 +43,12 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * Компонент для вывода круговой диаграммы
+ */
 import * as d3 from "d3"
 
-const getMin = (arr: Array<DataItem>) => {
-  let min = 0
-  arr.forEach(item => {
-    if ((item.value) < min) {
-      min = item.value
-    }
-  });
-
-  return min
-}
-const getMax = (arr: Array<DataItem>) => {
-  let max = 0
-  arr.forEach(item => {
-    if ((item.value) > max) {
-      max = item.value
-    }
-  });
-
-  return max
-}
-
+/** Интерфейс данных которые будут выводиться в диаграмме */
 interface DataItem {
   category: string
   value: number
@@ -77,33 +60,33 @@ const props = defineProps<{
   height?: number
 }>()
 
-// параметры контейнера для графика
+/** параметры контейнера для графика */ 
 const width = props.width ?? 500
 const height = props.height ?? 500
 const margin = 30
 
-// для круговой диаграммы нужен радиус
+/** для круговой диаграммы нужен радиус */
 const radius = Math.min(width / 2 - margin * 2, height / 2  - 2 * margin)
 
+/** массив цветов для секторов диаграммы */
 const colorSet = ['#fbb4ae', '#b3cde3', '#ccebc5', '#decbe4', '#fed9a6', '#ffffcc', '#e5d8bd', '#fddaec', '#f2f2f2']
+/** цвет сектора для ховера */
 const colorHover = ['rgb(59, 130, 246)']
-// цвета для диаграммы - между границ значений создаем шкалу цветов в пределах выбранных границ цветов
+/** шкала для привязки цветов к данным */
 const color = d3.scaleOrdinal(colorSet)
-
-
-
 
 const chart = ref<SVGSVGElement | null>(null)
 const container = ref<HTMLDivElement | null>(null)
 const legendblock = ref<HTMLDivElement | null>(null)
-
-// подсказки
 const tooltip = reactive({
   visible: false,
   x: 0,
   y: 0,
   text: "",
 })
+
+/** Тип смены цвета - соотвественно смена на другой цвет или возврат к родному цвету */
+type colorType = 'hover' | 'unhover'
 
 /**
  * Событие при ховере на элемент таблицы с данными.
@@ -114,9 +97,9 @@ const hoverD3 = (category: string, prevColor: string, value: number) => {
   // выбираем из диаграммы  сектор, соотвествующий категории под ховером
   const $el = d3.select(`path[data-id="${category}"]`);
   // меняем цвет выбранного сектора  
-  changePieColor($el, 'fill')
-  // меняем цвет элемента в таблице под ховером
-  changeItemColor(category, 'fill', prevColor)
+  changePieColor($el, 'hover')
+  /** @see changeItemColor */
+  changeItemColor(category, 'hover', prevColor)
   // определяем текст, который будет выводиться в подсказке - название категории и ее значение
   const tooltiptext = category + ": " + value
   // показываем подсказку на секторе диаграмме для соотвествующей категории под ховером
@@ -130,30 +113,40 @@ const hoverD3 = (category: string, prevColor: string, value: number) => {
 const leaveD3 = (category: string, prevColor: string) => {
   const $el = d3.select(`path[data-id="${category}"]`);
   // возвращаем цвет выбранного сектора 
-  changePieColor($el, 'exfill')
+  changePieColor($el, 'unhover')
   // возвращаем цвет элемента в таблице под ховером
-  changeItemColor(category, 'exfill', prevColor)
+  changeItemColor(category, 'unhover', prevColor)
   // скрываем подсказку 
   hideTooltip()
 }
 
-// смена цвета у элемента в таблице
-const changeItemColor = (category: string, colorAttr: string, prevColor?: string) => {
+/**
+ * Смена цвета элемента в таблице под ховером 
+ * @param category - выбранная категория
+ * @param colorAttr - тип смены цвета 
+ * @param prevColor - соотвествующий для данной категории цвет 
+ */
+const changeItemColor = (category: string, colorAttr: colorType, prevColor?: string) => {
   d3.select(`[data-category=${category}]`)
-    .attr('style', `background-color: ${colorAttr === 'fill' ? colorHover : prevColor}`)
+    .attr('style', `background-color: ${colorAttr === 'hover' ? colorHover : prevColor}`)
 }
 
-// смена цвета у элемента в диаграмме
-const changePieColor = ($el: d3.Selection<d3.BaseType, unknown, HTMLElement, any> | d3.Selection<SVGPathElement, unknown, null, undefined>, colorAttr: 'fill' | 'exfill', d?: d3.PieArcDatum<DataItem>) => {
+/**
+ * Смена цвета сектора диаграммы. Вызывается при ховере.
+ * @param $el - элемент диаграммы, для которого меняется цвет
+ * @param colorAttr - тип смены цвета
+ * @param d - Секция с данными 
+ */
+const changePieColor = ($el: d3.Selection<d3.BaseType, unknown, HTMLElement, any> | d3.Selection<SVGPathElement, unknown, null, undefined>, colorAttr: colorType, d?: d3.PieArcDatum<DataItem>) => {
   // извлекаем текущий цвет
   const prevColor = $el.attr(colorAttr);
     if (prevColor) {
-      // для таблицы - если fill - то применяем новый цвет для fill, а если exfill - возвращаем старый цвет 
-      $el.attr(colorAttr === 'fill' ? 'fill' : 'exfill', colorHover) 
-      $el.attr('style', `transform: ${colorAttr === 'fill' ? 'scale(1.05)' : ''};  transition: all 0.3s ease;`)
-      $el.attr(colorAttr === 'fill' ? 'exfill' : 'fill', prevColor)
+      // для таблицы - если hover - то применяем новый цвет для fill, а если unhover - возвращаем старый цвет 
+      $el.attr(colorAttr === 'hover' ? 'fill' : 'exfill', colorHover) 
+      $el.attr('style', `transform: ${colorAttr === 'hover' ? 'scale(1.05)' : ''};  transition: all 0.3s ease;`)
+      $el.attr(colorAttr === 'hover' ? 'exfill' : 'fill', prevColor)
       
-      // для секций - если fill - то применяем новый цвет, а если exfill - возвращаем старый цвет
+      // для секций - если hover - то применяем новый цвет, а если unhover - возвращаем старый цвет
       if (d) {
         changeItemColor(d.data.category, colorAttr, prevColor)
         const tooltipText = `${d.data.category}: ${d.value}`
@@ -163,6 +156,11 @@ const changePieColor = ($el: d3.Selection<d3.BaseType, unknown, HTMLElement, any
     }
 }
 
+/**
+ * Вывод подсказки при ховере
+ * @param category - категория для идентификации 
+ * @param tooltipText - текст подсказки
+ */
 const showTooltip = (category: string, tooltipText: string) => {
       tooltip.text = tooltipText
       tooltip.visible = true
@@ -233,30 +231,12 @@ const renderChart = () => {
                 .on('mouseover', function(e, d) {
                   const $el = d3.select(this)
                  /*  markPie($el, d) */
-                  changePieColor($el, 'fill', d)
+                  changePieColor($el, 'hover', d)
                 })
                 .on('mouseleave', function(e, d) {
                   const $el = d3.select(this)
-                  changePieColor($el, 'exfill', d)
+                  changePieColor($el, 'unhover', d)
                 })
-                     
-    
- /*  const legend = d3.select(legendblock.value)
-                .attr('width', '100%')
-                .attr('height', '100%')
-                .attr('data-legend', 'legend')
-               
-  const legenditems = legend.selectAll('.datarow')
-                      .data(props.data)
-                      .enter()
-                      .append('div')
-                      .style('background-color', (d) => color(d.category))
-                      .text((d) => d.category)
-                      .append('div')
-                      .style('font-weigth', 'bold')
-                      .text(d => d.value) */
-
-       
 
 
 }
