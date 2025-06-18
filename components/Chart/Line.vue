@@ -24,7 +24,6 @@
           {{ tooltip.text }}
         </div>
       </div>
-      <TableChart :data="data" @hover-d3="hoverD3" @leave-d3="leaveD3" :color-set="colorSet"/>    
     </div>
   </div>
 </template>
@@ -40,11 +39,6 @@ import generateColors from "~/utils/colorGenerate"
 interface DataItem  {
   category: string
   value: number
-  startvalue?: number
-  ticker?: string
-  change?: number
-  pricechange?: number
-  share?: number
 }
 
 const props = defineProps<{
@@ -59,21 +53,14 @@ const width = props.width ?? 600
 const height = props.height ?? 600
 const margin = 30
 
-/** для круговой диаграммы нужен радиус */
-const radius = Math.min(width / 2 - margin * 2, height / 2  - 2 * margin)
 
-/** массив цветов для секторов диаграммы */
-
+/** массив цветов для линий */
 const colorSet =  generateColors(props.data.length);
- /* ['#fbb4ae', '#b3cde3', '#ccebc5', '#decbe4', '#fed9a6', '#ffffcc', '#e5d8bd', '#fddaec', '#f2f2f2'] */
 
 /** цвет сектора для ховера */
 const colorHover = ['rgb(59, 130, 246)']
 /** шкала для привязки цветов к данным */
 const color = d3.scaleOrdinal(colorSet)
-
-const pieAngle = 0.03
-const innerRad = 120
 
 const chart = ref<SVGSVGElement | null>(null)
 const container = ref<HTMLDivElement | null>(null)
@@ -192,20 +179,11 @@ const renderChart = () => {
     .selectAll("*")
     .remove();
 
-  // ширина и высота графика = размер контейнера - отступы с обеих сторон
-  const innerWidth = width - 2 * margin
-  const innerHeight = height - 2 * margin
+    const x = d3.scaleTime([new Date(props.data[0].category), new Date(props.data[props.data.length - 1].category)], [0, width]);
 
-  // создаем генератор секций 
-  const pie = d3.pie<DataItem>()
-                .sort(null)
-                .padAngle(pieAngle) // промежутки сежду секторами
-                .value((d => d.value));
-                
-  // создаем графическое представление секций
-  const arc = d3.arc<d3.PieArcDatum<DataItem>>()
-                .outerRadius(radius)
-                .innerRadius(radius - innerRad);
+    const line = d3.line<DataItem>()
+        .x(d => d.category)
+        .y(d => d.value);
 
   // выбор контейнера svg для графика и установка его размеров
   const svg = d3.select(chart.value)
@@ -216,21 +194,17 @@ const renderChart = () => {
                 .append("g")
                 .attr("transform", `translate(${width / 2 },${height / 2})`);
 
-                console.log(pie(props.data))
-  // рисование секторов 
-  const g = svg.selectAll('.arc')
-                .data(pie(props.data))       
+  // рисование линий 
+  const g = svg.selectAll('.line')
+                .data(props.data)       
                 .enter()
                 .append("g")
                 .attr('class', 'arc')
                 .append('path')
-                .attr('d', d => arc(d))
-                .attr('data-id', (d) => d.data.category)    
-                .attr('data-centerX', (d) => arc.centroid(d)[0] + width / 2)    
-                .attr('data-centerY', (d) => arc.centroid(d)[1] + height / 2)    
-                .attr('fill', (d) => color(d.data.category))    
+                .attr('d', line(props.data))
+                .attr('stroke', colorHover)
+                .attr('data-id', (d) => d.data.category)     
                 .on('mouseover', function(e, d) {
-                
                   const $el = d3.select(this)
                  /*  markPie($el, d) */
                   changePieColor($el, 'hover', d)

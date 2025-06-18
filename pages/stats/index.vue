@@ -1,11 +1,32 @@
 <template>
   <div class="w-full">
    <!--  <ChartBar :data="chartData" /> -->
-    <ChartPie :data="chartData" />
+     <ClientOnly>
+      <ChartPie :data="chartData" />
+      <ChartLine :data="daily" />
+     </ClientOnly>
   </div>
 </template>
 
 <script setup lang="ts">
+
+function generateDataPoints() {
+  const dataPoints = [];
+  const today = new Date();
+
+  for (let i = 0; i < 30; i++) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    const formattedDate = date.toISOString().split('T')[0]; // YYYY-MM-DD
+    const randomNumber = Math.floor(Math.random() * 100); // Пример случайного числа
+    dataPoints.push({ category: formattedDate, value: randomNumber });
+  }
+
+  return dataPoints.reverse(); // Возвращаем в хронологическом порядке
+}
+
+const daily = generateDataPoints()
+
 
 const loadData = [
   {
