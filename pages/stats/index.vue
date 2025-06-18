@@ -1,6 +1,5 @@
 <template>
   <div class="w-full">
-    <h1>Пример диаграммы на D3 с Nuxt 3 и Vue 3</h1>
    <!--  <ChartBar :data="chartData" /> -->
     <ChartPie :data="chartData" />
   </div>
@@ -20,18 +19,20 @@ const loadData = [
     change: 11,
     yearchange: 12,
     openDate: "02.01.2024",
+    share: 20
   },
   {
     ticker: "ROSN",
     name: "Роснефть",
     count: 12323,
     price: 420,
-    newprice: 320,
-    pricechange: -100,
+    newprice: 380,
+    pricechange: -40,
     total: 500,
-    change: -13,
+    change: -6,
     yearchange: 11,
     openDate: "02.03.2024",
+    share: 30
   },
   {
     ticker: "LKOH",
@@ -44,6 +45,7 @@ const loadData = [
     change: 22,
     yearchange: 32,
     openDate: "22.11.2024",
+    share: 25
   },
   {
     ticker: "ASTR",
@@ -56,6 +58,7 @@ const loadData = [
     change: 10,
     yearchange: -20,
     openDate: "23.01.2025",
+    share: 25
   },
 ]
 
@@ -67,7 +70,8 @@ const chartData = computed(() => {
       ticker: item.ticker,
       startvalue: item.count * item.price,
       pricechange: item.count * item.newprice - item.count * item.price,
-      change: item.change
+      change: item.change,
+      share: item.share
     }
   })
   

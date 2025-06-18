@@ -24,44 +24,8 @@
           {{ tooltip.text }}
         </div>
       </div>
-      <div class="legendblock w-full py-14 px-10" ref="legendblock">
-        <table class="w-full">
-          <tbody>
-            <tr 
-              v-for="(item, index) in props.data" 
-              :key="item.category" 
-              :data-category="item.category"
-              :ref="item.category"
-              @mouseenter="hoverD3(item.category, colorSet[index], item.value)"
-              @mouseleave="leaveD3(item.category, colorSet[index])"
-              class="py-2 px-2 mb-10  border-b-1 border-gray-100">
-                <td class="p-1 rounded-xs w-2" :style="`background-color: ${colorSet[index]}`" data-color>
-                  
-                </td>
-                <td class="p-2" v-if="item.ticker">
-                  <TableAsset :name="item.category" :ticker="item.ticker" />
-                </td>
-                <td class="p-2" v-if="item.startvalue">
-                  <TableTextdouble :boldtext="numberFormat(item.value + ' ₽')" :text="numberFormat(item.startvalue + ' ₽')" />
-                </td>
-                <td class="p-2" v-else>
-                  <TableTextdouble :boldtext="numberFormat(item.value + ' ₽')" />
-                </td>
-                 <td class="p-2" v-if="item.pricechange">
-                  <TableChange
-                    :price="numberFormat(item.pricechange) + ' ₽'"
-                    :change="item.change"
-                  />
-                </td>
-            </tr>
-          </tbody>
-
-        </table>
-       
-      
-      </div>
-    </div><!-- /.flex -->
-    
+      <TableChart :data="data" @hover-d3="hoverD3" @leave-d3="leaveD3" :color-set="colorSet"/>    
+    </div>
   </div>
 </template>
 
@@ -79,6 +43,7 @@ interface DataItem  {
   ticker?: string
   change?: number
   pricechange?: number
+  share?: number
 }
 
 const props = defineProps<{
@@ -87,9 +52,10 @@ const props = defineProps<{
   height?: number
 }>()
 
+
 /** параметры контейнера для графика */ 
-const width = props.width ?? 500
-const height = props.height ?? 500
+const width = props.width ?? 600
+const height = props.height ?? 600
 const margin = 30
 
 /** для круговой диаграммы нужен радиус */
@@ -102,9 +68,11 @@ const colorHover = ['rgb(59, 130, 246)']
 /** шкала для привязки цветов к данным */
 const color = d3.scaleOrdinal(colorSet)
 
+const pieAngle = 0.03
+const innerRad = 120
+
 const chart = ref<SVGSVGElement | null>(null)
 const container = ref<HTMLDivElement | null>(null)
-const legendblock = ref<HTMLDivElement | null>(null)
 const tooltip = reactive({
   visible: false,
   x: 0,
@@ -227,13 +195,13 @@ const renderChart = () => {
   // создаем генератор секций 
   const pie = d3.pie<DataItem>()
                 .sort(null)
-                .padAngle(0.03) // промежутки сежду секторами
+                .padAngle(pieAngle) // промежутки сежду секторами
                 .value((d => d.value));
                 
   // создаем графическое представление секций
   const arc = d3.arc<d3.PieArcDatum<DataItem>>()
                 .outerRadius(radius)
-                .innerRadius(radius - 90);
+                .innerRadius(radius - innerRad);
 
   // выбор контейнера svg для графика и установка его размеров
   const svg = d3.select(chart.value)
@@ -258,6 +226,7 @@ const renderChart = () => {
                 .attr('data-centerY', (d) => arc.centroid(d)[1] + height / 2)    
                 .attr('fill', (d) => color(d.data.category))    
                 .on('mouseover', function(e, d) {
+                
                   const $el = d3.select(this)
                  /*  markPie($el, d) */
                   changePieColor($el, 'hover', d)
