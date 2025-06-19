@@ -55,7 +55,7 @@ const margin = 30
 
 
 /** массив цветов для линий */
-const colorSet =  generateColors(props.data.length);
+const colorSet =  generateColors(100);
 
 /** цвет сектора для ховера */
 const colorHover = ['rgb(59, 130, 246)']
@@ -179,10 +179,10 @@ const renderChart = () => {
     .selectAll("*")
     .remove();
 
-    const x = d3.scaleTime([new Date(props.data[0].category), new Date(props.data[props.data.length - 1].category)], [0, width]);
+    const scaleX = d3.scaleTime([new Date(props.data[0].category), new Date(props.data[props.data.length - 1].category)], [0, width]);
 
     const line = d3.line<DataItem>()
-        .x(d => d.category)
+        .x(d => d.value)
         .y(d => d.value);
 
   // выбор контейнера svg для графика и установка его размеров
@@ -199,21 +199,20 @@ const renderChart = () => {
                 .data(props.data)       
                 .enter()
                 .append("g")
-                .attr('class', 'arc')
+                .attr('class', 'line')
                 .append('path')
                 .attr('d', line(props.data))
                 .attr('stroke', colorHover)
-                .attr('data-id', (d) => d.data.category)     
-                .on('mouseover', function(e, d) {
+                .attr('data-id', (d) => d.category)     
+               /*  .on('mouseover', function(e, d) {
                   const $el = d3.select(this)
-                 /*  markPie($el, d) */
                   changePieColor($el, 'hover', d)
                 })
                 .on('mouseleave', function(e, d) {
                   const $el = d3.select(this)
                   changePieColor($el, 'unhover', d)
                   hideTooltip()
-                })
+                }) */
 
 
 }
