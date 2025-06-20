@@ -107,20 +107,31 @@ const renderChart = () => {
   // перед рисования графика очищаем контейнер
   d3.select(chart.value).selectAll("*").remove()
 
+  const minCategory = d3.min(props.data, (d) => new Date(d.category))
+  const maxCategory = d3.max(props.data, (d) => new Date(d.category))
+  const minValue = d3.min(props.data, (d) => d.value)
+  const maxValue = d3.max(props.data, (d) => d.value)
+
   // даты нужно интерполировать на ось Х
   const x = d3.scaleTime(
-    [
-      new Date(props.data[0].category),
-      new Date(props.data[props.data.length - 1].category),
-    ],
-    [0, width]
+    [minCategory || new Date(), maxCategory || new Date()],
+    /*      d3.extent(props.data, d => new Date(d.category)),
+     */ [0, width - 2 * margin]
   )
+
+  const y = d3
+    .scaleLinear()
+    .domain([minValue || 0, maxValue || 100])
+    .range([height - 2 * margin, 0])
+
+  const xAxis = d3.axisBottom(x)
+  const yAxis = d3.axisLeft(y)
 
   // генератор линий на основе дат
   const line = d3
     .line<DataItem>()
     .x((d) => x(new Date(d.category)))
-    .y((d) => d.value)
+    .y((d) => y(d.value))
 
   // выбор контейнера svg для графика и установка его размеров
   const svg = d3
@@ -129,11 +140,12 @@ const renderChart = () => {
     .attr("height", height)
     .attr("padding", margin)
     .append("g")
-    .attr("transform", `translate(0, ${height / 2})`)
+    .attr("transform", `translate(0, 0)`)
 
   // рисование линии
   const g = svg
     .append("path")
+    .attr('transform', `translate(${margin}, ${margin})`)
     .attr("fill", "none")
     .attr("stroke", colorHover)
     .attr("d", line(props.data))
@@ -165,30 +177,69 @@ const renderChart = () => {
       hideTooltip()
     }) */
 
-  svg.selectAll(".vline")
+  /* svg
+    .selectAll(".hline")
+    .data(props.data)
+    .enter()
+    .append("line")
+    .classed("grid-line", true)
+    .attr("class", "hline")
+    .attr("x1", 0)
+    .attr("y1", (d) => y(d.value))
+    .attr("x2", width - 2 * margin)
+    .attr("y2", (d) => y(d.value))
+    .attr("stroke", "gray")
+    .attr("stroke-width", 1)
+    .attr("transform", `translate(${margin}, ${margin})`) 
+  .attr('opacity', 0)
+    .on("mouseover", function (e, d) {
+      d3.select(this)
+        .attr('opacity', 1)
+    })
+     .on("mouseleave", function (e, d) {
+       d3.select(this)
+        .attr('opacity', 0)
+    }) */
+
+  svg
+    .selectAll(".vline")
     .data(props.data)
     .enter()
     .append("line")
     .classed("grid-line", true)
     .attr("class", "vline")
-    .attr("x1", d => x(new Date(d.category)))
+    .attr("x1", (d) => x(new Date(d.category)))
     .attr("y1", 0)
-    .attr("x2", d => x(new Date(d.category)))
-    .attr("y2", height)
-    .attr("stroke", 'gray')
-    .attr("stroke-width", 1)
+    .attr("x2", (d) => x(new Date(d.category)))
+    .attr("y2", height - 2 * margin)
+    .attr("stroke", "gray")
+    .attr("stroke-width", 2)
     .attr("data-value", (d) => d.value)
     .attr("data-id", (d) => d.category)
-     .attr("transform", `translate(0, -${height / 2})`)
+    .attr("transform", `translate(${margin}, ${margin})`)
+    .attr("opacity", 0)
     .on("mouseover", function (e, d) {
+      d3.select(this).attr("opacity", 1)
+
       showTooltip(d.category, String(d.value), [
         x(new Date(d.category)),
         height / 2 + d.value - 15,
       ])
     })
     .on("mouseleave", function (e, d) {
+      d3.select(this).attr("opacity", 0)
+
       hideTooltip()
     })
+
+  svg
+    .append("g")
+    .attr('transform', `translate(${margin}, ${height - margin})`)
+    .call(xAxis)
+  svg
+    .append("g")
+    .attr('transform', `translate(${margin}, ${margin})`)
+    .call(yAxis)
 }
 
 onMounted(() => {
