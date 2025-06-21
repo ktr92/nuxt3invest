@@ -125,7 +125,7 @@ export const useChartDot = (
 }
 
 export const useChartLineAxis = (
-    svg: d3.Selection<SVGGElement, unknown, null, undefined>,,
+    svg: d3.Selection<SVGGElement, unknown, null, undefined>,
     xAxis: d3.Axis<d3.NumberValue | Date>,
     yAxis: d3.Axis<d3.NumberValue | Date>,
     width: number,
