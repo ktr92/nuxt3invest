@@ -35,12 +35,6 @@
 import * as d3 from "d3"
 import generateColors from "~/utils/colorGenerate"
 
-/** Интерфейс данных которые будут выводиться в диаграмме */
-interface DataItem {
-  category: string
-  value: number
-}
-
 const props = defineProps<{
   data: DataItem[]
   width?: number
@@ -70,27 +64,6 @@ const tooltip = reactive({
 })
 
 /**
- * Вывод подсказки при ховере
- * @param category - категория для идентификации
- * @param tooltipText - текст подсказки
- */
-const showTooltip = (
-  category: string,
-  tooltipText: string,
-  coord: number[]
-) => {
-  tooltip.text = tooltipText
-  tooltip.visible = true
-  /*  const [mouseX, mouseY] = d3.pointer(event, container.value) */
-  tooltip.x = coord[0]
-  tooltip.y = coord[1]
-}
-
-const hideTooltip = () => {
-  tooltip.visible = false
-}
-
-/**
  * Функция для рисования графика
  */
 const renderChart = () => {
@@ -100,7 +73,7 @@ const renderChart = () => {
   // проверяем входные данные для графика
   if (!props.data || !Array.isArray(props.data) || props.data.length === 0) {
     d3.select(chart.value).selectAll("*").remove()
-    hideTooltip()
+    useHideTooltip(tooltip)
     return
   }
 
@@ -145,101 +118,17 @@ const renderChart = () => {
   // рисование линии
   const g = svg
     .append("path")
-    .attr('transform', `translate(${margin}, ${margin})`)
+    .attr("transform", `translate(${margin}, ${margin})`)
     .attr("fill", "none")
     .attr("stroke", colorHover)
     .attr("d", line(props.data))
-  /* .on("mouseover", function (e, d) {
-      const $el = d3.select(this)
-      changePieColor($el, props.data)
-    })
-    .on("mouseleave", function (e, d) {
-      const $el = d3.select(this)
-      changePieColor($el, d)
-      hideTooltip()
-    }) */
 
-  /*  svg.selectAll(".dot")
-    .data(props.data)
-    .enter()
-    .append('circle')
-    .attr('class', 'dot')
-    .attr('r', 3)
-    .attr('cx', d => x(new Date(d.category)))
-    .attr('cy', d => d.value)
-    .attr('fill', 'red')
-    .attr('data-value', d => d.value)
-    .attr('data-id', d => d.category)
-    .on("mouseover", function (e, d) {
-     showTooltip(d.category, String(d.value), [x(new Date(d.category)), height / 2 + d.value - 15])
-    })
-    .on("mouseleave", function (e, d) {
-      hideTooltip()
-    }) */
-
-  /* svg
-    .selectAll(".hline")
-    .data(props.data)
-    .enter()
-    .append("line")
-    .classed("grid-line", true)
-    .attr("class", "hline")
-    .attr("x1", 0)
-    .attr("y1", (d) => y(d.value))
-    .attr("x2", width - 2 * margin)
-    .attr("y2", (d) => y(d.value))
-    .attr("stroke", "gray")
-    .attr("stroke-width", 1)
-    .attr("transform", `translate(${margin}, ${margin})`) 
-  .attr('opacity', 0)
-    .on("mouseover", function (e, d) {
-      d3.select(this)
-        .attr('opacity', 1)
-    })
-     .on("mouseleave", function (e, d) {
-       d3.select(this)
-        .attr('opacity', 0)
-    }) */
-
-  svg
-    .selectAll(".vline")
-    .data(props.data)
-    .enter()
-    .append("line")
-    .classed("grid-line", true)
-    .attr("class", "vline")
-    .attr("x1", (d) => x(new Date(d.category)))
-    .attr("y1", 0)
-    .attr("x2", (d) => x(new Date(d.category)))
-    .attr("y2", height - 2 * margin)
-    .attr("stroke", "gray")
-    .attr("stroke-width", 2)
-    .attr("data-value", (d) => d.value)
-    .attr("data-id", (d) => d.category)
-    .attr("transform", `translate(${margin}, ${margin})`)
-    .attr("opacity", 0)
-    .on("mouseover", function (e, d) {
-      d3.select(this).attr("opacity", 1)
-
-      showTooltip(d.category, String(d.value), [
-        x(new Date(d.category)),
-        height / 2 + d.value - 15,
-      ])
-    })
-    .on("mouseleave", function (e, d) {
-      d3.select(this).attr("opacity", 0)
-
-      hideTooltip()
-    })
-
-  svg
-    .append("g")
-    .attr('transform', `translate(${margin}, ${height - margin})`)
-    .call(xAxis)
-  svg
-    .append("g")
-    .attr('transform', `translate(${margin}, ${margin})`)
-    .call(yAxis)
+  /** рисование вертикальный линий  - при ховере */
+  useVLine(svg, props.data, x, y, width, height, margin, tooltip)
+  /** рисование точек для значений на линии графика - при ховере */
+  useChartDot(svg, props.data, x, y, width, height, margin, tooltip)
+  /** рисование осей координат */
+  useChartLineAxis(svg, xAxis, yAxis, width, height, margin)
 }
 
 onMounted(() => {

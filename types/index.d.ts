@@ -63,3 +63,18 @@ declare interface IPortfolioDeal {
   name: string
   fee?: number
 }
+
+
+/** Интерфейс данных которые будут выводиться в диаграмме */
+declare interface DataItem {
+  category: string
+  value: number
+}
+/** Интерфейс подсказкок диаграммы */
+
+declare interface Tooltip {
+  visible: boolean
+  x: number
+  y: number
+  text: string
+}
