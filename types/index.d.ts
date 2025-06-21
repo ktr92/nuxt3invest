@@ -64,11 +64,24 @@ declare interface IPortfolioDeal {
   fee?: number
 }
 
-
 /** Интерфейс данных которые будут выводиться в диаграмме */
 declare interface DataItem {
   category: string
   value: number
+}
+
+declare interface LineData {
+  dates: DatePrice[]
+  category: string
+  startprice: number
+  count: number
+  value: number
+}
+
+declare interface DatePrice {
+  date: string
+  price: number
+  change?: string
 }
 /** Интерфейс подсказкок диаграммы */
 
@@ -77,4 +90,17 @@ declare interface Tooltip {
   x: number
   y: number
   text: string
+}
+
+declare interface LineChartData {
+  svg: d3.Selection<SVGGElement, unknown, null, undefined>
+  dataitems: DataItem[]
+  x: (value: d3.NumberValue) => number
+  y: (value: d3.NumberValue) => number
+  width: number
+  height: number
+  margin: number
+  tooltip: Tooltip
+  xAxis: d3.Axis<d3.NumberValue | Date>
+  yAxis: d3.Axis<d3.NumberValue | Date>
 }
