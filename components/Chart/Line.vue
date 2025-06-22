@@ -128,13 +128,13 @@ const renderChart = () => {
   /** рисование осей координат */
   useChartLineAxis(svg, xAxis, yAxis, width.value, height, margin)
 
-  return {
-    svg: svg,
-    line: line,
-    x: x,
-    y: y,
-    width: width.value,
-  }
+
+   props.data.forEach((item, index) => {
+    /*  renderChart(item) */
+    renderLine(item, svg, line, x, y, width.value, colorSet[index])
+  })
+
+ 
 }
 
 /**
@@ -145,8 +145,9 @@ const renderLine = (
   svg: d3.Selection<SVGGElement, unknown, null, undefined>,
   line: d3.Line<DatePrice>,
   x: d3.ScaleTime<number, number, never>,
-  y: d3.ScaleTime<number, number, never>,
-  width: number
+  y: d3.ScaleLinear<number, number, never>,
+  width: number,
+  color: string
 ) => {
   const datevalue = position.dates
   // рисование линии
@@ -154,7 +155,7 @@ const renderLine = (
     .append("path")
     .attr("transform", `translate(${margin}, ${margin})`)
     .attr("fill", "none")
-    .attr("stroke", colorHover)
+    .attr("stroke", color)
     .attr("stroke-width", 2)
     .attr("d", line(datevalue))
   /** рисование точек для значений на линии графика - при ховере */
@@ -165,11 +166,8 @@ const renderLine = (
  * рисуем график для всех данных входного массива
  */
 const renderLoop = () => {
-  const {svg, line, x, y, width} = renderChart()
-  props.data.forEach((item) => {
-    /*  renderChart(item) */
-    renderLine(item, svg, line, x, y, width)
-  })
+  renderChart()
+ 
 }
 
 /**
