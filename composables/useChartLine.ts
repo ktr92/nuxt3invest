@@ -92,6 +92,7 @@ export const useHLine = (
 }
 
 export const useChartDot = (
+  id: string,
   svg: d3.Selection<SVGGElement, unknown, null, undefined>,
   DateValues: DatePrice[],
   x: (value: d3.NumberValue) => number,
@@ -99,15 +100,16 @@ export const useChartDot = (
   width: number,
   height: number,
   margin: number,
-  tooltip: Tooltip
+  tooltip: Tooltip,
+  color: string
 ) => {
   svg
-    .selectAll(".dot")
+    .selectAll(`.dot-${id}`)
     .data(DateValues)
     .enter()
     .append("circle")
-    .attr("class", "dot")
-    .attr("stroke", `steelblue`)
+    .attr("class", `dot-${id}`)
+    .attr("stroke", color)
     .attr("stroke-width", 2)
     .attr("r", 4)
     .attr("cx", (d) => x(new Date(d.date)))

@@ -14,7 +14,7 @@ export const useShowTooltip = (
   tooltip.text = tooltipText
   tooltip.visible = true
   /*  const [mouseX, mouseY] = d3.pointer(event, container.value) */
-  tooltip.x = coord[0]
+  tooltip.x = coord[0] - 20
   tooltip.y = coord[1]
 }
 

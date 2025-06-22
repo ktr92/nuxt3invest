@@ -54,7 +54,8 @@ const container = ref<HTMLDivElement | null>(null)
 const margin = 30
 
 /** массив цветов для линий */
-const colorSet = generateColors(100)
+const colorSet = ["steelblue", "red", "green"]
+/* const colorSet = generateColors(100) */
 
 /** цвет сектора для ховера */
 const colorHover = ["rgb(59, 130, 246)"]
@@ -123,18 +124,16 @@ const renderChart = () => {
     .attr("transform", `translate(0, 0)`)
 
   /** рисование вертикальный линий  - при ховере */
-  useVLine(svg, datevalue, x, y, width.value, height, margin, tooltip)
 
   /** рисование осей координат */
   useChartLineAxis(svg, xAxis, yAxis, width.value, height, margin)
 
+  props.data.forEach((item, index) => {
+    useVLine(svg, datevalue, x, y, width.value, height, margin, tooltip)
 
-   props.data.forEach((item, index) => {
     /*  renderChart(item) */
     renderLine(item, svg, line, x, y, width.value, colorSet[index])
   })
-
- 
 }
 
 /**
@@ -159,27 +158,19 @@ const renderLine = (
     .attr("stroke-width", 2)
     .attr("d", line(datevalue))
   /** рисование точек для значений на линии графика - при ховере */
-  useChartDot(svg, datevalue, x, y, width, height, margin, tooltip)
-}
-
-/**
- * рисуем график для всех данных входного массива
- */
-const renderLoop = () => {
-  renderChart()
- 
+  useChartDot(position.category, svg, datevalue, x, y, width, height, margin, tooltip, color)
 }
 
 /**
  * функция откладывает перерисовку для снижения нагрузки
  */
-const debouncedRender = debounce(renderLoop, 300)
+const debouncedRender = debounce(renderChart, 300)
 
 /**
  * рисуем диаграмму и добавляем перерисовку при ресайзе окна
  */
 onMounted(() => {
-  renderLoop()
+  renderChart()
   window.addEventListener("resize", debouncedRender)
 })
 
