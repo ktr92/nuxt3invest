@@ -38,10 +38,12 @@ export const useVLine = (
     .on("mouseover", function (e, d) {
       d3.select(this).attr("opacity", 1)
       d3.select(`circle[data-id="${d.date}"]`).attr("opacity", 1)
-      useShowTooltip(tooltip, d.date, `<div class="text-gray-500">${d.date}</div> <div class="text-green-400 font-black; text-lg">${d.price} ₽</div>`, [
-        x(new Date(d.date)),
-        y(d.price) + 10,
-      ])
+      useShowTooltip(
+        tooltip,
+        d.date,
+        `<div class="text-white font-black;">${d.date}</div> <div class="text-green-400 font-black; text-lg">${d.price} ₽</div>`,
+        [x(new Date(d.date)), y(d.price) + 10]
+      )
     })
     .on("mouseleave", function (e, d) {
       d3.select(this).attr("opacity", 0)
@@ -117,16 +119,17 @@ export const useChartDot = (
     .attr("opacity", 0)
     .on("mouseover", function (e, d) {
       d3.select(this).attr("opacity", 1)
-        useShowTooltip(tooltip, d.date, String(d.price), [
-        x(new Date(d.date)),
-        y(d.price) + 2 * margin,
-      ])
+      useShowTooltip(
+        tooltip,
+        d.date,
+        `<div class="text-white font-black;">${d.date}</div> <div class="text-green-400 font-black; text-lg">${d.price} ₽</div>`,
+        [x(new Date(d.date)), y(d.price) + 10]
+      )
     })
     .on("mouseleave", function (e, d) {
       d3.select(this).attr("opacity", 0)
     })
 }
-
 
 export const useChartLocale = () => {
   return {

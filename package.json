@@ -16,6 +16,7 @@
     "chart.js": "^4.4.9",
     "chroma-js": "^3.1.2",
     "d3": "^7.9.0",
+    "lodash-es": "^4.17.21",
     "nuxt": "^3.17.5",
     "pinia": "^3.0.3",
     "vee-validate": "^4.15.0",
@@ -28,6 +29,7 @@
     "@nuxtjs/tailwindcss": "^7.0.0-beta.0",
     "@types/chroma-js": "^3.1.1",
     "@types/d3": "^7.4.3",
+    "@types/lodash-es": "^4.17.12",
     "typescript": "^5.8.3",
     "vue-tsc": "^2.2.10"
   }
