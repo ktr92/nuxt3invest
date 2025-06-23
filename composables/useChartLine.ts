@@ -22,22 +22,28 @@ export const useVLine = (
     .selectAll(".vline")
     .data(DateValues)
     .enter()
-    .append("line")
-    .classed("grid-line", true)
+    .append("rect")
+    /* .append("line") */
+   /*  .classed("grid-line", true) */
     .attr("class", "vline")
-    .attr("x1", (d) => x(new Date(d.date)))
+    .attr('x', (d) => x(new Date(d.date)))
+    .attr('y', 0)
+    .attr('width', Math.ceil(width / DateValues.length))
+    .attr('height', height - 2 * margin)
+    /* .attr("x1", (d) => x(new Date(d.date)))
     .attr("y1", 0)
     .attr("x2", (d) => x(new Date(d.date)))
-    .attr("y2", height - 2 * margin)
-    .attr("stroke", "#eee")
-    .attr("stroke-width", Math.ceil(width / DateValues.length))
+    .attr("y2", height - 2 * margin) */
+   /*  .attr("stroke", "#eee")
+    .attr("stroke-width", Math.ceil(width / DateValues.length)) */
+    .attr('fill', '#eee')
     .attr("data-value", (d) => d.price)
     .attr("data-id", (d) => d.date)
     .attr("transform", `translate(${margin}, ${margin})`)
     .attr("opacity", 0)
     .on("mouseover", function (e, d) {
       d3.select(this).attr("opacity", 1)
-      d3.select(`circle[data-id="${d.date}"]`).attr("opacity", 1)
+      d3.selectAll(`circle[data-id="${d.date}"]`).attr("opacity", 1)
       useShowTooltip(
         tooltip,
         d.date,
@@ -47,7 +53,7 @@ export const useVLine = (
     })
     .on("mouseleave", function (e, d) {
       d3.select(this).attr("opacity", 0)
-      d3.select(`circle[data-id="${d.date}"]`).attr("opacity", 0)
+      d3.selectAll(`circle[data-id="${d.date}"]`).attr("opacity", 0)
       useHideTooltip(tooltip)
     })
 }

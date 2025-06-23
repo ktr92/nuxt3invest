@@ -77,8 +77,8 @@ const renderChart = () => {
     container.value ? container.value.clientWidth : 600
   )
 
-  const datevalue = props.data[0].dates
-
+/*   const datevalue = props.data[0].dates
+ */
   // проверяем входные данные для графика
   if (!props.data || !Array.isArray(props.data) || props.data.length === 0) {
     d3.select(chart.value).selectAll("*").remove()
@@ -89,10 +89,13 @@ const renderChart = () => {
   // перед рисованием графика очищаем контейнер
   d3.select(chart.value).selectAll("*").remove()
 
-  const minCategory = d3.min(datevalue, (d) => new Date(d.date))
-  const maxCategory = d3.max(datevalue, (d) => new Date(d.date))
-  const minValue = d3.min(datevalue, (d) => d.price)
-  const maxValue = d3.max(datevalue, (d) => d.price)
+  const flatData = props.data.flatMap(item => item.dates)
+
+
+  const minCategory = d3.min(flatData, (d) => new Date(d.date))
+  const maxCategory = d3.max(flatData, (d) => new Date(d.date))
+  const minValue = d3.min(flatData, (d) => d.price)
+  const maxValue = d3.max(flatData, (d) => d.price)
 
   // даты нужно интерполировать на ось Х
   const x = d3.scaleTime(
@@ -123,14 +126,15 @@ const renderChart = () => {
     .append("g")
     .attr("transform", `translate(0, 0)`)
 
-  /** рисование вертикальный линий  - при ховере */
 
   /** рисование осей координат */
   useChartLineAxis(svg, xAxis, yAxis, width.value, height, margin)
 
-  props.data.forEach((item, index) => {
-    useVLine(svg, datevalue, x, y, width.value, height, margin, tooltip)
+  /** рисование вертикальных линий  - показ при ховере */
+  useVLine(svg, flatData, x, y, width.value, height, margin, tooltip)
 
+
+  props.data.forEach((item, index) => {
     /*  renderChart(item) */
     renderLine(item, svg, line, x, y, width.value, colorSet[index])
   })

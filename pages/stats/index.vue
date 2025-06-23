@@ -2330,7 +2330,7 @@ const chartData = computed(() => {
     return {
       startprice: item.price,
       count: item.count,
-      category: item.name,
+      category: item.ticker,
       value: item.count * item.newprice,
       ticker: item.ticker,
       startvalue: item.count * item.price,
