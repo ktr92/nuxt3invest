@@ -1,13 +1,12 @@
 <template>
   <div class="w-full">
-    <div v-if="status === 'pending'">
-      <h2>Loading...</h2>
-    </div>
+    <div v-if="status === 'pending'"></div>
     <div v-else>
       <div v-if="candles && candles.length">
-        <h2>Изменение цены акций в портфеле</h2>
         <ChartLine
-          :data="[ { category: 'ROSN', dates: candles as DatePrice[] } ]"
+          :data="[ { category: 'ROSN', dates: candles[0] as DatePrice[] },
+          { category: 'ASTR', dates: candles[1] as DatePrice[] }
+         ]"
         />
       </div>
     </div>
@@ -17,20 +16,8 @@
 <script setup lang="ts">
 const loadData = [
   {
-    ticker: "HYDR",
-    name: "Русгидро",
-    count: 6000000,
-    price: 0.5,
-    newprice: 0.6,
-    pricechange: 0.1,
-    total: 500,
-    change: 11,
-    yearchange: 12,
-    openDate: "02.01.2024",
-    share: 20,
-  },
-  {
     ticker: "ROSN",
+    isin: "RU000A0J2Q06",
     name: "Роснефть",
     count: 12323,
     price: 420,
@@ -43,20 +30,8 @@ const loadData = [
     share: 30,
   },
   {
-    ticker: "LKOH",
-    name: "Лукойл",
-    count: 444,
-    price: 6500,
-    newprice: 6700,
-    pricechange: 200,
-    total: 500,
-    change: 22,
-    yearchange: 32,
-    openDate: "22.11.2024",
-    share: 25,
-  },
-  {
     ticker: "ASTR",
+    isin: "RU000A106T36",
     name: "Астра",
     count: 33213,
     price: 545,
@@ -73,38 +48,42 @@ const loadData = [
 const from = new Date()
 from.setFullYear(from.getFullYear() - 1)
 const to = new Date()
+const idList = loadData.map((item) => item.isin)
 
-const { data: candles, status } = await useFetch("/api/tinvest", {
-  transform: (candles) => {
-    return candles.map((item: any) => {
-      const open = `${item.open.units}.${item.open.nano}`
-      const close = `${item.close.units}.${item.close.nano}`
-      const change = ((Number(close) - Number(open)) / Number(open)) * 100
-      return {
-        price: close,
-        change: change.toFixed(2),
-        date: item.time,
-      }
-    })
-  },
-  method: "POST",
-  body: {
-    instrumentId: "BBG004731354",
-    from: from.toISOString(),
-    to: to.toISOString(),
-    interval: "CANDLE_INTERVAL_DAY",
-  },
+const { data: shares } = await useAsyncData(() => {
+  return Promise.all([
+    ...idList.map((item) => {
+      return $fetch("/api/tinsrumentid", {
+        body: {
+          isin: item,
+        },
+        method: "POST",
+      })
+    }),
+  ])
 })
+
+const { data: candles, status } = await useAsyncData(() => {
+  console.log("shares: ", shares.value)
+  return Promise.all([
+    ...shares.value.map((item: any) => {
+      return $fetch("/api/tinvest", {
+        body: {
+          instrumentId: item,
+          from: from.toISOString(),
+          to: to.toISOString(),
+          interval: "CANDLE_INTERVAL_DAY",
+        },
+        method: "POST"
+      })
+    }),
+  ])
+})
+
 
 /* const tickersList = loadData.filter((item) => tickers.includes(item.ticker))
  */
 
-/* const { data } = await useFetch("/api/t_shares", {
-  body: {
-    list: ['RU000A0J2Q06', 'RU000A106T36']
-  },
-  method: "POST",
-}) */
 /* const chartData = computed(() => {
   return candles.value.map((item: DatePrice) => {
     return {
@@ -115,7 +94,7 @@ const { data: candles, status } = await useFetch("/api/tinvest", {
   })
 }) */
 
-/* 
+/*
 const { data: candles, pending, error } = await useAsyncData('/api/tinvest', () => fetchCandles());
 
 async function fetchCandles(): Promise<{ candles: any[] }> {
@@ -125,7 +104,7 @@ async function fetchCandles(): Promise<{ candles: any[] }> {
       'Content-Type': 'application/json',
     };
 
-    const response = await $fetch('/api/tinvest', { 
+    const response = await $fetch('/api/tinvest', {
       method: 'POST',
       headers,
       body: JSON.stringify({
@@ -151,7 +130,7 @@ async function fetchCandles(): Promise<{ candles: any[] }> {
     return data;
   } catch (error) {
     console.error('Ошибка при получении данных:', error);
-    throw error; 
+    throw error;
   }
 }
  */

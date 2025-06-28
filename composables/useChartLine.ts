@@ -37,7 +37,7 @@ export const useVLine = (
    /*  .attr("stroke", "#eee")
     .attr("stroke-width", Math.ceil(width / DateValues.length)) */
     .attr('fill', '#eee')
-    .attr("data-value", (d) => d.price)
+    .attr("data-value", (d) => d.value)
     .attr("data-id", (d) => d.date)
     .attr("transform", `translate(${margin}, ${margin})`)
     .attr("opacity", 0)
@@ -47,8 +47,8 @@ export const useVLine = (
       useShowTooltip(
         tooltip,
         d.date,
-        `<div class="text-white font-black;">${d.date}</div> <div class="text-green-400 font-black; text-lg">${d.price} ₽</div>`,
-        [x(new Date(d.date)), y(d.price) + 10]
+          `<div class="text-white font-black;">${d.date}</div> <div class=" font-black; text-lg ${d.value >= 0 ? 'text-green-400' : 'text-red-400'}">${d.value}</div>`,
+        [x(new Date(d.date)), y(d.value) + 10]
       )
     })
     .on("mouseleave", function (e, d) {
@@ -82,9 +82,9 @@ export const useHLine = (
     .classed("grid-line", true)
     .attr("class", "hline")
     .attr("x1", 0)
-    .attr("y1", (d) => y(d.price))
+    .attr("y1", (d) => y(d.value))
     .attr("x2", width - 2 * margin)
-    .attr("y2", (d) => y(d.price))
+    .attr("y2", (d) => y(d.value))
     .attr("stroke", "gray")
     .attr("stroke-width", 1)
     .attr("transform", `translate(${margin}, ${margin})`)
@@ -119,9 +119,9 @@ export const useChartDot = (
     .attr("stroke-width", 2)
     .attr("r", 4)
     .attr("cx", (d) => x(new Date(d.date)))
-    .attr("cy", (d) => y(d.price))
+    .attr("cy", (d) => y(d.value))
     .attr("fill", "white")
-    .attr("data-value", (d) => d.price)
+    .attr("data-value", (d) => d.value)
     .attr("data-id", (d) => d.date)
     .attr("transform", `translate(${margin}, ${margin})`)
     .attr("opacity", 0)
@@ -130,8 +130,8 @@ export const useChartDot = (
       useShowTooltip(
         tooltip,
         d.date,
-        `<div class="text-white font-black;">${d.date}</div> <div class="text-green-400 font-black; text-lg">${d.price} ₽</div>`,
-        [x(new Date(d.date)), y(d.price) + 10]
+        `<div class="text-white font-black;">${d.date}</div> <div class=" font-black; text-lg ${d.value >= 0 ? 'text-green-400' : 'text-red-400'}">${d.value}</div>`,
+        [x(new Date(d.date)), y(d.value) + 10]
       )
     })
     .on("mouseleave", function (e, d) {

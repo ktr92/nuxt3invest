@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
         "/tinkoff.public.invest.api.contract.v1.InstrumentsService/FindInstrument",
       {
         body: {
-          query: body.ticker,
+          query: body.isin,
           instrumentKind: "INSTRUMENT_TYPE_UNSPECIFIED",
           apiTradeAvailableFlag: true,
         },
@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
     )
 
 
-    return response.instruments.filter((item) => item.ticker === body.ticker)[0]
+    return response.instruments[0].figi
   } catch (error) {
     console.error("Error fetching instrumentId:", error)
     return null

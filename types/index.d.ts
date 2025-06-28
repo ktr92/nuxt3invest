@@ -39,6 +39,7 @@ declare interface IPositionView {
   change: number
   yearchange: number
   openDate: string
+  isin?: string
 }
 declare interface IDealView {
   ticker: string
@@ -80,7 +81,7 @@ declare interface LineData {
 
 declare interface DatePrice {
   date: string
-  price: number
+  value: number
   change?: string
 }
 /** Интерфейс подсказкок диаграммы */

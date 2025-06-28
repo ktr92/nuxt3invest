@@ -94,8 +94,8 @@ const renderChart = () => {
 
   const minCategory = d3.min(flatData, (d) => new Date(d.date))
   const maxCategory = d3.max(flatData, (d) => new Date(d.date))
-  const minValue = d3.min(flatData, (d) => d.price)
-  const maxValue = d3.max(flatData, (d) => d.price)
+  const minValue = d3.min(flatData, (d) => d.value)
+  const maxValue = d3.max(flatData, (d) => d.value)
 
   // даты нужно интерполировать на ось Х
   const x = d3.scaleTime(
@@ -115,7 +115,7 @@ const renderChart = () => {
   const line = d3
     .line<DatePrice>()
     .x((d) => x(new Date(d.date)))
-    .y((d) => y(d.price))
+    .y((d) => y(d.value))
 
   // выбор контейнера svg для графика и установка его размеров
   const svg = d3

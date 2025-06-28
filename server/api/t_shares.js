@@ -1,9 +1,7 @@
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event)
 
-  try {
-    const body = await readBody(event)
-
+  try {   
     const response = await $fetch(
       `${config.APIURL}/tinkoff.public.invest.api.contract.v1.InstrumentsService/Shares`,
       {
@@ -20,7 +18,7 @@ export default defineEventHandler(async (event) => {
       }
     )
 
-    return response.instruments.filter(item => body.list.includes(item.isin))
+    return response
   } catch (error) {
     console.error("Error fetching instrumentId:", error)
     return null

@@ -20,7 +20,15 @@ export default defineEventHandler(async (event) => {
       }
     )
 
-    return response.candles
+    return response.candles.map((item) => {
+        // const open = `${item.open.units}.${item.open.nano}`
+        const close = `${item.close.units}.${item.close.nano}`
+        // const change = ((Number(close) - Number(open)) / Number(open)) * 100
+        return {
+          value: Number(close),
+          date: item.time,
+        }
+      })
   } catch (error) {
     if (error instanceof Error) {
       throw createError({
