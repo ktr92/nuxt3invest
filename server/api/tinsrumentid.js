@@ -9,7 +9,6 @@ export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
 
-    console.log(body)
     const response = await $fetch(
       config.APIURL +
         "/tinkoff.public.invest.api.contract.v1.InstrumentsService/FindInstrument",
@@ -21,7 +20,7 @@ export default defineEventHandler(async (event) => {
         },
         method: "post",
         headers: {
-          Authorization: `Bearer ${config.TOKEN}`, 
+          Authorization: `Bearer ${config.APITOKEN}`, 
           "Content-Type": "application/json",
           Accept: "application/json",
         },

@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ["@pinia/nuxt", "@nuxtjs/tailwindcss"],
   runtimeConfig: {
-    TOKEN: process.env.TBTOKEN,
+    APITOKEN: process.env.API_TOKEN,
     APIURL: process.env.API_URL,
   },
   typescript: {

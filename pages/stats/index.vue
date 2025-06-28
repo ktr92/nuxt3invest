@@ -1,32 +1,20 @@
 <template>
   <div class="w-full">
-    <!--  <ChartBar :data="chartData" /> -->
-    <ClientOnly>
-      <!--     <ChartPie :data="chartData" /> -->
-      <h2>Изменение цены акций в портфеле</h2>
-      <ChartLine :data="chartData" />
-    </ClientOnly>
+    <div v-if="status === 'pending'">
+      <h2>Loading...</h2>
+    </div>
+    <div v-else>
+      <div v-if="candles && candles.length">
+        <h2>Изменение цены акций в портфеле</h2>
+        <ChartLine
+          :data="[ { category: 'ROSN', dates: candles as DatePrice[] } ]"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-function generateDataPoints() {
-  const dataPoints = []
-  const today = new Date()
-
-  for (let i = 0; i < 30; i++) {
-    const date = new Date(today)
-    date.setDate(today.getDate() - i)
-    const formattedDate = date.toISOString().split("T")[0] // YYYY-MM-DD
-    const randomNumber = Math.floor(Math.random() * 100) // Пример случайного числа
-    dataPoints.push({ category: formattedDate, value: randomNumber })
-  }
-
-  return dataPoints.reverse() // Возвращаем в хронологическом порядке
-}
-
-const daily = generateDataPoints()
-
 const loadData = [
   {
     ticker: "HYDR",
@@ -82,21 +70,50 @@ const loadData = [
   },
 ]
 
-const config = useRuntimeConfig()
-
-const instrumentId = "BBG004730F88"
-
 const from = new Date()
 from.setFullYear(from.getFullYear() - 1)
 const to = new Date()
 
-const { data } = await useFetch("/api/tinsrumentid", {
-  body: {
-    ticker: "ROSN",
+const { data: candles, status } = await useFetch("/api/tinvest", {
+  transform: (candles) => {
+    return candles.map((item: any) => {
+      const open = `${item.open.units}.${item.open.nano}`
+      const close = `${item.close.units}.${item.close.nano}`
+      const change = ((Number(close) - Number(open)) / Number(open)) * 100
+      return {
+        price: close,
+        change: change.toFixed(2),
+        date: item.time,
+      }
+    })
   },
   method: "POST",
+  body: {
+    instrumentId: "BBG004731354",
+    from: from.toISOString(),
+    to: to.toISOString(),
+    interval: "CANDLE_INTERVAL_DAY",
+  },
 })
 
+/* const tickersList = loadData.filter((item) => tickers.includes(item.ticker))
+ */
+
+/* const { data } = await useFetch("/api/t_shares", {
+  body: {
+    list: ['RU000A0J2Q06', 'RU000A106T36']
+  },
+  method: "POST",
+}) */
+/* const chartData = computed(() => {
+  return candles.value.map((item: DatePrice) => {
+    return {
+      price: item.price,
+      date: item.date,
+      change: item.change
+    }
+  })
+}) */
 
 /* 
 const { data: candles, pending, error } = await useAsyncData('/api/tinvest', () => fetchCandles());
@@ -138,13 +155,8 @@ async function fetchCandles(): Promise<{ candles: any[] }> {
   }
 }
  */
-onMounted(() => {
-    if (data.value) {
-      console.log('candles: ', console.log(data.value)); 
-    }
-})
 
-const monthData = [
+/* const monthData = [
   {
     ticker: "ROSN",
     value: [
@@ -2347,7 +2359,7 @@ const monthData = [
       },
     ],
   },
-]
+] */
 
 /* console.log(monthData.map(item => {
   return {
@@ -2356,26 +2368,25 @@ const monthData = [
   }
 })) */
 
-const tickers = monthData.map((item) => item.ticker)
-const filteredData = loadData.filter((item) => tickers.includes(item.ticker))
+/* const tickers = monthData.map((item) => item.ticker)
 const pricetoNumber = monthData.map((item) => {
   return {
     ...item,
-    value: item.value.map((val) => {
-      /* const dateParts = val.date.split(".");
+    value: item.value.map((val) => { */
+/* const dateParts = val.date.split(".");
       const day = parseInt(dateParts[0]);
       const month = parseInt(dateParts[1]) - 1;
       const year = parseInt(dateParts[2]); */
 
-      return {
+/*       return {
         price: Number(val.price),
         date: val.date,
       }
     }),
   }
-})
+}) */
 
-const mergeData = filteredData.map((item) => {
+/* const mergeData = filteredData.map((item) => {
   const matchingMonthData = pricetoNumber.find(
     (monthItem) => monthItem.ticker === item.ticker
   )
@@ -2383,22 +2394,5 @@ const mergeData = filteredData.map((item) => {
     ...item,
     dates: matchingMonthData?.value || [],
   }
-})
-
-const chartData = computed(() => {
-  return mergeData.map((item) => {
-    return {
-      startprice: item.price,
-      count: item.count,
-      category: item.ticker,
-      value: item.count * item.newprice,
-      ticker: item.ticker,
-      startvalue: item.count * item.price,
-      pricechange: item.count * item.newprice - item.count * item.price,
-      change: item.change,
-      share: item.share,
-      dates: item.dates,
-    }
-  })
-})
+}) */
 </script>
