@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
     )
 
 
-    return response.instruments[0].figi
+    return response.instruments
   } catch (error) {
     console.error("Error fetching instrumentId:", error)
     return null

@@ -51,11 +51,11 @@ const container = ref<HTMLDivElement | null>(null)
 /** параметры контейнера для графика */
 /* const width = props.width ?? container.value.clientWidth
  */ const height = props.height ?? 300
-const margin = 30
+const margin = 50
 
 /** массив цветов для линий */
-const colorSet = ["steelblue", "red", "green"]
-/* const colorSet = generateColors(100) */
+/* const colorSet = ["steelblue", "red", "green"] */
+const colorSet = generateColors(100)
 
 /** цвет сектора для ховера */
 const colorHover = ["rgb(59, 130, 246)"]
@@ -116,6 +116,7 @@ const renderChart = () => {
     .line<DatePrice>()
     .x((d) => x(new Date(d.date)))
     .y((d) => y(d.value))
+    .curve(d3.curveCatmullRom.alpha(0.5))
 
   // выбор контейнера svg для графика и установка его размеров
   const svg = d3
@@ -131,7 +132,7 @@ const renderChart = () => {
   useChartLineAxis(svg, xAxis, yAxis, width.value, height, margin)
 
   /** рисование вертикальных линий  - показ при ховере */
-  useVLine(svg, flatData, x, y, width.value, height, margin, tooltip)
+  useVLine(svg, flatData, x, y, width.value, height, margin, tooltip, props.data)
 
 
   props.data.forEach((item, index) => {
@@ -159,10 +160,10 @@ const renderLine = (
     .attr("transform", `translate(${margin}, ${margin})`)
     .attr("fill", "none")
     .attr("stroke", color)
-    .attr("stroke-width", 2)
+    .attr("stroke-width", 1)
     .attr("d", line(datevalue))
   /** рисование точек для значений на линии графика - при ховере */
-  useChartDot(position.category, svg, datevalue, x, y, width, height, margin, tooltip, color)
+  useChartDot(position.id, svg, datevalue, x, y, width, height, margin, tooltip, color)
 }
 
 /**

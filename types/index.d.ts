@@ -73,7 +73,7 @@ declare interface DataItem {
 
 declare interface LineData {
   dates: DatePrice[]
-  category: string
+  id: string
   startprice?: number
   count?: number
   value?: number

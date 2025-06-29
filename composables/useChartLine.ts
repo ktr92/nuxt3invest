@@ -16,7 +16,8 @@ export const useVLine = (
   width: number,
   height: number,
   margin: number,
-  tooltip: Tooltip
+  tooltip: Tooltip,
+  data: LineData[]
 ): void => {
   svg
     .selectAll(".vline")
@@ -24,19 +25,19 @@ export const useVLine = (
     .enter()
     .append("rect")
     /* .append("line") */
-   /*  .classed("grid-line", true) */
+    /*  .classed("grid-line", true) */
     .attr("class", "vline")
-    .attr('x', (d) => x(new Date(d.date)))
-    .attr('y', 0)
-    .attr('width', Math.ceil(width / DateValues.length))
-    .attr('height', height - 2 * margin)
+    .attr("x", (d) => x(new Date(d.date)))
+    .attr("y", 0)
+    .attr("width", 10)
+    .attr("height", height - 2 * margin)
     /* .attr("x1", (d) => x(new Date(d.date)))
     .attr("y1", 0)
     .attr("x2", (d) => x(new Date(d.date)))
     .attr("y2", height - 2 * margin) */
-   /*  .attr("stroke", "#eee")
+    /*  .attr("stroke", "#eee")
     .attr("stroke-width", Math.ceil(width / DateValues.length)) */
-    .attr('fill', '#eee')
+    .attr("fill", "#fff")
     .attr("data-value", (d) => d.value)
     .attr("data-id", (d) => d.date)
     .attr("transform", `translate(${margin}, ${margin})`)
@@ -44,12 +45,34 @@ export const useVLine = (
     .on("mouseover", function (e, d) {
       d3.select(this).attr("opacity", 1)
       d3.selectAll(`circle[data-id="${d.date}"]`).attr("opacity", 1)
+      
+      let text = ''
+      const hoverdate = d3.select(this).attr("data-id")
+
+      data.forEach((item) => {
+        const datafilter = item.dates.filter((date) => date.date == hoverdate)[0]
+        const val = datafilter.value
+        const idColor = d3.select(`circle.dot-${item.id}`).attr('stroke')
+        text += `<div>
+        <span  style="background: ${idColor};" class="inline-block w-2 h-2"></span>
+        <span  >${item.id} </span>
+        <span  class="${val >= 0 ? "text-green-300" : "text-red-300"}">${val}</span>
+        </div>`
+      })
+
       useShowTooltip(
+        tooltip,
+        d.date,
+        `<div class="text-white font-black;">${new Date(d.date).toDateString()}</div> 
+         <div class="font-bold text-md ">${text}</div>`,
+        [x(new Date(d.date)), y(d.value) + 10]
+      )
+      /*   useShowTooltip(
         tooltip,
         d.date,
           `<div class="text-white font-black;">${d.date}</div> <div class=" font-black; text-lg ${d.value >= 0 ? 'text-green-400' : 'text-red-400'}">${d.value}</div>`,
         [x(new Date(d.date)), y(d.value) + 10]
-      )
+      ) */
     })
     .on("mouseleave", function (e, d) {
       d3.select(this).attr("opacity", 0)
@@ -125,18 +148,18 @@ export const useChartDot = (
     .attr("data-id", (d) => d.date)
     .attr("transform", `translate(${margin}, ${margin})`)
     .attr("opacity", 0)
-    .on("mouseover", function (e, d) {
+  /* .on("mouseover", function (e, d) {
       d3.select(this).attr("opacity", 1)
       useShowTooltip(
         tooltip,
         d.date,
-        `<div class="text-white font-black;">${d.date}</div> <div class=" font-black; text-lg ${d.value >= 0 ? 'text-green-400' : 'text-red-400'}">${d.value}</div>`,
+        `<div class="text-white font-black;">${id} ${d.date}</div> <div class=" font-black; text-lg ${d.value >= 0 ? 'text-green-400' : 'text-red-400'}">${d.value}</div>`,
         [x(new Date(d.date)), y(d.value) + 10]
       )
     })
     .on("mouseleave", function (e, d) {
       d3.select(this).attr("opacity", 0)
-    })
+    }) */
 }
 
 export const useChartLocale = () => {

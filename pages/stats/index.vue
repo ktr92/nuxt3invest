@@ -1,13 +1,10 @@
 <template>
   <div class="w-full">
+    <h2 class="text-[hsla(147, 70%,  88%, 0.8)]">text</h2>
     <div v-if="status === 'pending'"></div>
     <div v-else>
-      <div v-if="candles && candles.length">
-        <ChartLine
-          :data="[ { category: 'ROSN', dates: candles[0] as DatePrice[] },
-          { category: 'ASTR', dates: candles[1] as DatePrice[] }
-         ]"
-        />
+      <div v-if="chartData && chartData.length">
+        <ChartLine :data="chartData" />
       </div>
     </div>
   </div>
@@ -43,6 +40,20 @@ const loadData = [
     openDate: "23.01.2025",
     share: 25,
   },
+  {
+    ticker: "SBER",
+    isin: "RU0009029540",
+    name: "Сбербанк",
+    count: 300,
+    price: 255,
+    newprice: 567,
+    pricechange: 22,
+    total: 500,
+    change: 10,
+    yearchange: -20,
+    openDate: "11.04.2025",
+    share: 25,
+  },
 ]
 
 const from = new Date()
@@ -63,13 +74,14 @@ const { data: shares } = await useAsyncData(() => {
   ])
 })
 
+
 const { data: candles, status } = await useAsyncData(() => {
   console.log("shares: ", shares.value)
   return Promise.all([
     ...shares.value.map((item: any) => {
-      return $fetch("/api/tinvest", {
+      return $fetch("/api/t_candles", {
         body: {
-          instrumentId: item,
+          instrumentId: item[0].figi,
           from: from.toISOString(),
           to: to.toISOString(),
           interval: "CANDLE_INTERVAL_DAY",
@@ -81,18 +93,26 @@ const { data: candles, status } = await useAsyncData(() => {
 })
 
 
+
 /* const tickersList = loadData.filter((item) => tickers.includes(item.ticker))
  */
 
-/* const chartData = computed(() => {
-  return candles.value.map((item: DatePrice) => {
+ console.log('shares :', shares.value)
+ console.log('candles :', candles.value)
+
+
+
+
+const chartData = computed(() => {
+  return candles.value?.map((item: LineData) => {
     return {
-      price: item.price,
-      date: item.date,
-      change: item.change
+      dates: item.dates,
+      id: shares.value.filter((share: any) => share[0].figi === item.id)[0][0].ticker
     }
   })
-}) */
+})
+
+console.log('chartData :', chartData.value)
 
 /*
 const { data: candles, pending, error } = await useAsyncData('/api/tinvest', () => fetchCandles());
