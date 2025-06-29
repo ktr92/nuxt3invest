@@ -29,7 +29,7 @@ export const useVLine = (
     .attr("class", "vline")
     .attr("x", (d) => x(new Date(d.date)))
     .attr("y", 0)
-    .attr("width", 10)
+    .attr("width", width)
     .attr("height", height - 2 * margin)
     /* .attr("x1", (d) => x(new Date(d.date)))
     .attr("y1", 0)
@@ -40,31 +40,18 @@ export const useVLine = (
     .attr("fill", "#fff")
     .attr("data-value", (d) => d.value)
     .attr("data-id", (d) => d.date)
-    .attr("transform", `translate(${margin}, ${margin})`)
+    .attr("transform", `translate(${margin}, 0)`)
     .attr("opacity", 0)
     .on("mouseover", function (e, d) {
       d3.select(this).attr("opacity", 1)
       d3.selectAll(`circle[data-id="${d.date}"]`).attr("opacity", 1)
-      
-      let text = ''
-      const hoverdate = d3.select(this).attr("data-id")
 
-      data.forEach((item) => {
-        const datafilter = item.dates.filter((date) => date.date == hoverdate)[0]
-        const val = datafilter.value
-        const idColor = d3.select(`circle.dot-${item.id}`).attr('stroke')
-        text += `<div>
-        <span  style="background: ${idColor};" class="inline-block w-2 h-2"></span>
-        <span  >${item.id} </span>
-        <span  class="${val >= 0 ? "text-green-300" : "text-red-300"}">${val}</span>
-        </div>`
-      })
+      const hoverdate = d3.select(this).attr("data-id")
 
       useShowTooltip(
         tooltip,
         d.date,
-        `<div class="text-white font-black;">${new Date(d.date).toDateString()}</div> 
-         <div class="font-bold text-md ">${text}</div>`,
+        useDateValueTooltip(data, hoverdate, d.date),
         [x(new Date(d.date)), y(d.value) + 10]
       )
       /*   useShowTooltip(
@@ -225,4 +212,32 @@ export const useChartLineAxis = (
     .append("g")
     .attr("transform", `translate(${margin}, ${margin})`)
     .call(yAxis)
+}
+
+export const useDateValueTooltip = (
+  data: LineData[],
+  hoverdate: string,
+  currentdate: string
+) => {
+  let text = ""
+
+  data.forEach((item) => {
+    const datafilter = item.dates.filter((date) => date.date == hoverdate)[0]
+    if (datafilter) {
+      const val = datafilter.value
+      const idColor = d3.select(`circle.dot-${item.id}`).attr("stroke")
+      text += `<div>
+        <span  style="background: ${idColor};" class="inline-block w-2 h-2"></span>
+        <span  >${item.id} </span>
+        <span  class="${
+          val >= 0 ? "text-green-300" : "text-red-300"
+        }">${val}</span>
+        </div>`
+    }
+  })
+
+  return `<div class="text-white font-black;">${new Date(
+    currentdate
+  ).toDateString()}</div> 
+         <div class="font-bold text-md ">${text}</div>`
 }

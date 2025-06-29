@@ -137,6 +137,13 @@ const renderChart = () => {
 
   props.data.forEach((item, index) => {
     /*  renderChart(item) */
+    const datesFrom: DatePrice[] = []
+    item.dates.forEach(dates => {
+      if (dates.date >= item.opendate) {
+        datesFrom.push(dates)
+      } 
+    })
+    item.dates = datesFrom
     renderLine(item, svg, line, x, y, width.value, colorSet[index])
   })
 }

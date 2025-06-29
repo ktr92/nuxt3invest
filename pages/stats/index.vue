@@ -23,7 +23,7 @@ const loadData = [
     total: 500,
     change: -6,
     yearchange: 11,
-    openDate: "02.03.2024",
+    openDate: "2024-03-02",
     share: 30,
   },
   {
@@ -37,7 +37,8 @@ const loadData = [
     total: 500,
     change: 10,
     yearchange: -20,
-    openDate: "23.01.2025",
+    openDate: "2024-12-02",
+
     share: 25,
   },
   {
@@ -50,35 +51,46 @@ const loadData = [
     pricechange: 22,
     total: 500,
     change: 10,
-    yearchange: -20,
-    openDate: "11.04.2025",
+    openDate: "2024-11-02",
     share: 25,
   },
 ]
 
 const from = new Date()
 from.setFullYear(from.getFullYear() - 1)
+/* from.setMonth(from.getMonth() - 1) */
 const to = new Date()
-const idList = loadData.map((item) => item.isin)
-
+/* const idList = loadData.map((item) => item.isin)
+ */
 const { data: shares } = await useAsyncData(() => {
   return Promise.all([
-    ...idList.map((item) => {
+    ...loadData.map((item) => {
       return $fetch("/api/tinsrumentid", {
         body: {
-          isin: item,
+          isin: item.isin,
         },
         method: "POST",
       })
     }),
   ])
 })
+ console.log('shares :', shares.value)
 
+const sharesData = computed(() => {
+  return shares.value?.map((share: APIShare[]) => {
+    return {
+      opendate: loadData.filter(load => load.isin === share[0].isin)[0].openDate,
+      ...share
+    }
+  })
+})
+
+console.log('sharesData: ', sharesData.value)
 
 const { data: candles, status } = await useAsyncData(() => {
-  console.log("shares: ", shares.value)
+
   return Promise.all([
-    ...shares.value.map((item: any) => {
+    ...sharesData.value.map((item: any) => {
       return $fetch("/api/t_candles", {
         body: {
           instrumentId: item[0].figi,
@@ -97,17 +109,18 @@ const { data: candles, status } = await useAsyncData(() => {
 /* const tickersList = loadData.filter((item) => tickers.includes(item.ticker))
  */
 
- console.log('shares :', shares.value)
- console.log('candles :', candles.value)
+ console.log('candles :', candles.value) 
 
 
 
 
 const chartData = computed(() => {
   return candles.value?.map((item: LineData) => {
-    return {
+    const ticker = shares.value.filter((share: any) => share[0].figi === item.id)[0][0].ticker
+    return {   
       dates: item.dates,
-      id: shares.value.filter((share: any) => share[0].figi === item.id)[0][0].ticker
+      id: ticker,
+      opendate: loadData.filter((share: any) => share.ticker === ticker)[0].openDate
     }
   })
 })

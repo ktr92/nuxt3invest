@@ -26,9 +26,9 @@ export default defineEventHandler(async (event) => {
         const open = `${item.open.units}.${item.open.nano}`
         const close = `${item.close.units}.${item.close.nano}`
         const change = ((Number(close) - Number(open)) / Number(open)) * 100
-        percent += change
+        
         return {
-          value: Number(change.toFixed(2)),
+          value: Number(close),
           date: item.time,
         }
       }),
