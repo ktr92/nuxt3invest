@@ -51,7 +51,7 @@ export const useVLine = (
       useShowTooltip(
         tooltip,
         d.date,
-        useDateValueTooltip(data, hoverdate, d.date),
+        useDateValueTooltip(data, hoverdate, String(new Date(d.date).toLocaleString("ru", {day: "numeric", month: "long", year: "numeric"}))),
         [x(new Date(d.date)), y(d.value) + 10]
       )
       /*   useShowTooltip(
@@ -107,6 +107,7 @@ export const useHLine = (
     })
 }
 
+/** */
 export const useChartDot = (
   id: string,
   svg: d3.Selection<SVGGElement, unknown, null, undefined>,
@@ -149,12 +150,16 @@ export const useChartDot = (
     }) */
 }
 
+/**
+ * Локализация дат для осей графика D3
+ * @returns {d3.TimeLocaleDefinition}
+ */
 export const useChartLocale = () => {
-  return {
+  const ruLocale = {
     dateTime: "%A, %e %B %Y г. %X",
     date: "%d.%m.%Y",
     time: "%H:%M:%S",
-    periods: ["AM", "PM"],
+    periods: ["AM", "PM"] ,
     days: [
       "воскресенье",
       "понедельник",
@@ -164,7 +169,7 @@ export const useChartLocale = () => {
       "пятница",
       "суббота",
     ],
-    shortDays: ["вс", "пн", "вт", "ср", "чт", "пт", "сб"],
+    shortDays: ["вс", "пн", "вт", "ср", "чт", "пт", "сб"] ,
     months: [
       "января",
       "февраля",
@@ -178,7 +183,7 @@ export const useChartLocale = () => {
       "октября",
       "ноября",
       "декабря",
-    ],
+    ] ,
     shortMonths: [
       "янв",
       "фев",
@@ -192,8 +197,20 @@ export const useChartLocale = () => {
       "окт",
       "ноя",
       "дек",
-    ],
-  }
+    ] 
+  } 
+
+  /**  
+   * Приводим к нужному типу TimeLocaleDefinition @see https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/d3-time-format/index.d.ts
+   */
+  return {
+    ...ruLocale,
+    periods: Array.from(ruLocale.periods),
+    days: Array.from(ruLocale.days),
+    shortDays: Array.from(ruLocale.shortDays),
+    months: Array.from(ruLocale.months),
+    shortMonths: Array.from(ruLocale.shortMonths),
+  } as d3.TimeLocaleDefinition
 }
 
 export const useChartLineAxis = (
@@ -242,15 +259,15 @@ export const useDateValueTooltip = (
          <div class="font-bold text-md ">${text}</div>`
 }
 
-
-export const useLineAnimation = (g: d3.Selection<SVGPathElement, unknown, null, undefined>) => {
-    
-    const totalLength = g.node()?.getTotalLength
-    if (totalLength) {
-      g.attr("stroke-dasharray", totalLength)
-        .attr("stroke-dashoffset", totalLength)
-        .transition()
-        .duration(1200)
-        .attr("stroke-dashoffset", 0)
+export const useLineAnimation = (
+  g: d3.Selection<SVGPathElement, unknown, null, undefined>
+) => {
+  const totalLength = g.node()?.getTotalLength
+  if (totalLength) {
+    g.attr("stroke-dasharray", totalLength)
+      .attr("stroke-dashoffset", totalLength)
+      .transition()
+      .duration(1200)
+      .attr("stroke-dashoffset", 0)
   }
 }

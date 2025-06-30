@@ -73,6 +73,8 @@ const tooltip = reactive({
  * Функция для рисования графика
  */
 const renderChart = () => {
+  const localeRU = d3.timeFormatLocale(useChartLocale())
+
   const width = computed(() =>
     container.value ? container.value.clientWidth : 600
   )
@@ -107,7 +109,11 @@ const renderChart = () => {
     .domain([minValue || 0, maxValue || 100])
     .range([height - 2 * margin, 0])
 
-  const xAxis = d3.axisBottom(x).ticks(d3.timeMonth.every(1), "%b %y")
+
+
+  const xAxis = d3
+    .axisBottom(x)
+    .ticks(d3.timeMonth.every(1), "%b %y")
   const yAxis = d3.axisLeft(y)
 
   // генератор линий на основе дат
@@ -155,7 +161,6 @@ const renderChart = () => {
       item.dates = datesFrom
     }
 
-  
     renderLine(item, svg, line, x, y, width.value, colorSet[index])
   })
 }

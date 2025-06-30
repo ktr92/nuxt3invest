@@ -1,6 +1,6 @@
 <template>
   <div class="w-full my-8">
-    <h2 class="font-medium text-lg text-gray-600">Доходность всех позиций</h2>
+    <h2 class="font-medium text-lg text-gray-600">Цена акций в портфеле с момента покупки</h2>
 
     <ChartFilter @changePeriod="changePeriod" :firstDate="firstDate" />
     <div v-if="status === 'success'">

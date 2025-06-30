@@ -6,7 +6,8 @@
           <div v-for="range in datesRange" :key="range.id">
             <label
               :for="range.id"
-              class="flex items-center justify-between gap-4 rounded border border-transparent bg-white p-1 text-xs font-medium transition-colors hover:bg-gray-100 has-checked:border-blue-700 has-checked:ring-1 has-checked:ring-blue-700 cursor-pointer"
+              
+              class="flex items-center justify-between gap-4 rounded border bg-white border-transparent p-1 text-xs font-medium transition-colors hover:bg-gray-100 has-checked:border-blue-700 has-checked:ring-1 has-checked:ring-blue-700 cursor-pointer"
             >
               <p class="text-gray-700">{{ range.name }}</p>
 
@@ -31,7 +32,7 @@
             range
             auto-apply
             :enable-time-picker="false"
-            placeholder="Выбрать период"
+            placeholder="Выбрать даты"
             locale="ru"
             cancelText="Отмена"
             selectText="Выбрать"
@@ -60,7 +61,7 @@ const props = defineProps({
 const datesRange = [
   {
     id: "alltime",
-    name: "все время",
+    name: "за все время",
   },
   {
     id: "ytd",
@@ -92,7 +93,7 @@ const datesRange = [
   }, */
   {
     id: "custom",
-    name: "выбрать даты",
+    name: "другой период",
   },
 ]
 const emit = defineEmits(["changePeriod"])
