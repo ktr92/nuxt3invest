@@ -2,11 +2,11 @@
   <div>
     <div class="flex justify-start gap-4 my-4">
       <div>
-        <fieldset class="space-y-3 flex gap-2">
+        <fieldset class="space-y-3 flex gap-2" v-once>
           <div v-for="range in datesRange" :key="range.id">
             <label
               :for="range.id"
-              class="flex items-center justify-between gap-4 rounded border border-transparent bg-white p-1 text-xs font-medium transition-colors hover:bg-gray-100 has-checked:border-blue-600 has-checked:ring-1 has-checked:ring-blue-600 cursor-pointer"
+              class="flex items-center justify-between gap-4 rounded border border-transparent bg-white p-1 text-xs font-medium transition-colors hover:bg-gray-100 has-checked:border-blue-700 has-checked:ring-1 has-checked:ring-blue-700 cursor-pointer"
             >
               <p class="text-gray-700">{{ range.name }}</p>
 
@@ -18,7 +18,7 @@
                 :value="range.id"
                 :id="range.id"
                 class="sr-only"
-                checked
+                
               />
             </label>
           </div>
@@ -53,7 +53,7 @@ import "@vuepic/vue-datepicker/dist/main.css"
 const props = defineProps({
   firstDate: {
     type: Date,
-    default: new Date()
+    default: new Date(),
   },
 })
 
@@ -86,7 +86,7 @@ const datesRange = [
     id: "1w",
     name: "1 неделя",
   },
- /*  {
+  /*  {
     id: "1d",
     name: "1 день",
   }, */
@@ -99,67 +99,61 @@ const emit = defineEmits(["changePeriod"])
 
 const datesFilter = ref()
 const selectedRange = ref("1y")
-const from = new Date()
-from.setFullYear(from.getFullYear() - 1)
-const to = new Date()
+
 
 watchEffect(() => {
-   if (datesFilter.value && datesFilter.value.length === 2) {
+  if (datesFilter.value && datesFilter.value.length === 2) {
     changePeriod()
-   }
+  }
 })
 
 const changePeriod = () => {
   let fromFilter = new Date()
-  let toFilter = to
+  let toFilter = new Date()
   if (selectedRange.value === "custom") {
     // данные из календаря
     if (datesFilter.value && datesFilter.value.length === 2) {
       fromFilter = datesFilter.value[0]
       toFilter = datesFilter.value[1]
-
-        emit("changePeriod", fromFilter, toFilter)
-
+      emit("changePeriod", fromFilter, toFilter)
     }
-    
   } else {
+    datesFilter.value = null
     switch (selectedRange.value) {
       case "1y":
-        fromFilter.setFullYear(fromFilter.getFullYear() - 1);
-        break;
+        fromFilter.setFullYear(fromFilter.getFullYear() - 1)
+        break
       case "1m":
-        fromFilter.setMonth(fromFilter.getMonth() - 1);
-        break;
+        fromFilter.setMonth(fromFilter.getMonth() - 1)
+        break
       case "3m":
-        fromFilter.setMonth(fromFilter.getMonth() - 3);
-        break;
+        fromFilter.setMonth(fromFilter.getMonth() - 3)
+        break
       case "6m":
-        fromFilter.setMonth(fromFilter.getMonth() - 6);
-        break;
+        fromFilter.setMonth(fromFilter.getMonth() - 6)
+        break
       case "ytd":
         fromFilter = new Date(fromFilter.getFullYear(), 0, 1)
-        break;
+        break
       case "1w":
         fromFilter.setDate(fromFilter.getDate() - 7)
-        break;
+        break
       case "custom":
         fromFilter.setDate(fromFilter.getDate() - 7)
-        break;
+        break
       case "alltime":
         fromFilter = props.firstDate
-        break;
-     /*  case "1d":
+        break
+      /*  case "1d":
         fromFilter.setHours(fromFilter.getHours() - 24)
         break; */
-      default: 
+      /*   default: 
         fromFilter.setFullYear(fromFilter.getFullYear() - 1);
-        break;
+        break; */
     }
 
-      emit("changePeriod", fromFilter, toFilter)
-
+    emit("changePeriod", fromFilter, toFilter)
   }
-
 }
 </script>
 

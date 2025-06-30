@@ -155,6 +155,7 @@ const renderChart = () => {
       item.dates = datesFrom
     }
 
+  
     renderLine(item, svg, line, x, y, width.value, colorSet[index])
   })
 }
@@ -172,14 +173,18 @@ const renderLine = (
   color: string
 ) => {
   const datevalue = position.dates
+
   // рисование линии
   const g = svg
     .append("path")
+    .attr("d", line(datevalue))
     .attr("transform", `translate(${margin}, ${margin})`)
     .attr("fill", "none")
     .attr("stroke", color)
     .attr("stroke-width", 2)
-    .attr("d", line(datevalue))
+
+  useLineAnimation(g)
+
   /** рисование точек для значений на линии графика - при ховере */
   useChartDot(
     position.id,

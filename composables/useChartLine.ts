@@ -241,3 +241,16 @@ export const useDateValueTooltip = (
   ).toDateString()}</div> 
          <div class="font-bold text-md ">${text}</div>`
 }
+
+
+export const useLineAnimation = (g: d3.Selection<SVGPathElement, unknown, null, undefined>) => {
+    
+    const totalLength = g.node()?.getTotalLength
+    if (totalLength) {
+      g.attr("stroke-dasharray", totalLength)
+        .attr("stroke-dashoffset", totalLength)
+        .transition()
+        .duration(1200)
+        .attr("stroke-dashoffset", 0)
+  }
+}
