@@ -49,7 +49,13 @@
 <script setup lang="ts">
 import Datepicker from "@vuepic/vue-datepicker"
 import "@vuepic/vue-datepicker/dist/main.css"
-import { addDays } from "date-fns/addDays"
+
+const props = defineProps({
+  firstDate: {
+    type: Date,
+    default: new Date()
+  },
+})
 
 const datesRange = [
   {
@@ -138,6 +144,9 @@ const changePeriod = () => {
         break;
       case "custom":
         fromFilter.setDate(fromFilter.getDate() - 7)
+        break;
+      case "alltime":
+        fromFilter = props.firstDate
         break;
      /*  case "1d":
         fromFilter.setHours(fromFilter.getHours() - 24)

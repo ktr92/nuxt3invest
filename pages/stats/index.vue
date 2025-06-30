@@ -3,7 +3,7 @@
     <h2 class="font-medium text-lg text-gray-600">Доходность позиций</h2>
     <div v-if="status === 'success'">
       <div v-if="chartData && chartData.length">
-        <ChartFilter @changePeriod="changePeriod" />
+        <ChartFilter @changePeriod="changePeriod" :firstDate="firstDate" />
         <ChartLine :data="chartData" />
       </div>
     </div>
@@ -87,10 +87,13 @@ const instrumentId = ref<Array<{ id: string }>>([])
 
 // фильтрация
 const changePeriod = (paramFrom: Date, paramTo: Date) => {
-  console.log('param: ', paramFrom, paramTo)
+  
   from.value = paramFrom
   to.value = paramTo
 }
+
+const firstDate = computed(() => loadData.map(item => new Date(item.openDate)).reduce((a,b) => a < b ? a : b))
+
 
 // находим информацию по нашим акциям. Для дальнейшей реботы нужнен идентификатор FIGI который кроме как через api нигде не найти.
 const { data: shares } = await useAsyncData("instruments", () => {
@@ -167,6 +170,6 @@ const chartData = computed(() => {
     }
   })
 })
-
-console.log("chartData :", chartData.value)
+/* 
+console.log("chartData :", chartData.value) */
 </script>
