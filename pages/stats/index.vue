@@ -1,8 +1,9 @@
 <template>
-  <div class="w-full">
-    <h2 class="text-[hsla(147, 70%, 88%, 0.8)]">text</h2>
+  <div class="w-full my-8">
+    <h2 class="font-medium text-lg text-gray-600">Доходность позиций</h2>
     <div v-if="status === 'success'">
-           <div v-if="chartData && chartData.length">
+      <div v-if="chartData && chartData.length">
+        <ChartFilter @changePeriod="changePeriod" />
         <ChartLine :data="chartData" />
       </div>
     </div>
@@ -13,7 +14,6 @@
 </template>
 
 <script setup lang="ts">
-
 // информация о портфеле грузится из БД
 const loadData = [
   {
@@ -59,15 +59,38 @@ const loadData = [
     share: 25,
   },
 ]
+
+const datesRange = [
+  {
+    id: "allTime",
+    name: "все",
+  },
+  {
+    id: "sell",
+    name: "Продажи",
+  },
+  {
+    id: "buy",
+    name: "Покупки",
+  },
+]
+
 // показывать график с момента покупки (false) или за весь выбранный период (true)
 const alltime = ref(false)
 // выбор периода дат
-const from = new Date()
-from.setFullYear(from.getFullYear() - 1)
+const from = ref(new Date())
+from.value.setFullYear(from.value.getFullYear() - 1)
 /* from.setMonth(from.getMonth() - 1) */
-const to = new Date()
+const to = ref(new Date())
 
 const instrumentId = ref<Array<{ id: string }>>([])
+
+// фильтрация
+const changePeriod = (paramFrom: Date, paramTo: Date) => {
+  console.log('param: ', paramFrom, paramTo)
+  from.value = paramFrom
+  to.value = paramTo
+}
 
 // находим информацию по нашим акциям. Для дальнейшей реботы нужнен идентификатор FIGI который кроме как через api нигде не найти.
 const { data: shares } = await useAsyncData("instruments", () => {
@@ -97,8 +120,8 @@ const { data: candles, status } = await useLazyAsyncData(
         return $fetch("/api/t_candles", {
           body: {
             instrumentId: item[0].figi,
-            from: from.toISOString(),
-            to: to.toISOString(),
+            from: from.value.toISOString(),
+            to: to.value.toISOString(),
             interval: "CANDLE_INTERVAL_DAY",
           },
           method: "POST",
@@ -107,6 +130,7 @@ const { data: candles, status } = await useLazyAsyncData(
     ])
   },
   {
+    watch: [from, to],
     transform: (candles) => {
       // обработка каждого из рельзутатов promise.all
       return candles.map((res: any, index: number) => {
@@ -121,17 +145,16 @@ const { data: candles, status } = await useLazyAsyncData(
               date: item.time,
             }
           }),
-          id: instrumentId.value[index].id
+          id: instrumentId.value[index].id,
         }
       })
-    }
+    },
   }
 )
 /* console.log('candles :', candles.value)
- */// на основе полученных свечек формируем данные для графика - нам нужны даты с ценой, идентификатор (тикер) и дата открытия позиции.
+ */ // на основе полученных свечек формируем данные для графика - нам нужны даты с ценой, идентификатор (тикер) и дата открытия позиции.
 const chartData = computed(() => {
-  return candles.value?.map((item: LineData, index:number) => {
-
+  return candles.value?.map((item: LineData, index: number) => {
     const ticker = shares.value.filter(
       (share: any) => share[0].figi === item.id
     )[0][0].ticker
@@ -139,7 +162,7 @@ const chartData = computed(() => {
       dates: item.dates,
       id: ticker,
       opendate: alltime.value
-        ? from.toISOString()
+        ? from.value.toISOString()
         : loadData.filter((share: any) => share.ticker === ticker)[0].openDate,
     }
   })

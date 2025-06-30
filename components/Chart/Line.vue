@@ -178,7 +178,7 @@ const renderLine = (
     .attr("transform", `translate(${margin}, ${margin})`)
     .attr("fill", "none")
     .attr("stroke", color)
-    .attr("stroke-width", 1)
+    .attr("stroke-width", 2)
     .attr("d", line(datevalue))
   /** рисование точек для значений на линии графика - при ховере */
   useChartDot(
