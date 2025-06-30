@@ -1,10 +1,38 @@
 <template>
   <div class="w-full">
     <TableMain :tableheader="tableHeader" :tabledata="tableData" />
+    <div v-if="chartData && chartData.length">
+    <ChartLine :data="chartData" />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+
+
+const { data: candles } = useNuxtData('candles')
+const { data: instruments } = useNuxtData('instruments')
+
+if (candles.value) {
+  console.log('candles: ', candles.value)
+  
+}
+
+const chartData = computed(() => {
+  return candles.value?.map((item: LineData) => {
+    const ticker = instruments.value.filter((share: any) => share[0].figi === item.id)[0][0].ticker
+    return {   
+      dates: item.dates,
+      id: ticker,
+    }
+  })
+})
+
+
+if (chartData.value) {
+  console.log('candles: ', chartData.value)
+  
+}
 
 const tableHeader = [
   "Актив",

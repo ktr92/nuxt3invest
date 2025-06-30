@@ -77,8 +77,8 @@ const renderChart = () => {
     container.value ? container.value.clientWidth : 600
   )
 
-/*   const datevalue = props.data[0].dates
- */
+  /*   const datevalue = props.data[0].dates
+   */
   // проверяем входные данные для графика
   if (!props.data || !Array.isArray(props.data) || props.data.length === 0) {
     d3.select(chart.value).selectAll("*").remove()
@@ -89,8 +89,7 @@ const renderChart = () => {
   // перед рисованием графика очищаем контейнер
   d3.select(chart.value).selectAll("*").remove()
 
-  const flatData = props.data.flatMap(item => item.dates)
-
+  const flatData = props.data.flatMap((item) => item.dates)
 
   const minCategory = d3.min(flatData, (d) => new Date(d.date))
   const maxCategory = d3.max(flatData, (d) => new Date(d.date))
@@ -127,23 +126,35 @@ const renderChart = () => {
     .append("g")
     .attr("transform", `translate(0, 0)`)
 
-
   /** рисование осей координат */
   useChartLineAxis(svg, xAxis, yAxis, width.value, height, margin)
 
   /** рисование вертикальных линий  - показ при ховере */
-  useVLine(svg, flatData, x, y, width.value, height, margin, tooltip, props.data)
-
+  useVLine(
+    svg,
+    flatData,
+    x,
+    y,
+    width.value,
+    height,
+    margin,
+    tooltip,
+    props.data
+  )
 
   props.data.forEach((item, index) => {
     /*  renderChart(item) */
     const datesFrom: DatePrice[] = []
-    item.dates.forEach(dates => {
-      if (dates.date >= item.opendate) {
-        datesFrom.push(dates)
-      } 
-    })
-    item.dates = datesFrom
+    // если график от даты открытия позиции
+    if (item.opendate) {
+      item.dates.forEach((dates) => {
+        if (item.opendate && dates.date >= item.opendate) {
+          datesFrom.push(dates)
+        }
+      })
+      item.dates = datesFrom
+    }
+
     renderLine(item, svg, line, x, y, width.value, colorSet[index])
   })
 }
@@ -170,7 +181,18 @@ const renderLine = (
     .attr("stroke-width", 1)
     .attr("d", line(datevalue))
   /** рисование точек для значений на линии графика - при ховере */
-  useChartDot(position.id, svg, datevalue, x, y, width, height, margin, tooltip, color)
+  useChartDot(
+    position.id,
+    svg,
+    datevalue,
+    x,
+    y,
+    width,
+    height,
+    margin,
+    tooltip,
+    color
+  )
 }
 
 /**

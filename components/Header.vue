@@ -139,12 +139,12 @@
         <div class="px-4 py-6">
           <ul class="mt-14 space-y-1">
             <li>
-              <a
-                href="#"
+              <NuxtLink to="/"
+               
                 class="block rounded-lg bg-blue-100 px-4 py-2 text-sm font-medium text-blue-700 hover:bg-blue-500 hover:text-white "
               >
                 Посмотреть все 
-              </a>
+              </NuxtLink>
             </li>
 
             <template v-for="item in mainstore.getPorfolio" :key='item'>

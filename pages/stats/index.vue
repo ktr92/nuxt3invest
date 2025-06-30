@@ -1,9 +1,8 @@
 <template>
   <div class="w-full">
-    <h2 class="text-[hsla(147, 70%,  88%, 0.8)]">text</h2>
-    <div v-if="status === 'pending'"></div>
-    <div v-else>
-      <div v-if="chartData && chartData.length">
+    <h2 class="text-[hsla(147, 70%, 88%, 0.8)]">text</h2>
+    <div v-if="status === 'success'">
+           <div v-if="chartData && chartData.length">
         <ChartLine :data="chartData" />
       </div>
     </div>
@@ -11,6 +10,8 @@
 </template>
 
 <script setup lang="ts">
+import { transform } from "typescript"
+
 // информация о портфеле грузится из БД
 const loadData = [
   {
@@ -64,8 +65,10 @@ from.setFullYear(from.getFullYear() - 1)
 /* from.setMonth(from.getMonth() - 1) */
 const to = new Date()
 
+const instrumentId = ref<Array<{ id: string }>>([])
+
 // находим информацию по нашим акциям. Для дальнейшей реботы нужнен идентификатор FIGI который кроме как через api нигде не найти.
-const { data: shares } = await useAsyncData(() => {
+const { data: shares } = await useAsyncData("instruments", () => {
   return Promise.all([
     ...loadData.map((item) => {
       return $fetch("/api/tinsrumentid", {
@@ -81,35 +84,65 @@ const { data: shares } = await useAsyncData(() => {
  */
 
 // получаем данные для свечек за выбранный период
-const { data: candles, status } = await useAsyncData(() => {
+const { data: candles, status } = await useAsyncData(
+  "candles",
+  () => {
+    return Promise.all([
+      ...shares.value.map((item: any) => {
+        instrumentId.value.push({
+          id: item[0].figi,
+        })
+        return $fetch("/api/t_candles", {
+          body: {
+            instrumentId: item[0].figi,
+            from: from.toISOString(),
+            to: to.toISOString(),
+            interval: "CANDLE_INTERVAL_DAY",
+          },
+          method: "POST",
+        })
+      }),
+    ])
+  },
+  {
+    transform: (candles) => {
+      // обработка каждого из рельзутатов promise.all
+      return candles.map((res: any, index: number) => {
+        return {
+          dates: res.map((item: any) => {
+            const open = `${item.open.units}.${item.open.nano}`
+            const close = `${item.close.units}.${item.close.nano}`
+            const change = ((Number(close) - Number(open)) / Number(open)) * 100
 
-  return Promise.all([
-    ...shares.value.map((item: any) => {
-      return $fetch("/api/t_candles", {
-        body: {
-          instrumentId: item[0].figi,
-          from: from.toISOString(),
-          to: to.toISOString(),
-          interval: "CANDLE_INTERVAL_DAY",
-        },
-        method: "POST"
+            return {
+              value: Number(close),
+              date: item.time,
+            }
+          }),
+          id: instrumentId.value[index].id
+        }
       })
-    }),
-  ])
-})
-
+    }
+  }
+)
+console.log('candles :', candles.value)
 // на основе полученных свечек формируем данные для графика - нам нужны даты с ценой, идентификатор (тикер) и дата открытия позиции.
 const chartData = computed(() => {
-  return candles.value?.map((item: LineData) => {
-    const ticker = shares.value.filter((share: any) => share[0].figi === item.id)[0][0].ticker
-    return {   
+  return candles.value?.map((item: LineData, index:number) => {
+    console.log('instrumentId')
+
+    const ticker = shares.value.filter(
+      (share: any) => share[0].figi === item.id
+    )[0][0].ticker
+    return {
       dates: item.dates,
       id: ticker,
-      opendate: alltime.value ? from.toISOString() : loadData.filter((share: any) => share.ticker === ticker)[0].openDate
+      opendate: alltime.value
+        ? from.toISOString()
+        : loadData.filter((share: any) => share.ticker === ticker)[0].openDate,
     }
   })
 })
 
-console.log('chartData :', chartData.value)
-
+console.log("chartData :", chartData.value)
 </script>

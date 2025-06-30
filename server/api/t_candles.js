@@ -21,19 +21,7 @@ export default defineEventHandler(async (event) => {
     )
     let percent = 0
 
-    return {
-      dates: response.candles.map((item) => {
-        const open = `${item.open.units}.${item.open.nano}`
-        const close = `${item.close.units}.${item.close.nano}`
-        const change = ((Number(close) - Number(open)) / Number(open)) * 100
-        
-        return {
-          value: Number(close),
-          date: item.time,
-        }
-      }),
-      id: body.instrumentId,
-    }
+    return response.candles
   } catch (error) {
     if (error instanceof Error) {
       throw createError({
