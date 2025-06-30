@@ -80,10 +80,10 @@ const datesRange = [
     id: "1w",
     name: "1 неделя",
   },
-  {
+ /*  {
     id: "1d",
     name: "1 день",
-  },
+  }, */
   {
     id: "custom",
     name: "выбрать даты",
@@ -97,12 +97,25 @@ const from = new Date()
 from.setFullYear(from.getFullYear() - 1)
 const to = new Date()
 
+watchEffect(() => {
+   if (datesFilter.value && datesFilter.value.length === 2) {
+    changePeriod()
+   }
+})
+
 const changePeriod = () => {
   let fromFilter = new Date()
   let toFilter = to
   if (selectedRange.value === "custom") {
     // данные из календаря
-    console.log("custom")
+    if (datesFilter.value && datesFilter.value.length === 2) {
+      fromFilter = datesFilter.value[0]
+      toFilter = datesFilter.value[1]
+
+        emit("changePeriod", fromFilter, toFilter)
+
+    }
+    
   } else {
     switch (selectedRange.value) {
       case "1y":
@@ -114,13 +127,30 @@ const changePeriod = () => {
       case "3m":
         fromFilter.setMonth(fromFilter.getMonth() - 3);
         break;
+      case "6m":
+        fromFilter.setMonth(fromFilter.getMonth() - 6);
+        break;
+      case "ytd":
+        fromFilter = new Date(fromFilter.getFullYear(), 0, 1)
+        break;
+      case "1w":
+        fromFilter.setDate(fromFilter.getDate() - 7)
+        break;
+      case "custom":
+        fromFilter.setDate(fromFilter.getDate() - 7)
+        break;
+     /*  case "1d":
+        fromFilter.setHours(fromFilter.getHours() - 24)
+        break; */
       default: 
         fromFilter.setFullYear(fromFilter.getFullYear() - 1);
         break;
     }
+
+      emit("changePeriod", fromFilter, toFilter)
+
   }
 
-  emit("changePeriod", fromFilter, toFilter)
 }
 </script>
 
