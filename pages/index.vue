@@ -13,10 +13,6 @@
 const { data: candles } = useNuxtData('candles')
 const { data: instruments } = useNuxtData('instruments')
 
-if (candles.value) {
-  console.log('candles: ', candles.value)
-  
-}
 
 const chartData = computed(() => {
   return candles.value?.map((item: LineData) => {
@@ -28,11 +24,6 @@ const chartData = computed(() => {
   })
 })
 
-
-if (chartData.value) {
-  console.log('candles: ', chartData.value)
-  
-}
 
 const tableHeader = [
   "Актив",

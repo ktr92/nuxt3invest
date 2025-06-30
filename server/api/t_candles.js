@@ -19,7 +19,6 @@ export default defineEventHandler(async (event) => {
         body,
       }
     )
-    let percent = 0
 
     return response.candles
   } catch (error) {

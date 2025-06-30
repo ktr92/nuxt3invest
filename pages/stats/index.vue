@@ -6,11 +6,13 @@
         <ChartLine :data="chartData" />
       </div>
     </div>
+    <div v-else>
+      <ChartSkeleton />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { transform } from "typescript"
 
 // информация о портфеле грузится из БД
 const loadData = [
@@ -84,7 +86,7 @@ const { data: shares } = await useAsyncData("instruments", () => {
  */
 
 // получаем данные для свечек за выбранный период
-const { data: candles, status } = await useAsyncData(
+const { data: candles, status } = await useLazyAsyncData(
   "candles",
   () => {
     return Promise.all([
@@ -125,11 +127,10 @@ const { data: candles, status } = await useAsyncData(
     }
   }
 )
-console.log('candles :', candles.value)
-// на основе полученных свечек формируем данные для графика - нам нужны даты с ценой, идентификатор (тикер) и дата открытия позиции.
+/* console.log('candles :', candles.value)
+ */// на основе полученных свечек формируем данные для графика - нам нужны даты с ценой, идентификатор (тикер) и дата открытия позиции.
 const chartData = computed(() => {
   return candles.value?.map((item: LineData, index:number) => {
-    console.log('instrumentId')
 
     const ticker = shares.value.filter(
       (share: any) => share[0].figi === item.id
