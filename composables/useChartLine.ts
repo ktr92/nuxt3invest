@@ -51,7 +51,7 @@ export const useVLine = (
       useShowTooltip(
         tooltip,
         d.date,
-        useDateValueTooltip(data, hoverdate, String(new Date(d.date).toLocaleString("ru", {day: "numeric", month: "long", year: "numeric"}))),
+        useDateValueTooltip(data, hoverdate, d.date),
         [x(new Date(d.date)), y(d.value) + 10]
       )
       /*   useShowTooltip(
@@ -159,7 +159,7 @@ export const useChartLocale = () => {
     dateTime: "%A, %e %B %Y г. %X",
     date: "%d.%m.%Y",
     time: "%H:%M:%S",
-    periods: ["AM", "PM"] ,
+    periods: ["AM", "PM"],
     days: [
       "воскресенье",
       "понедельник",
@@ -169,7 +169,7 @@ export const useChartLocale = () => {
       "пятница",
       "суббота",
     ],
-    shortDays: ["вс", "пн", "вт", "ср", "чт", "пт", "сб"] ,
+    shortDays: ["вс", "пн", "вт", "ср", "чт", "пт", "сб"],
     months: [
       "января",
       "февраля",
@@ -183,7 +183,7 @@ export const useChartLocale = () => {
       "октября",
       "ноября",
       "декабря",
-    ] ,
+    ],
     shortMonths: [
       "янв",
       "фев",
@@ -197,10 +197,10 @@ export const useChartLocale = () => {
       "окт",
       "ноя",
       "дек",
-    ] 
-  } 
+    ],
+  }
 
-  /**  
+  /**
    * Приводим к нужному типу TimeLocaleDefinition @see https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/d3-time-format/index.d.ts
    */
   return {
@@ -253,9 +253,13 @@ export const useDateValueTooltip = (
     }
   })
 
-  return `<div class="text-white font-black;">${new Date(
-    currentdate
-  ).toDateString()}</div> 
+  return `<div class="text-white font-black;">
+  ${new Date(currentdate).toLocaleString("ru", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })    
+  }</div> 
          <div class="font-bold text-md ">${text}</div>`
 }
 
