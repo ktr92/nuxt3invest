@@ -213,6 +213,25 @@ export const useChartLocale = () => {
   } as d3.TimeLocaleDefinition
 }
 
+export const useFormatLocale = (locale: d3.TimeLocaleObject) => {
+  return (
+    domainValue: Date | number | { valueOf(): number },
+    _index: number
+  ): string => {
+    let date: Date
+    if (domainValue instanceof Date) {
+      date = domainValue
+    } else if (typeof domainValue === "number") {
+      date = new Date(domainValue)
+    } else if (domainValue && typeof domainValue.valueOf === "function") {
+      date = new Date(domainValue.valueOf())
+    } else {
+      date = new Date()
+    }
+    return locale.format("%b %Y")(date)
+  }
+}
+
 export const useChartLineAxis = (
   svg: d3.Selection<SVGGElement, unknown, null, undefined>,
   xAxis: d3.Axis<d3.NumberValue | Date>,
@@ -221,14 +240,33 @@ export const useChartLineAxis = (
   height: number,
   margin: number
 ) => {
-  svg
+  const gxAxis = svg
     .append("g")
     .attr("transform", `translate(${margin}, ${height - margin})`)
     .call(xAxis)
-  svg
+  const gyAxis = svg
     .append("g")
     .attr("transform", `translate(${margin}, ${margin})`)
     .call(yAxis)
+
+  const axisStyle = "stroke-gray-400"
+  const axisTextStyle = "text-gray-400  text-[11px] "
+
+  gxAxis
+    .selectAll(".tick text")    
+    .attr("class", axisTextStyle)
+   gyAxis
+    .selectAll(".tick text")
+    .attr("class", axisTextStyle)
+    
+  gxAxis
+    .selectAll(".domain")    
+    .attr("class", axisStyle)
+  gyAxis
+    .selectAll(".domain")    
+    .attr("class", axisStyle)
+
+ 
 }
 
 export const useDateValueTooltip = (
@@ -255,11 +293,10 @@ export const useDateValueTooltip = (
 
   return `<div class="text-white font-black;">
   ${new Date(currentdate).toLocaleString("ru", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })    
-  }</div> 
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  })}</div> 
          <div class="font-bold text-md ">${text}</div>`
 }
 

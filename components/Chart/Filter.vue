@@ -3,25 +3,8 @@
     <div class="flex justify-start gap-4 my-4">
       <div>
         <fieldset class="space-y-3 flex gap-2" v-once>
-          <div v-for="range in datesRange" :key="range.id">
-            <label
-              :for="range.id"
-              
-              class="flex items-center justify-between gap-4 rounded border bg-white border-transparent p-1 text-xs font-medium transition-colors hover:bg-gray-100 has-checked:border-blue-700 has-checked:ring-1 has-checked:ring-blue-700 cursor-pointer"
-            >
-              <p class="text-gray-700">{{ range.name }}</p>
-
-              <input
-                @change="changePeriod"
-                v-model="selectedRange"
-                type="radio"
-                name="datesRange"
-                :value="range.id"
-                :id="range.id"
-                class="sr-only"
-                
-              />
-            </label>
+          <div v-for="range in datesRange" :key="`${range.id}-${uniqueId}`">
+            <UIRadio v-model="selectedRange" :range="range" :unique="uniqueId"/>
           </div>
         </fieldset>
       </div>
@@ -102,6 +85,10 @@ const datesFilter = ref()
 const selectedRange = ref("1y")
 
 
+
+// label и input должны быть уникальными, иначе фильтр будет работать на всех графиках каждого компонента
+const uniqueId = createUniqueId() 
+
 watchEffect(() => {
   if (datesFilter.value && datesFilter.value.length === 2) {
     changePeriod()
@@ -156,6 +143,12 @@ const changePeriod = () => {
     emit("changePeriod", fromFilter, toFilter)
   }
 }
+
+watchEffect(() => {
+ if (selectedRange.value) {
+    changePeriod()
+ }
+})
 </script>
 
 <style scoped>

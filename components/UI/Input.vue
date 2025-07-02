@@ -10,7 +10,7 @@
       :value="inputValue"
       :placeholder="props.placeholder"
       :disabled='props.disabled'
-      @input="(event) => onChange(event)"
+      @input="(event: Event) => onChange(event)"
       @keyup.enter="onEnter"
       @blur="handleBlur"
       autocomplete='off'

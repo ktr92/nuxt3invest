@@ -131,4 +131,19 @@ interface APIShare {
   lot: number;
 }
 
+declare interface ILoadData {
+   ticker: string;
+    isin: string;
+    name: string;
+    count: number;
+    price: number;
+    newprice: number;
+    pricechange: number;
+    total: number;
+    change: number;
+    yearchange: number;
+    openDate: string;
+    share: number;
+}
+
 type APISharesResponse = APIShare[][];

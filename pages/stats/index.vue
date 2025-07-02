@@ -1,22 +1,13 @@
 <template>
-  <div class="w-full my-8">
-    <h2 class="font-medium text-lg text-gray-600">Цена акций в портфеле с момента покупки</h2>
-
-    <ChartFilter @changePeriod="changePeriod" :firstDate="firstDate" />
-    <div v-if="status === 'success'">
-      <div v-if="chartData && chartData.length">
-        <ChartLine :data="chartData" />
-      </div>
-    </div>
-    <div v-else>
-      <ChartSkeleton />
-    </div>
+  <div class="w-full">
+    <ChartCDataTimePrice :loadData="loadData" />
+    <ChartCDataTimeProfit :loadData="loadData" />
   </div>
 </template>
 
 <script setup lang="ts">
 // информация о портфеле грузится из БД
-const loadData = [
+const loadData: ILoadData[] = [
   {
     ticker: "ROSN",
     isin: "RU000A0J2Q06",
@@ -55,124 +46,14 @@ const loadData = [
     newprice: 567,
     pricechange: 22,
     total: 500,
+    yearchange: -20,
     change: 10,
     openDate: "2024-11-02",
     share: 25,
   },
 ]
 
-const datesRange = [
-  {
-    id: "allTime",
-    name: "все",
-  },
-  {
-    id: "sell",
-    name: "Продажи",
-  },
-  {
-    id: "buy",
-    name: "Покупки",
-  },
-]
 
-// показывать график с момента покупки (false) или за весь выбранный период (true)
-const alltime = ref(false)
-// выбор периода дат
-const from = ref(new Date())
-from.value.setFullYear(from.value.getFullYear() - 1)
-/* from.setMonth(from.getMonth() - 1) */
-const to = ref(new Date())
-
-const instrumentId = ref<Array<{ id: string }>>([])
-
-// фильтрация
-const changePeriod = (paramFrom: Date, paramTo: Date) => {
-  from.value = paramFrom
-  to.value = paramTo
-}
-
-const firstDate = computed(() =>
-  loadData
-    .map((item) => new Date(item.openDate))
-    .reduce((a, b) => (a < b ? a : b))
-)
-
-// находим информацию по нашим акциям. Для дальнейшей реботы нужнен идентификатор FIGI который кроме как через api нигде не найти.
-const { data: shares } = await useAsyncData("instruments", () => {
-  return Promise.all([
-    ...loadData.map((item) => {
-      return $fetch("/api/tinsrumentid", {
-        body: {
-          isin: item.isin,
-        },
-        method: "POST",
-      })
-    }),
-  ])
-})
-/*  console.log('shares :', shares.value)
- */
-
-// получаем данные для свечек за выбранный период
-const { data: candles, status } = await useLazyAsyncData(
-  "candles",
-  () => {
-    return Promise.all([
-      ...shares.value.map((item: any) => {
-        instrumentId.value.push({
-          id: item[0].figi,
-        })
-        return $fetch("/api/t_candles", {
-          body: {
-            instrumentId: item[0].figi,
-            from: from.value.toISOString(),
-            to: to.value.toISOString(),
-            interval: "CANDLE_INTERVAL_DAY",
-          },
-          method: "POST",
-        })
-      }),
-    ])
-  },
-  {
-    watch: [from],
-    transform: (candles) => {
-      // обработка каждого из рельзутатов promise.all
-      return candles.map((res: any, index: number) => {
-        return {
-          dates: res.map((item: any) => {
-            const open = `${item.open.units}.${item.open.nano}`
-            const close = `${item.close.units}.${item.close.nano}`
-            const change = ((Number(close) - Number(open)) / Number(open)) * 100
-
-            return {
-              value: Number(close),
-              date: item.time,
-            }
-          }),
-          id: instrumentId.value[index].id,
-        }
-      })
-    },
-  }
-)
-/* console.log('candles :', candles.value)
- */ // на основе полученных свечек формируем данные для графика - нам нужны даты с ценой, идентификатор (тикер) и дата открытия позиции.
-const chartData = computed(() => {
-  return candles.value?.map((item: LineData, index: number) => {
-    const ticker = shares.value.filter(
-      (share: any) => share[0].figi === item.id
-    )[0][0].ticker
-    return {
-      dates: item.dates,
-      id: ticker,
-      opendate: alltime.value
-        ? from.value.toISOString()
-        : loadData.filter((share: any) => share.ticker === ticker)[0].openDate,
-    }
-  })
-})
 /* 
 console.log("chartData :", chartData.value) */
 </script>

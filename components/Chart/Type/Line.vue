@@ -1,9 +1,9 @@
 <template>
-  <div ref="container" class="chart-wrapper w-full" style="position: relative">
+  <div :ref="`container-${uniqueId}`" class="chart-wrapper w-full" style="position: relative">
     <div class="flex w-full">
       <div class="chartblock w-full">
         <svg
-          ref="chart"
+          :ref="`chart${uniqueId}`"
           :width="width"
           :height="height"
           class="max-w-full"
@@ -43,6 +43,7 @@ const props = defineProps<{
   data: LineData[]
   width?: number
   height?: number
+  uniqueId: string
 }>()
 
 const chart = ref<SVGSVGElement | null>(null)
@@ -109,11 +110,12 @@ const renderChart = () => {
     .domain([minValue || 0, maxValue || 100])
     .range([height - 2 * margin, 0])
 
-
+const formatDate = useFormatLocale(localeRU)
 
   const xAxis = d3
     .axisBottom(x)
-    .ticks(d3.timeMonth.every(1), "%b %y")
+    .tickFormat(formatDate)
+    
   const yAxis = d3.axisLeft(y)
 
   // генератор линий на основе дат
