@@ -4,7 +4,7 @@
       <div>
         <fieldset class="space-y-3 flex gap-2" v-once>
           <div v-for="range in datesRange" :key="`${range.id}-${uniqueId}`">
-            <UIRadio v-model="selectedRange" :range="range" :unique="uniqueId"/>
+            <UIRadio v-model="selectedRange" :range="range" :uniqueprop="uniqueId"/>
           </div>
         </fieldset>
       </div>

@@ -73,7 +73,7 @@ const firstDate = computed(() =>
 )
 
 // находим информацию по нашим акциям. Для дальнейшей реботы нужнен идентификатор FIGI который кроме как через api нигде не найти.
-const { data: shares } = await useAsyncData("instruments", () => {
+const { data: shares } = await useAsyncData(`instruments-${uniqueId}`, () => {
   return Promise.all([
     ...props.loadData.map((item: ILoadData) => {
       return $fetch("/api/tinsrumentid", {
@@ -90,7 +90,7 @@ const { data: shares } = await useAsyncData("instruments", () => {
 
 // получаем данные для свечек за выбранный период
 const { data: candles, status } = await useLazyAsyncData(
-  "candles",
+  `candles-${uniqueId}`,
   () => {
     return Promise.all([
       ...shares.value.map((item: any) => {

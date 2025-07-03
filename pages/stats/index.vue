@@ -8,13 +8,11 @@
 </template>
 
 <script setup lang="ts">
-
 const chartcontainer = ref<HTMLDivElement | null>(null)
 
-  const width = computed(() =>
-    chartcontainer.value ? chartcontainer.value.clientWidth : 600
-  )
-
+const width = computed(() =>
+  chartcontainer.value ? chartcontainer.value.clientWidth : 600
+)
 
 // информация о портфеле грузится из БД
 const loadData: ILoadData[] = [

@@ -133,6 +133,7 @@ const formatDate = useFormatLocale(localeRU)
     .append("g")
     .attr("transform", `translate(0, 0)`)
 
+
   /** рисование осей координат */
   useChartLineAxis(svg, xAxis, yAxis, width.value, height, margin, props.uniqueId)
 
