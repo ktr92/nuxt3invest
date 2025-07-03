@@ -1,12 +1,12 @@
 <template>
-  <div :ref="`container-${uniqueId}`" class="chart-wrapper w-full" style="position: relative">
+  <div class="chart-wrapper w-full" style="position: relative">
     <div class="flex w-full">
       <div class="chartblock w-full">
         <svg
-          :ref="`chart${uniqueId}`"
+          :id="`chart${uniqueId}`"
           :width="width"
           :height="height"
-          class="max-w-full"
+          class="max-w-full w-full"
         ></svg>
         <div
           class="p-2 absolute rounded-md"
@@ -33,7 +33,7 @@
 
 <script setup lang="ts">
 /**
- * Компонент для вывода круговой диаграммы
+ * Компонент для вывода линейной диаграммы
  */
 import * as d3 from "d3"
 import generateColors from "~/utils/colorGenerate"
@@ -41,13 +41,12 @@ import { debounce } from "lodash-es"
 
 const props = defineProps<{
   data: LineData[]
-  width?: number
+  width: number
   height?: number
   uniqueId: string
 }>()
 
-const chart = ref<SVGSVGElement | null>(null)
-const container = ref<HTMLDivElement | null>(null)
+/* const chart = ref<SVGSVGElement | null>(null) */
 
 /** параметры контейнера для графика */
 /* const width = props.width ?? container.value.clientWidth
@@ -77,20 +76,20 @@ const renderChart = () => {
   const localeRU = d3.timeFormatLocale(useChartLocale())
 
   const width = computed(() =>
-    container.value ? container.value.clientWidth : 600
+    props.width ?   props.width : 600
   )
 
   /*   const datevalue = props.data[0].dates
    */
   // проверяем входные данные для графика
   if (!props.data || !Array.isArray(props.data) || props.data.length === 0) {
-    d3.select(chart.value).selectAll("*").remove()
+    d3.select('').selectAll("*").remove()
     useHideTooltip(tooltip)
     return
   }
 
   // перед рисованием графика очищаем контейнер
-  d3.select(chart.value).selectAll("*").remove()
+  d3.select(`#chart${props.uniqueId}`).selectAll("*").remove()
 
   const flatData = props.data.flatMap((item) => item.dates)
 
@@ -127,7 +126,7 @@ const formatDate = useFormatLocale(localeRU)
 
   // выбор контейнера svg для графика и установка его размеров
   const svg = d3
-    .select(chart.value)
+    .select(`#chart${props.uniqueId}`)
     .attr("width", width.value)
     .attr("height", height)
     .attr("padding", margin)
@@ -135,7 +134,7 @@ const formatDate = useFormatLocale(localeRU)
     .attr("transform", `translate(0, 0)`)
 
   /** рисование осей координат */
-  useChartLineAxis(svg, xAxis, yAxis, width.value, height, margin)
+  useChartLineAxis(svg, xAxis, yAxis, width.value, height, margin, props.uniqueId)
 
   /** рисование вертикальных линий  - показ при ховере */
   useVLine(
@@ -147,7 +146,7 @@ const formatDate = useFormatLocale(localeRU)
     height,
     margin,
     tooltip,
-    props.data
+    props.data, props.uniqueId
   )
 
   props.data.forEach((item, index) => {
@@ -163,7 +162,7 @@ const formatDate = useFormatLocale(localeRU)
       item.dates = datesFrom
     }
 
-    renderLine(item, svg, line, x, y, width.value, colorSet[index])
+    renderLine(item, svg, line, x, y, width.value, colorSet[index], props.uniqueId)
   })
 }
 
@@ -172,12 +171,13 @@ const formatDate = useFormatLocale(localeRU)
  */
 const renderLine = (
   position: LineData,
-  svg: d3.Selection<SVGGElement, unknown, null, undefined>,
+  svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>,
   line: d3.Line<DatePrice>,
   x: d3.ScaleTime<number, number, never>,
   y: d3.ScaleLinear<number, number, never>,
   width: number,
-  color: string
+  color: string,
+  uniqueId: string
 ) => {
   const datevalue = position.dates
 
@@ -190,7 +190,7 @@ const renderLine = (
     .attr("stroke", color)
     .attr("stroke-width", 2)
 
-  useLineAnimation(g)
+  useLineAnimation(g, props.uniqueId)
 
   /** рисование точек для значений на линии графика - при ховере */
   useChartDot(
@@ -203,7 +203,7 @@ const renderLine = (
     height,
     margin,
     tooltip,
-    color
+    color, props.uniqueId
   )
 }
 

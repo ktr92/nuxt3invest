@@ -7,7 +7,7 @@
     <ChartFilter @changePeriod="changePeriod" :firstDate="firstDate" />
     <div v-if="status === 'success'">
      <!--  <div v-if="chartData && chartData.length"> -->
-        <ChartTypeLine :data="chartData" :uniqie="uniqueId"/>
+        <ChartTypeLine :data="chartData" :uniqueId="uniqueId" :width="width"/>
       <!-- </div> -->
     </div>
     <div v-else>
@@ -43,6 +43,10 @@ const props = defineProps({
     type: Array<ILoadData>,
     required: true,
   },
+  width: {
+    type: Number,
+    default: 600
+  }
 })
 
 const uniqueId = createUniqueId()

@@ -11,7 +11,7 @@
           @change="(event: Event) => onChange(event)"
           v-model="selectedRange"
           type="radio"
-          :name="`datesRange-${unique}`"
+          :name="`datesRange-${uniqueprop}`"
           :value="range.id"
           :id="`${range.id}-${uniqueId}`"
           class="sr-only"
@@ -36,7 +36,7 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  unique: {
+  uniqueprop: {
     type: String,
     default: ''
   }

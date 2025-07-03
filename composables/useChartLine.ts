@@ -9,7 +9,7 @@ import * as d3 from "d3"
  * @param margin - отступы холста
  */
 export const useVLine = (
-  svg: d3.Selection<SVGGElement, unknown, null, undefined>,
+  svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>,
   DateValues: DatePrice[],
   x: (value: d3.NumberValue) => number,
   y: (value: d3.NumberValue) => number,
@@ -17,7 +17,8 @@ export const useVLine = (
   height: number,
   margin: number,
   tooltip: Tooltip,
-  data: LineData[]
+  data: LineData[],
+  uniqueId: string
 ): void => {
   svg
     .selectAll(".vline")
@@ -39,19 +40,18 @@ export const useVLine = (
     .attr("stroke-width", Math.ceil(width / DateValues.length)) */
     .attr("fill", "#fff")
     .attr("data-value", (d) => d.value)
-    .attr("data-id", (d) => d.date)
+    .attr("data-id", (d) => d.date + `-${uniqueId}`)
     .attr("transform", `translate(${margin}, 0)`)
     .attr("opacity", 0)
     .on("mouseover", function (e, d) {
       d3.select(this).attr("opacity", 1)
-      d3.selectAll(`circle[data-id="${d.date}"]`).attr("opacity", 1)
+      d3.selectAll(`circle[data-id="${d.date}-${uniqueId}"]`).attr("opacity", 1)
 
-      const hoverdate = d3.select(this).attr("data-id")
-
+      const hoverdate = d3.select(this).attr(`data-id`)
       useShowTooltip(
         tooltip,
-        d.date,
-        useDateValueTooltip(data, hoverdate, d.date),
+        `${d.date}-${uniqueId}`,
+        useDateValueTooltip(data, hoverdate, d.date, uniqueId),
         [x(new Date(d.date)), y(d.value) + 10]
       )
       /*   useShowTooltip(
@@ -63,7 +63,7 @@ export const useVLine = (
     })
     .on("mouseleave", function (e, d) {
       d3.select(this).attr("opacity", 0)
-      d3.selectAll(`circle[data-id="${d.date}"]`).attr("opacity", 0)
+      d3.selectAll(`circle[data-id="${d.date}-${uniqueId}"]`).attr("opacity", 0)
       useHideTooltip(tooltip)
     })
 }
@@ -82,7 +82,8 @@ export const useHLine = (
   DateValues: DatePrice[],
   y: (value: d3.NumberValue) => number,
   width: number,
-  margin: number
+  margin: number,
+  uniqueId: string
 ): void => {
   svg
     .selectAll(".hline")
@@ -110,7 +111,7 @@ export const useHLine = (
 /** */
 export const useChartDot = (
   id: string,
-  svg: d3.Selection<SVGGElement, unknown, null, undefined>,
+  svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>,
   DateValues: DatePrice[],
   x: (value: d3.NumberValue) => number,
   y: (value: d3.NumberValue) => number,
@@ -118,14 +119,15 @@ export const useChartDot = (
   height: number,
   margin: number,
   tooltip: Tooltip,
-  color: string
+  color: string,
+  uniqueId: string
 ) => {
   svg
-    .selectAll(`.dot-${id}`)
+    .selectAll(`.dot-${id}-${uniqueId}`)
     .data(DateValues)
     .enter()
     .append("circle")
-    .attr("class", `dot-${id}`)
+    .attr("class", `dot-${id}-${uniqueId}`)
     .attr("stroke", color)
     .attr("stroke-width", 2)
     .attr("r", 4)
@@ -133,7 +135,7 @@ export const useChartDot = (
     .attr("cy", (d) => y(d.value))
     .attr("fill", "white")
     .attr("data-value", (d) => d.value)
-    .attr("data-id", (d) => d.date)
+    .attr("data-id", (d) => d.date + `-${uniqueId}`)
     .attr("transform", `translate(${margin}, ${margin})`)
     .attr("opacity", 0)
   /* .on("mouseover", function (e, d) {
@@ -233,12 +235,13 @@ export const useFormatLocale = (locale: d3.TimeLocaleObject) => {
 }
 
 export const useChartLineAxis = (
-  svg: d3.Selection<SVGGElement, unknown, null, undefined>,
+  svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>,
   xAxis: d3.Axis<d3.NumberValue | Date>,
   yAxis: d3.Axis<d3.NumberValue | Date>,
   width: number,
   height: number,
-  margin: number
+  margin: number,
+  uniqueId: string
 ) => {
   const gxAxis = svg
     .append("g")
@@ -272,15 +275,16 @@ export const useChartLineAxis = (
 export const useDateValueTooltip = (
   data: LineData[],
   hoverdate: string,
-  currentdate: string
+  currentdate: string,
+  uniqueId: string
 ) => {
   let text = ""
 
   data.forEach((item) => {
-    const datafilter = item.dates.filter((date) => date.date == hoverdate)[0]
+    const datafilter = item.dates.filter((date) => date.date == currentdate)[0]
     if (datafilter) {
       const val = datafilter.value
-      const idColor = d3.select(`circle.dot-${item.id}`).attr("stroke")
+      const idColor = d3.select(`circle.dot-${item.id}-${uniqueId}`).attr("stroke")
       text += `<div>
         <span  style="background: ${idColor};" class="inline-block w-2 h-2"></span>
         <span  >${item.id} </span>
@@ -301,7 +305,8 @@ export const useDateValueTooltip = (
 }
 
 export const useLineAnimation = (
-  g: d3.Selection<SVGPathElement, unknown, null, undefined>
+  g: d3.Selection<SVGPathElement, unknown, HTMLElement, any>,
+  uniqueId: string
 ) => {
   const totalLength = g.node()?.getTotalLength
   if (totalLength) {

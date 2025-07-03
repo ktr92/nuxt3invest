@@ -1,11 +1,21 @@
 <template>
-  <div class="w-full">
-    <ChartCDataTimePrice :loadData="loadData" />
-    <ChartCDataTimeProfit :loadData="loadData" />
+  <div class="w-full" ref="chartcontainer">
+    <ClientOnly class="w-full">
+      <ChartCDataTimePrice :loadData="loadData" :width="width" />
+      <ChartCDataTimeProfit :loadData="loadData" :width="width" />
+    </ClientOnly>
   </div>
 </template>
 
 <script setup lang="ts">
+
+const chartcontainer = ref<HTMLDivElement | null>(null)
+
+  const width = computed(() =>
+    chartcontainer.value ? chartcontainer.value.clientWidth : 600
+  )
+
+
 // информация о портфеле грузится из БД
 const loadData: ILoadData[] = [
   {
@@ -52,7 +62,6 @@ const loadData: ILoadData[] = [
     share: 25,
   },
 ]
-
 
 /* 
 console.log("chartData :", chartData.value) */
