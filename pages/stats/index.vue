@@ -4,6 +4,13 @@
       <!--   <ChartCDataTimePrice :loadData="loadData" :width="width" />
       <ChartCDataTimeProfit :loadData="loadData" :width="width" /> -->
       <ChartCDataTimeValue
+        title="Стоимость портфеля"
+        :loadData="loadData"
+        :width="width"
+        :dataHandler="timeTotalHandler"
+        units="%"
+      />
+      <ChartCDataTimeValue
         title="Доходность"
         :loadData="loadData"
         :width="width"
@@ -22,6 +29,15 @@
 </template>
 
 <script setup lang="ts">
+import { groupBy, flatten, sumBy } from "lodash-es"
+type CandleField = "open" | "high" | "low" | "close"
+type CandleSubField = "units" | "nano"
+
+const getFirstDate = () =>
+  loadData
+    .map((item) => new Date(item.openDate))
+    .reduce((a, b) => (a < b ? a : b))
+
 const getTicker = (
   shares: APISharesResponse,
   instrumentId: Array<{ id: string }>,
@@ -36,7 +52,70 @@ const getOpenDate = (alltime: boolean, from: Date, ticker: string) =>
     ? from.toISOString()
     : loadData.filter((share: ILoadData) => share.ticker === ticker)[0].openDate
 
-const formatPrice = (price: any) => Number(`${price.units}.${price.nano}`).toFixed(2)
+const formatPrice = (price: any) => Number(`${price.units}.${price.nano}`)
+
+const timeTotalHandler = (
+  candles: ICandleData[],
+  from: Date,
+  shares: APISharesResponse,
+  instrumentId: Array<{ id: string }>,
+  alltime: boolean
+) => {
+  // Функция для суммирования массива значений { units, nano }
+  function sumNanoValues(values: { units: string; nano: number }[]) {
+    const total = values.reduce((acc, val) => {
+      const unitsNum = parseInt(val.units, 10)
+      const nanoNum = val.nano
+      return acc + unitsNum + nanoNum / 1_000_000_000
+    }, 0)
+
+    const unitsPart = Math.floor(total)
+    const nanoPart = Math.round((total - unitsPart) * 1_000_000_000)
+
+    return {
+      units: unitsPart.toString(),
+      nano: nanoPart,
+    }
+  }
+  // Предположим, у вас есть массив arrays
+  const combined = flatten(candles)
+
+  // Группируем по времени
+  const grouped = groupBy(combined, (item) => item.time)
+
+  const result = Object.keys(grouped).map((time) => {
+    const groupItems = grouped[time]
+
+    // Суммируем только свойство close
+    const closeSum = sumNanoValues(groupItems.map((item) => item.close))
+
+    return {
+      time,
+      close: closeSum,
+    }
+  })
+
+  console.log("result: ", result)
+
+  return candles.map((res: any, index: number) => {
+    const ticker = getTicker(shares, instrumentId, index)
+    const count = loadData.filter((item) => item.ticker === ticker)[0].count
+
+    let opendate = getOpenDate(alltime, from, ticker)
+
+    return {
+      dates: res.map((item: any) => {
+        const close = formatPrice(item.close)
+        return {
+          value: Number(close) * count,
+          date: item.time,
+        }
+      }),
+      id: "",
+      opendate,
+    }
+  })
+}
 
 const timePriceHander = (
   candles: any,
