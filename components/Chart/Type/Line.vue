@@ -44,6 +44,7 @@ const props = defineProps<{
   width: number
   height?: number
   uniqueId: string
+  units?: string
 }>()
 
 /* const chart = ref<SVGSVGElement | null>(null) */
@@ -75,15 +76,13 @@ const tooltip = reactive({
 const renderChart = () => {
   const localeRU = d3.timeFormatLocale(useChartLocale())
 
-  const width = computed(() =>
-    props.width ?   props.width : 600
-  )
+  const width = computed(() => (props.width ? props.width : 600))
 
   /*   const datevalue = props.data[0].dates
    */
   // проверяем входные данные для графика
   if (!props.data || !Array.isArray(props.data) || props.data.length === 0) {
-    d3.select('').selectAll("*").remove()
+    d3.select("").selectAll("*").remove()
     useHideTooltip(tooltip)
     return
   }
@@ -109,12 +108,10 @@ const renderChart = () => {
     .domain([minValue || 0, maxValue || 100])
     .range([height - 2 * margin, 0])
 
-const formatDate = useFormatLocale(localeRU)
+  const formatDate = useFormatLocale(localeRU)
 
-  const xAxis = d3
-    .axisBottom(x)
-    .tickFormat(formatDate)
-    
+  const xAxis = d3.axisBottom(x).tickFormat(formatDate)
+
   const yAxis = d3.axisLeft(y)
 
   // генератор линий на основе дат
@@ -133,9 +130,16 @@ const formatDate = useFormatLocale(localeRU)
     .append("g")
     .attr("transform", `translate(0, 0)`)
 
-
   /** рисование осей координат */
-  useChartLineAxis(svg, xAxis, yAxis, width.value, height, margin, props.uniqueId)
+  useChartLineAxis(
+    svg,
+    xAxis,
+    yAxis,
+    width.value,
+    height,
+    margin,
+    props.uniqueId
+  )
 
   /** рисование вертикальных линий  - показ при ховере */
   useVLine(
@@ -147,7 +151,9 @@ const formatDate = useFormatLocale(localeRU)
     height,
     margin,
     tooltip,
-    props.data, props.uniqueId
+    props.data,
+    props.uniqueId,
+    props.units
   )
 
   props.data.forEach((item, index) => {
@@ -163,7 +169,16 @@ const formatDate = useFormatLocale(localeRU)
       item.dates = datesFrom
     }
 
-    renderLine(item, svg, line, x, y, width.value, colorSet[index], props.uniqueId)
+    renderLine(
+      item,
+      svg,
+      line,
+      x,
+      y,
+      width.value,
+      colorSet[index],
+      props.uniqueId
+    )
   })
 }
 
@@ -204,7 +219,8 @@ const renderLine = (
     height,
     margin,
     tooltip,
-    color, props.uniqueId
+    color,
+    props.uniqueId
   )
 }
 

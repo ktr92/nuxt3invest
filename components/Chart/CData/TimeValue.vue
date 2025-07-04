@@ -7,7 +7,7 @@
     <ChartFilter @changePeriod="changePeriod" :firstDate="firstDate" />
     <div v-if="status === 'success'">
       <!--  <div v-if="chartData && chartData.length"> -->
-      <ChartTypeLine :data="candles" :uniqueId="uniqueId" :width="width" />
+      <ChartTypeLine :data="candles" :uniqueId="uniqueId" :width="width" :units="units" />
       <!-- </div> -->
     </div>
     <div v-else>
@@ -17,6 +17,10 @@
 </template>
 <script lang="ts" setup>
 const props = defineProps({
+  units: {
+    type: String,
+    default: ''
+  },
   dataHandler: {
     type: Function,
     default: (candles: any) => candles

@@ -18,7 +18,8 @@ export const useVLine = (
   margin: number,
   tooltip: Tooltip,
   data: LineData[],
-  uniqueId: string
+  uniqueId: string,
+  units?: string
 ): void => {
   svg
     .selectAll(".vline")
@@ -30,8 +31,8 @@ export const useVLine = (
     .attr("class", "vline")
     .attr("x", (d) => x(new Date(d.date)))
     .attr("y", 0)
-    .attr("width", width)
-    .attr("height", height)
+    .attr("width", 20)
+    .attr("height", height - margin * 2)
     /* .attr("x1", (d) => x(new Date(d.date)))
     .attr("y1", 0)
     .attr("x2", (d) => x(new Date(d.date)))
@@ -41,7 +42,7 @@ export const useVLine = (
     .attr("fill", "transparent")
     .attr("data-value", (d) => d.value)
     .attr("data-id", (d) => d.date + `-${uniqueId}`)
-    .attr("transform", `translate(${margin}, 0)`)
+    .attr("transform", `translate(${margin * 2}, ${margin})`)
     .attr("opacity", 0)
     .on("mouseover", function (e, d) {
       d3.select(this).attr("opacity", 1)
@@ -51,7 +52,7 @@ export const useVLine = (
       useShowTooltip(
         tooltip,
         `${d.date}-${uniqueId}`,
-        useDateValueTooltip(data, hoverdate, d.date, uniqueId),
+        useDateValueTooltip(data, hoverdate, d.date, uniqueId, units),
         [x(new Date(d.date)), y(d.value) + 10]
       )
       /*   useShowTooltip(
@@ -276,7 +277,8 @@ export const useDateValueTooltip = (
   data: LineData[],
   hoverdate: string,
   currentdate: string,
-  uniqueId: string
+  uniqueId: string,
+  units?: string
 ) => {
   let text = ""
 
@@ -290,7 +292,7 @@ export const useDateValueTooltip = (
         <span  >${item.id} </span>
         <span  class="${
           val >= 0 ? "text-green-300" : "text-red-300"
-        }">${numberFormat(val)}</span>
+        }">${numberFormat(val)}${units ? units : ''}</span>
         </div>`
     }
   })

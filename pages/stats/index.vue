@@ -8,18 +8,36 @@
         :loadData="loadData"
         :width="width"
         :dataHandler="timeprofitHandler"
+        units="%"
       />
       <ChartCDataTimeValue
         title="Стоимость позиции"
         :loadData="loadData"
         :width="width"
         :dataHandler="timePriceHander"
+        units=" ₽"
       />
     </ClientOnly>
   </div>
 </template>
 
 <script setup lang="ts">
+const getTicker = (
+  shares: APISharesResponse,
+  instrumentId: Array<{ id: string }>,
+  index: number
+) =>
+  shares.filter(
+    (share: APIShare[]) => share[0].figi === instrumentId[index].id
+  )[0][0].ticker
+
+const getOpenDate = (alltime: boolean, from: Date, ticker: string) =>
+  alltime
+    ? from.toISOString()
+    : loadData.filter((share: ILoadData) => share.ticker === ticker)[0].openDate
+
+const formatPrice = (price: any) => Number(`${price.units}.${price.nano}`).toFixed(2)
+
 const timePriceHander = (
   candles: any,
   from: Date,
@@ -28,23 +46,20 @@ const timePriceHander = (
   alltime: boolean
 ) => {
   return candles.map((res: any, index: number) => {
-    const ticker = shares.filter(
-      (share: APIShare[]) => share[0].figi === instrumentId[index].id
-    )[0][0].ticker
-
+    const ticker = getTicker(shares, instrumentId, index)
     const count = loadData.filter((item) => item.ticker === ticker)[0].count
+    let opendate = getOpenDate(alltime, from, ticker)
 
     return {
       dates: res.map((item: any) => {
-        const open = `${item.open.units}.${item.open.nano}`
-        const close = `${item.close.units}.${item.close.nano}`
-        const change = ((Number(close) - Number(open)) / Number(open)) * 100
+        const close = formatPrice(item.close)
         return {
           value: Number(close) * count,
           date: item.time,
         }
       }),
       id: ticker,
+      opendate,
     }
   })
 }
@@ -59,36 +74,27 @@ const timeprofitHandler = (
   // обработка каждого из рельзутатов promise.all
 
   return candles.map((res: any, index: number) => {
-    const ticker = shares.filter(
-      (share: APIShare[]) => share[0].figi === instrumentId[index].id
-    )[0][0].ticker
-
+    const ticker = getTicker(shares, instrumentId, index)
     // цена покупки
     let openprice = loadData.filter((item) => item.ticker === ticker)[0].price
-
     // дата покупки
-    let opendate = alltime
-      ? from.toISOString()
-      : loadData.filter((share: ILoadData) => share.ticker === ticker)[0]
-          .openDate
+    let opendate = getOpenDate(alltime, from, ticker)
 
     // для изменения периода менять отсчет
     if (new Date(opendate) < from) {
       const tmp: Date = new Date(from.setDate(from.getDate() - 1))
       opendate = tmp.toISOString()
-      openprice = Number(
-        `${candles[index][0].open.units}.${candles[0][0].open.nano}`
-      )
+      openprice = Number(formatPrice(candles[index][0].open))
     }
 
     return {
       id: ticker, // figi
       dates: res.map((item: any) => {
-        const close = `${item.close.units}.${item.close.nano}`
+        const close = formatPrice(item.close)
         const percent = ((Number(close) - openprice) / Number(openprice)) * 100
 
         return {
-          value: Number(percent.toFixed(2)),
+          value: Number(percent),
           date: item.time,
         }
       }),
