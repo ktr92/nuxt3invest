@@ -78,6 +78,7 @@ declare interface LineData {
   count?: number
   value?: number
   opendate?: string
+  openprice?: number
 }
 
 declare interface DatePrice {

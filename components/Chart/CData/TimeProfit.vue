@@ -6,8 +6,8 @@
 
     <ChartFilter @changePeriod="changePeriod" :firstDate="firstDate" />
     <div v-if="status === 'success'">
-     <!--  <div v-if="chartData && chartData.length"> -->
-        <ChartTypeLine :data="chartData" :uniqueId="uniqueId" :width="width"/>
+      <!--  <div v-if="chartData && chartData.length"> -->
+      <ChartTypeLine :data="candles" :uniqueId="uniqueId" :width="width" />
       <!-- </div> -->
     </div>
     <div v-else>
@@ -23,8 +23,8 @@ const props = defineProps({
   },
   width: {
     type: Number,
-    default: 600
-  }
+    default: 600,
+  },
 })
 const uniqueId = createUniqueId()
 
@@ -39,8 +39,6 @@ const instrumentId = ref<Array<{ id: string }>>([])
 
 // фильтрация
 const changePeriod = (paramFrom: Date, paramTo: Date) => {
-  console.log('timeprofit')
-
   from.value = paramFrom
   to.value = paramTo
 }
@@ -93,32 +91,40 @@ const { data: candles, status } = await useLazyAsyncData(
     transform: (candles) => {
       // обработка каждого из рельзутатов promise.all
       return candles.map((res: any, index: number) => {
+        const ticker = shares.value.filter(
+          (share: APIShare[]) => share[0].figi === instrumentId.value[index].id
+        )[0][0].ticker
+            const openprice = props.loadData.filter((item) => item.ticker === ticker)[0].price
+
         return {
           dates: res.map((item: any) => {
             const open = `${item.open.units}.${item.open.nano}`
             const close = `${item.close.units}.${item.close.nano}`
             const change = ((Number(close) - Number(open)) / Number(open)) * 100
+            const percent = ((Number(close) - openprice) / Number(openprice)) * 100
+
             return {
-              value: Number(change),
+              value: Number(percent.toFixed(2)),
               date: item.time,
             }
           }),
-          id: instrumentId.value[index].id,
+          opendate: alltime.value
+            ? from.value.toISOString()
+            : props.loadData.filter(
+                (share: ILoadData) => share.ticker === ticker
+              )[0].openDate,
+          id: ticker, // figi
+          openprice
         }
       })
     },
   }
 )
-/* console.log('candles :', candles.value)
- */ // на основе полученных свечек формируем данные для графика - нам нужны даты с ценой, идентификатор (тикер) и дата открытия позиции.
-const chartData = computed(() => {
+ // на основе полученных свечек формируем данные для графика - нам нужны даты с ценой, идентификатор (тикер) и дата открытия позиции.
+/* const chartData = computed(() => {
   return candles.value?.map((item: LineData, index: number) => {
-    const ticker = shares.value.filter(
-      (share: APIShare[]) => share[0].figi === item.id
-    )[0][0].ticker
-
     return {
-      dates: item.dates,
+      dates: item,
       id: ticker,
       opendate: alltime.value
         ? from.value.toISOString()
@@ -127,6 +133,6 @@ const chartData = computed(() => {
           )[0].openDate,
     }
   })
-})
+}) */
 </script>
 <style lang="scss" scoped></style>

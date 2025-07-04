@@ -31,14 +31,14 @@ export const useVLine = (
     .attr("x", (d) => x(new Date(d.date)))
     .attr("y", 0)
     .attr("width", width)
-    .attr("height", height - 2 * margin)
+    .attr("height", height)
     /* .attr("x1", (d) => x(new Date(d.date)))
     .attr("y1", 0)
     .attr("x2", (d) => x(new Date(d.date)))
     .attr("y2", height - 2 * margin) */
     /*  .attr("stroke", "#eee")
     .attr("stroke-width", Math.ceil(width / DateValues.length)) */
-    .attr("fill", "#fff")
+    .attr("fill", "transparent")
     .attr("data-value", (d) => d.value)
     .attr("data-id", (d) => d.date + `-${uniqueId}`)
     .attr("transform", `translate(${margin}, 0)`)
