@@ -1,7 +1,7 @@
 <template>
   <div class="w-full my-8">
     <h2 class="font-medium text-lg text-gray-600">
-      Цена акций в портфеле с момента покупки
+      {{ title }}
     </h2>
 
     <ChartFilter @changePeriod="changePeriod" :firstDate="firstDate" />
@@ -17,6 +17,14 @@
 </template>
 <script lang="ts" setup>
 const props = defineProps({
+  dataHandler: {
+    type: Function,
+    default: (candles: any) => candles
+  },
+  title: {
+    type: String,
+    required: false
+  },
   loadData: {
     type: Array<ILoadData>,
     required: true,
@@ -89,48 +97,7 @@ const { data: candles, status } = await useLazyAsyncData(
   {
     watch: [from],
     transform: (candles) => {
-      // обработка каждого из рельзутатов promise.all
-      return candles.map((res: any, index: number) => {
-        const ticker = shares.value.filter(
-          (share: APIShare[]) => share[0].figi === instrumentId.value[index].id
-        )[0][0].ticker
-
-        // цена покупки
-        let openprice = props.loadData.filter(
-          (item) => item.ticker === ticker
-        )[0].price
-
-        // дата покупки
-        let opendate = alltime.value
-          ? from.value.toISOString()
-          : props.loadData.filter(
-              (share: ILoadData) => share.ticker === ticker
-            )[0].openDate
-      
-        // для изменения периода менять отсчет
-        if (new Date(opendate) < from.value) {
-          const tmp: Date  = new Date(from.value.setDate(from.value.getDate() - 1))
-          opendate = tmp.toISOString()
-          openprice = Number(`${candles[index][0].open.units}.${candles[0][0].open.nano}`)
-        }
-
-
-        return {
-          id: ticker, // figi
-          dates: res.map((item: any) => {
-            const close = `${item.close.units}.${item.close.nano}`
-            const percent =
-              ((Number(close) - openprice) / Number(openprice)) * 100
-
-            return {
-              value: Number(percent.toFixed(2)),
-              date: item.time,
-            }
-          }),
-          opendate,
-          openprice,
-        }
-      })
+      return props.dataHandler(candles, from.value, shares.value, instrumentId.value, alltime.value)
     },
   }
 )

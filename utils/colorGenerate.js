@@ -16,7 +16,6 @@ export default function generateColors(count) {
     "hsla(203, 95%,  77%,1)",
     "hsla(241, 95%,  77%,1)",
     "hsla(96, 95%,  77%,1)",
-    "hsla(253, 95%,  77%,1)",
     "hsla(171, 95%,  77%,1)",
     "hsla(68, 95%,  77%,1)",
     "hsla(178, 95%,  77%,1)",

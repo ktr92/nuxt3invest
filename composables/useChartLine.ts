@@ -290,7 +290,7 @@ export const useDateValueTooltip = (
         <span  >${item.id} </span>
         <span  class="${
           val >= 0 ? "text-green-300" : "text-red-300"
-        }">${val}</span>
+        }">${numberFormat(val)}</span>
         </div>`
     }
   })
