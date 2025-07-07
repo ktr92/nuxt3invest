@@ -42,7 +42,7 @@ export const useVLine = (
     .attr("fill", "transparent")
     .attr("data-value", (d) => d.value)
     .attr("data-id", (d) => d.date + `-${uniqueId}`)
-    .attr("transform", `translate(${margin * 2}, ${margin})`)
+    .attr("transform", `translate(${margin}, ${margin})`)
     .attr("opacity", 0)
     .on("mouseover", function (e, d) {
       d3.select(this).attr("opacity", 1)
