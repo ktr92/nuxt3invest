@@ -29,9 +29,8 @@
 </template>
 
 <script setup lang="ts">
-import { groupBy, flatten, sumBy } from "lodash-es"
-type CandleField = "open" | "high" | "low" | "close"
-type CandleSubField = "units" | "nano"
+import { groupBy, flatten } from "lodash-es"
+
 
 const getFirstDate = () =>
   loadData
@@ -61,17 +60,49 @@ const timeTotalHandler = (
   instrumentId: Array<{ id: string }>,
   alltime: boolean
 ) => {
-  /*   const dvTotal = [...candles[0]] */
-
-  console.log(candles)
-  return candles.map((res: ICandleData[], index: number) => {
+  const dvTotal = candles.map((res: ICandleData[], index: number) => {
     const ticker = getTicker(shares, instrumentId, index)
     const count = loadData.filter((item) => item.ticker === ticker)[0].count
+    let opendate = new Date(getOpenDate(alltime, from, ticker))
 
-    let opendate = getOpenDate(alltime, from, ticker)
+    // стоимость каждой позиции
+    const totalEach = res.map((item: ICandleData) => {
+        const itemdate = new Date(item.time) 
+        const close = opendate <= itemdate ? formatPrice(item.close) * count : 0
+        return {
+          value: Number(close),
+          date: item.time
+        }
+      })
+    
+    return totalEach
 
-    return {
-      dates: res.map((item: ICandleData) => {
+    
+  })
+ console.log(dvTotal)
+  // все массивы складываем в один общий и группируем по датам
+  const grouped = groupBy(flatten(dvTotal), 'date')
+
+  // массив для суммы позиций по датам
+  const totalArray = []
+  for (const [key, value] of Object.entries(grouped)) {
+    const initialValue = 0;
+
+    totalArray.push({
+      date: key,
+      value: value.reduce((acc, val) => val.value + acc, initialValue)
+    })
+  }
+
+ 
+
+  return [{
+    dates: totalArray,
+    id: 'сумма'
+  }]
+   
+ /*  return {
+      dates: grouped.keys().map((item: ICandleData) => {
         const close = formatPrice(item.close) * count
         return {
           value: Number(close),
@@ -80,8 +111,7 @@ const timeTotalHandler = (
       }),
       id: "",
       opendate,
-    }
-  })
+    } */
 }
 
 const timePriceHander = (
@@ -192,7 +222,7 @@ const loadData: ILoadData[] = [
     isin: "RU0009029540",
     name: "Сбербанк",
     count: 300,
-    price: 120,
+    price: 240,
     newprice: 567,
     pricechange: 22,
     total: 500,

@@ -31,7 +31,7 @@ export const useVLine = (
     .attr("class", "vline")
     .attr("x", (d) => x(new Date(d.date)))
     .attr("y", 0)
-    .attr("width", 20)
+    .attr("width", width)
     .attr("height", height - margin * 2)
     /* .attr("x1", (d) => x(new Date(d.date)))
     .attr("y1", 0)
