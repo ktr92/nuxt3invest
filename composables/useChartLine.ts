@@ -2,11 +2,13 @@ import * as d3 from "d3"
 /**
  * Функция рисует вертикальные линии для значений X
  * useСhartLine_hline(svg, props.data, y, width, margin);
- * @param svg - "холст"
- * @param DateValues - данные
+ * @param svg - "холст" из шаблона
+ * @param DateValues - данные на основе которых строится график {date, value}[]
  * @param y - функция масштабирования по оси Y
  * @param width - ширина холста
  * @param margin - отступы холста
+ * @param tooltip - подсказка при наведении
+ * @param data: 
  */
 export const useVLine = (
   svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>,

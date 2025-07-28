@@ -61,7 +61,7 @@ const firstDate = computed(() =>
     .reduce((a, b) => (a < b ? a : b))
 )
 
-// находим информацию по нашим акциям. Для дальнейшей реботы нужнен идентификатор FIGI который кроме как через api нигде не найти.
+// находим информацию по нашим акциям. Для дальнейшей работы нужнен идентификатор FIGI который кроме как через api нигде не найти.
 const { data: shares } = await useAsyncData(`instruments-${uniqueId}`, () => {
   return Promise.all([
     ...props.loadData.map((item: ILoadData) => {

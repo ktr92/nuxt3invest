@@ -147,11 +147,13 @@ declare interface ILoadData {
     share: number;
 }
 
+declare interface IPrice {
+  units: string;
+  nano: number;
+}
+
 declare interface ICandleData {
-  open: {
-    units: string;
-    nano: number;
-  };
+  open: IPrice;
   high: {
     units: string;
     nano: number;

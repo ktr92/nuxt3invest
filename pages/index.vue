@@ -1,110 +1,115 @@
 <template>
-  <div class="w-full">
-    <TableMain :tableheader="tableHeader" :tabledata="tableData" />
-    <div v-if="chartData && chartData.length">
-    <ChartLine :data="chartData" />
-    </div>
+  <div class="w-full" ref="chartcontainer">
+    <ClientOnly class="w-full">
+      <!--   <ChartCDataTimePrice :loadData="loadData" :width="width" />
+      <ChartCDataTimeProfit :loadData="loadData" :width="width" /> -->
+      <ChartCDataTimeValue
+        title="Стоимость портфеля"
+        :loadData="loadData"
+        :width="width"
+        :dataHandler="serviceChart.timeTotalHandler"
+        units=" ₽"
+      />
+      <ChartCDataTimeValue
+        title="Доходность"
+        :loadData="loadData"
+        :width="width"
+        :dataHandler="timeprofitHandler"
+        units="%"
+      />
+      <ChartCDataTimeValue
+        title="Стоимость позиции"
+        :loadData="loadData"
+        :width="width"
+        :dataHandler="timePriceHander"
+        units=" ₽"
+      />
+    </ClientOnly>
   </div>
 </template>
 
 <script setup lang="ts">
+import serviceChart from "~/services/chart"
+import loadData from '~/services/chart/mock'
+
+const chartcontainer = ref<HTMLDivElement | null>(null)
+const width = computed(() =>
+  chartcontainer.value ? chartcontainer.value.clientWidth : 600
+)
 
 
-const { data: candles } = useNuxtData('candles')
-const { data: instruments } = useNuxtData('instruments')
+// const getFirstDate = serviceChart.getFirstDate(loadData)
 
+ 
 
-const chartData = computed(() => {
-  return candles.value?.map((item: LineData) => {
-    const ticker = instruments.value.filter((share: any) => share[0].figi === item.id)[0][0].ticker
-    return {   
-      dates: item.dates,
+const timePriceHander = (
+  candles: any,
+  from: Date,
+  shares: APISharesResponse,
+  instrumentId: Array<{ id: string }>,
+  alltime: boolean
+) => {
+  return candles.map((res: any, index: number) => {
+    const ticker = serviceChart.getTicker(shares, instrumentId, index)
+    const count = loadData.filter((item) => item.ticker === ticker)[0].count
+    let opendate = new Date(serviceChart.getOpenDate(alltime, from, ticker, loadData))
+
+    return {
+      dates: res.map((item: any) => {
+        const close = serviceChart.formatPrice(item.close)
+        return {
+          value: Number(close) * count,
+          date: item.time,
+        }
+      }),
       id: ticker,
+      opendate,
     }
   })
-})
+}
+
+const timeprofitHandler = (
+  candles: any,
+  from: Date,
+  shares: APISharesResponse,
+  instrumentId: Array<{ id: string }>,
+  alltime: boolean
+) => {
+  // обработка каждого из рельзутатов promise.all
+
+  return candles.map((res: any, index: number) => {
+    const ticker = serviceChart.getTicker(shares, instrumentId, index)
+    // цена покупки
+    let openprice = loadData.filter((item) => item.ticker === ticker)[0].price
+    // дата покупки
+    let opendate = serviceChart.getOpenDate(alltime, from, ticker, loadData)
+
+    // для изменения периода менять отсчет
+    if (new Date(opendate) < from) {
+      const tmp: Date = new Date(from.setDate(from.getDate() - 1))
+      opendate = tmp.toISOString()
+      openprice = Number(serviceChart.formatPrice(candles[index][0].open))
+    }
+
+    return {
+      id: ticker, // figi
+      dates: res.map((item: any) => {
+        const close = serviceChart.formatPrice(item.close)
+        const percent = ((Number(close) - openprice) / Number(openprice)) * 100
+
+        return {
+          value: Number(percent),
+          date: item.time,
+        }
+      }),
+      opendate,
+      openprice,
+    }
+  })
+}
 
 
-const tableHeader = [
-  "Актив",
-  "Количество",
-  "Средняя цена",
-  "Вложено",
-  "Стоимость",
-  "Прибыль",
-  "Доходность",
-]
 
-const tableData = [
-  {
-    ticker: "HYDR",
-    name: "Русгидро",
-    count: 1000,
-    price: 0.5,
-    newprice: 0.6,
-    pricechange: 0.1,
-    total: 500,
-    change: 11,
-    yearchange: 12,
-    openDate: "02.01.2024",
-  },
-  {
-    ticker: "ROSN",
-    name: "Роснефть",
-    count: 12323,
-    price: 420,
-    newprice: 320,
-    pricechange: -100,
-    total: 500,
-    change: 13,
-    yearchange: 11,
-    openDate: "02.03.2024",
-  },
-  {
-    ticker: "LKOH",
-    name: "Лукойл",
-    count: 444,
-    price: 6500,
-    newprice: 6700,
-    pricechange: 200,
-    total: 500,
-    change: 22,
-    yearchange: 32,
-    openDate: "22.11.2024",
-  },
-  {
-    ticker: "ASTR",
-    name: "Астра",
-    count: 33213,
-    price: 545,
-    newprice: 567,
-    pricechange: 22,
-    total: 500,
-    change: -10,
-    yearchange: -20,
-    openDate: "23.01.2025",
-  },
-]
+/* 
+console.log("chartData :", chartData.value) */
 </script>
-
-<style scoped>
-.slide-enter-active,
-.slide-leave-active {
-  transition: all 0.3s ease-out;
-  z-index: -999;
-}
-
-/* неактивное состояние */
-.slide-enter-from,
-.slide-leave-to {
-  transform: translateX(-100%);
-  opacity: 0;
-}
-
-/* активное состояние */
-.slide-enter-to,
-.slide-leave-from {
-  left: 0;
-  opacity: 1;
-}
-</style>
