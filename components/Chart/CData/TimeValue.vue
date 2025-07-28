@@ -101,7 +101,7 @@ const { data: candles, status } = await useLazyAsyncData(
   {
     watch: [from],
     transform: (candles) => {
-      return props.dataHandler(candles, from.value, shares.value, instrumentId.value, alltime.value)
+      return props.dataHandler(props.loadData, candles, from.value, shares.value, instrumentId.value, alltime.value)
     },
   }
 )
