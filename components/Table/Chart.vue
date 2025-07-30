@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 /**
- * Компонент для вывода таблицы к диаграмме {@see components.Chart.Pie}
+ * Компонент для вывода таблицы-легенды к диаграмме {@see components.Chart.Pie}
  */
 const emit = defineEmits<{
   hoverD3: [category: string, prevColor: string, value: number]

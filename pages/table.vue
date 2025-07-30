@@ -6,7 +6,7 @@
         title="Стоимость портфеля"
         :loadData="loadData"
         :width="width" 
-        :dataHandler="serviceChart.timeTotalHandler"
+        :dataHandler="serviceApiData.timeTotalHandler"
         units=" ₽"
       />
     </div>
@@ -15,8 +15,8 @@
 
 <script setup lang="ts">
 
-import serviceChart  from '~/services/chart/serviceChart'
-import loadData from '~/services/chart/mock'
+import serviceApiData  from '~/services/apidata/serviceApiData'
+import loadData from '~/services/apidata/mock'
 const chartcontainer = ref<HTMLElement | null>(null)
 const { width } = useChartWidth(chartcontainer)
 

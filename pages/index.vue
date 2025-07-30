@@ -7,21 +7,21 @@
         title="Стоимость портфеля"
         :loadData="loadData"
         :width="width"
-        :dataHandler="serviceChart.timeTotalHandler"
+        :dataHandler="serviceApiData.timeTotalHandler"
         units=" ₽"
       />
       <LazyChartCDataTimeValue
         title="Доходность открытых позиций"
         :loadData="loadData"
         :width="width"
-        :dataHandler="serviceChart.timeprofitHandler"
+        :dataHandler="serviceApiData.timeprofitHandler"
         units="%"
       />
       <LazyChartCDataTimeValue
         title="Стоимость открытых позиций"
         :loadData="loadData"
         :width="width"
-        :dataHandler="serviceChart.timePriceHander"
+        :dataHandler="serviceApiData.timePriceHander"
         units=" ₽"
       />
     </ClientOnly>
@@ -32,8 +32,8 @@
 /**
  * Страница с графиками
  */
-import serviceChart from "~/services/chart/serviceChart"
-import loadData from '~/services/chart/mock'
+import serviceApiData from "~/services/apidata/serviceApiData"
+import loadData from '~/services/apidata/mock'
 
 const chartcontainer = ref<HTMLDivElement | null>(null)
 const { width } = useChartWidth(chartcontainer)

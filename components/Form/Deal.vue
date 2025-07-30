@@ -109,7 +109,6 @@ const onSubmit = handleSubmit(async () => {
       count: count.value,
       comment: comment.value,
     }
-    console.log(formData)
     const { data, error } = await useFetch("/api/auth/deal", {
       method: "POST",
       body: {

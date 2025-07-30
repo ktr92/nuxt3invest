@@ -184,3 +184,29 @@ declare interface ICandlesToLine {
 }
 
 declare type FTDataToChart = (api: ICandlesToLine) => LineData[]
+
+
+
+declare interface LineChartApi {
+  linedata: LineData[]
+  tooltip: Tooltip
+  uniqueId: string
+  width: number
+  margin: number
+  height: number
+  units?: string
+}
+
+declare interface SingleLineApi {
+  position: LineData
+  svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>
+  line: d3.Line<DatePrice>
+  x: d3.ScaleTime<number, number, never>
+  y: d3.ScaleLinear<number, number, never>
+  width: number
+  color: string
+  uniqueId: string
+  height: number
+  margin: number
+  tooltip: Tooltip
+}

@@ -1,6 +1,6 @@
 import { groupBy, flatten } from "lodash-es"
 
-const serviceChart = {
+const serviceApiData = {
   /**
    * Получить самую раннюю дату сделки из всего портфеля,
    * которая нужна для левой границы отрисовки графика типа "за все время"
@@ -141,11 +141,11 @@ const serviceChart = {
       const itemdate = new Date(item.date)
 
       // Разница текущей даты и предыдущей, в днях
-      let datediff = serviceChart.getDateDiff(itemdate, prevdate)
+      let datediff = serviceApiData.getDateDiff(itemdate, prevdate)
       // если пропущен день, то добавляем предыдущий вчерашний день в массив до тех пор пока разницы в днях от текущей даты то предыдущей не станет 1. Разница в днях может быть только 1, но от сервера будут пропущены выходные и праздничные дни когда нет торгов.
       if (datediff > 1) {
         while (datediff > 1) {
-          const newdate = serviceChart.getYesterday(itemdate);
+          const newdate = serviceApiData.getYesterday(itemdate);
           resultEach.push({
             value: prevValue,
             date: newdate,
@@ -172,15 +172,15 @@ const serviceChart = {
   timeTotalHandler(candlesAPI: ICandlesToLine): LineData[] {
     const dvTotal = candlesAPI.candles.map(
       (res: ICandleData[], index: number) => {
-        const ticker = serviceChart.getTicker(
+        const ticker = serviceApiData.getTicker(
           candlesAPI.shares,
           candlesAPI.instrumentId,
           index
         )
-        const count = serviceChart.getTickerCount(candlesAPI.loadData, ticker)
+        const count = serviceApiData.getTickerCount(candlesAPI.loadData, ticker)
 
         let opendate = new Date(
-          serviceChart.getOpenDate(
+          serviceApiData.getOpenDate(
             candlesAPI.alltime,
             candlesAPI.from,
             ticker,
@@ -194,7 +194,7 @@ const serviceChart = {
 
           const close =
             opendate <= itemdate
-              ? serviceChart.formatPrice(item.close) * count
+              ? serviceApiData.formatPrice(item.close) * count
               : 0
 
           return {
@@ -203,7 +203,7 @@ const serviceChart = {
           }
         })
 
-        const resultEach = serviceChart.addMissingDates(totalEach)
+        const resultEach = serviceApiData.addMissingDates(totalEach)
 
         return resultEach
       }
@@ -237,15 +237,15 @@ const serviceChart = {
     // обработка каждого из рельзутатов promise.all
 
     return candlesAPI.candles.map((res: any, index: number) => {
-      const ticker = serviceChart.getTicker(
+      const ticker = serviceApiData.getTicker(
         candlesAPI.shares,
         candlesAPI.instrumentId,
         index
       )
       // цена покупки
-      let openprice = serviceChart.getOpenPrice(candlesAPI.loadData, ticker)
+      let openprice = serviceApiData.getOpenPrice(candlesAPI.loadData, ticker)
       // дата покупки
-      let opendate = serviceChart.getOpenDate(
+      let opendate = serviceApiData.getOpenDate(
         candlesAPI.alltime,
         candlesAPI.from,
         ticker,
@@ -259,14 +259,14 @@ const serviceChart = {
         )
         opendate = tmp.toISOString()
         openprice = Number(
-          serviceChart.formatPrice(candlesAPI.candles[index][0].open)
+          serviceApiData.formatPrice(candlesAPI.candles[index][0].open)
         )
       }
 
       return {
         id: ticker, // figi
         dates: res.map((item: any) => {
-          const close = serviceChart.formatPrice(item.close)
+          const close = serviceApiData.formatPrice(item.close)
           const percent =
             ((Number(close) - openprice) / Number(openprice)) * 100
 
@@ -288,15 +288,15 @@ const serviceChart = {
    */
   timePriceHander(candlesAPI: ICandlesToLine): LineData[] {
     return candlesAPI.candles.map((res: ICandleData[], index: number) => {
-      const ticker = serviceChart.getTicker(
+      const ticker = serviceApiData.getTicker(
         candlesAPI.shares,
         candlesAPI.instrumentId,
         index
       )
 
-      const count = serviceChart.getTickerCount(candlesAPI.loadData, ticker)
+      const count = serviceApiData.getTickerCount(candlesAPI.loadData, ticker)
 
-      let opendate = serviceChart.getOpenDate(
+      let opendate = serviceApiData.getOpenDate(
         candlesAPI.alltime,
         candlesAPI.from,
         ticker,
@@ -305,7 +305,7 @@ const serviceChart = {
 
       return {
         dates: res.map((item: ICandleData) => {
-          const close = serviceChart.formatPrice(item.close)
+          const close = serviceApiData.formatPrice(item.close)
           return {
             value: Number(close) * count,
             date: item.time,
@@ -322,4 +322,4 @@ const serviceChart = {
   } */
 }
 
-export default serviceChart
+export default serviceApiData
