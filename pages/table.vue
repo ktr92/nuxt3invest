@@ -1,29 +1,24 @@
 <template>
   <div class="w-full">
-    <TableMain :tableheader="tableHeader" :tabledata="tableData" />
-    <div v-if="chartData && chartData.length">
-    <ChartLine :data="chartData" />
+    <TableMain :tableheader="tableHeader" :tabledata="loadData" />
+    <div v-if="loadData && loadData.length" class="w-full" ref="chartcontainer">
+    <ChartCDataTimeValue
+        title="Стоимость портфеля"
+        :loadData="loadData"
+        :width="width" 
+        :dataHandler="serviceChart.timeTotalHandler"
+        units=" ₽"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 
-
-const { data: candles } = useNuxtData('candles')
-const { data: instruments } = useNuxtData('instruments')
-
-
-const chartData = computed(() => {
-  return candles.value?.map((item: LineData) => {
-    const ticker = instruments.value.filter((share: any) => share[0].figi === item.id)[0][0].ticker
-    return {   
-      dates: item.dates,
-      id: ticker,
-    }
-  })
-})
-
+import serviceChart  from '~/services/chart/serviceChart'
+import loadData from '~/services/chart/mock'
+const chartcontainer = ref<HTMLElement | null>(null)
+const { width } = useChartWidth(chartcontainer)
 
 const tableHeader = [
   "Актив",
@@ -35,56 +30,6 @@ const tableHeader = [
   "Доходность",
 ]
 
-const tableData = [
-  {
-    ticker: "HYDR",
-    name: "Русгидро",
-    count: 1000,
-    price: 0.5,
-    newprice: 0.6,
-    pricechange: 0.1,
-    total: 500,
-    change: 11,
-    yearchange: 12,
-    openDate: "02.01.2024",
-  },
-  {
-    ticker: "ROSN",
-    name: "Роснефть",
-    count: 12323,
-    price: 420,
-    newprice: 320,
-    pricechange: -100,
-    total: 500,
-    change: 13,
-    yearchange: 11,
-    openDate: "02.03.2024",
-  },
-  {
-    ticker: "LKOH",
-    name: "Лукойл",
-    count: 444,
-    price: 6500,
-    newprice: 6700,
-    pricechange: 200,
-    total: 500,
-    change: 22,
-    yearchange: 32,
-    openDate: "22.11.2024",
-  },
-  {
-    ticker: "ASTR",
-    name: "Астра",
-    count: 33213,
-    price: 545,
-    newprice: 567,
-    pricechange: 22,
-    total: 500,
-    change: -10,
-    yearchange: -20,
-    openDate: "23.01.2025",
-  },
-]
 </script>
 
 <style scoped>

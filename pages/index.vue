@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full" ref="chartcontainer">
+  <div class="w-full" ref="chartcontainer" id="chartcontainer">
     <ClientOnly class="w-full">
       <!--   <ChartCDataTimePrice :loadData="loadData" :width="width" />
       <ChartCDataTimeProfit :loadData="loadData" :width="width" /> -->
@@ -36,8 +36,7 @@ import serviceChart from "~/services/chart/serviceChart"
 import loadData from '~/services/chart/mock'
 
 const chartcontainer = ref<HTMLDivElement | null>(null)
-const width = computed(() =>
-  chartcontainer.value ? chartcontainer.value.clientWidth : 600
-)
+const { width } = useChartWidth(chartcontainer)
+
 
 </script>

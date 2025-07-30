@@ -103,6 +103,69 @@ const serviceChart = {
   },
 
   /**
+   * получить разницу в днях между двумя датами
+   * @param itemdate - проверяемая дата из набора дат
+   * @param prevdate - прошлая дата из набора дат
+   * @returns {number} - разницы между входными датами в днях
+   */
+  getDateDiff(itemdate: Date, prevdate: Date): number {
+    return Math.ceil(
+      Math.abs(itemdate.getTime() - prevdate.getTime()) / (1000 * 3600 * 24)
+    )
+  },
+
+  /**
+   * получить вчерашний день
+   * @param itemdate - текущий день
+   * @returns {string} -  вчерашний день в виде строки
+   */
+  getYesterday(itemdate: Date): string {
+    return new Date(itemdate.setDate(itemdate.getDate() - 1)).toISOString()
+  },
+  /**
+   * в ответе сервера по активам может не быть дней, когда актив не торгуется(выходные). При этом другие активы могут торговаться в эти дни. Поэтому надо заполнить недостающие даты и сохранить значение цены до выходного дня.
+   * @param from - исходный
+   * @param totalEach - исходный массив
+   * @returns {Array<DatePrice>} - заполненный массив
+   */
+  addMissingDates(totalEach: Array<DatePrice>): Array<DatePrice> {
+    // заполняем пустые даты
+    let prevdate = new Date(totalEach[0].date)
+    let prevValue = totalEach[0].value
+    const resultEach: DatePrice[] = []
+
+    let i = 0
+    while (i < totalEach.length) {
+      // Текущая дата
+      const item = totalEach[i]
+      const itemdate = new Date(item.date)
+
+      // Разница текущей даты и предыдущей, в днях
+      let datediff = serviceChart.getDateDiff(itemdate, prevdate)
+      // если пропущен день, то добавляем предыдущий вчерашний день в массив до тех пор пока разницы в днях от текущей даты то предыдущей не станет 1. Разница в днях может быть только 1, но от сервера будут пропущены выходные и праздничные дни когда нет торгов.
+      if (datediff > 1) {
+        while (datediff > 1) {
+          const newdate = serviceChart.getYesterday(itemdate);
+          resultEach.push({
+            value: prevValue,
+            date: newdate,
+          })
+          // после добавления элемента, уменьшаем разницу
+          datediff--
+        }
+      }
+
+      // текущая дата и цена станет предыдущей для следующего элемента.
+      prevdate = new Date(item.date)
+      prevValue = item.value
+      resultEach.push(item)
+      i++
+    }
+
+    return resultEach
+  },
+
+  /**
    * Обработчик данных для графика суммарной стоимости всех позиций в портфеле. На основе ответа с информацией об исторических данных инструмента составляет данные для вывода на графике в формате "дата-значение"
    @param candlesAPI - интерфейс для преборазования набора данных по ценам из api в массив пар дата-значения для постоения графика
    */
@@ -140,56 +203,7 @@ const serviceChart = {
           }
         })
 
-        // заполняем пустые даты
-        let prevdate = candlesAPI.from
-        let prevValue = totalEach[0].value
-        const resultEach: DatePrice[] = []
-
-        let i = 0
-        while (i < totalEach.length) {
-          // Текущая дата
-          const item = totalEach[i]
-          const itemdate = new Date(item.date)
-
-          if (itemdate > candlesAPI.from) {
-            // Разница текущей даты и предыдущей, в днях
-            let datediff = Math.ceil(
-              Math.abs(itemdate.getTime() - prevdate.getTime()) /
-                (1000 * 3600 * 24)
-            )
-            // если пропущен день, то добавляем предыдущий вчерашний день в массив
-            if (datediff > 1) {
-              
-              while (datediff > 1) {              
-                const newdate = new Date(
-                  itemdate.setDate(itemdate.getDate() - 1)
-                ).toISOString()
-               
-                resultEach.push({
-                  value: prevValue,
-                  date: newdate,
-                })
-
-                datediff--
-              }
-
-              /*  const newdate = new Date(
-                itemdate.setDate(itemdate.getDate() - 1)
-              ).toISOString()
-              // значение для добввляемого дня должно оставаться на уровне предыдущего дня
-              resultEach.push({
-                value: prevValue,
-                date: newdate,
-              }) */
-            }
-          }
-          // текущая дата станет предыдущей датой для следующего элемента.
-          prevdate = new Date(item.date)
-          prevValue = item.value
-          resultEach.push(item)
-
-          i++
-        }
+        const resultEach = serviceChart.addMissingDates(totalEach)
 
         return resultEach
       }
@@ -197,8 +211,6 @@ const serviceChart = {
     // все массивы складываем в один общий и группируем по датам
     const grouped = groupBy(flatten(dvTotal), "date")
     // массив для суммы позиций по датам
-
-    console.log(grouped)
     const totalArray = []
     for (const [key, value] of Object.entries(grouped)) {
       const initialValue = 0

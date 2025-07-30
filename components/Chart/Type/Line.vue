@@ -69,6 +69,7 @@ const tooltip = reactive({
   y: 0,
   text: "",
 })
+  const width = computed(() => (props.width ? props.width : 600))
 
 /**
  * Функция для рисования графика
@@ -76,8 +77,7 @@ const tooltip = reactive({
 const renderChart = () => {
   const localeRU = d3.timeFormatLocale(useChartLocale())
 
-  const width = computed(() => (props.width ? props.width : 600))
-
+ 
   /*   const datevalue = props.data[0].dates
    */
   // проверяем входные данные для графика
@@ -232,13 +232,17 @@ const debouncedRender = debounce(renderChart, 300)
 /**
  * рисуем диаграмму и добавляем перерисовку при ресайзе окна
  */
+
+ watch(width, () => {
+  debouncedRender()
+ })
 onMounted(() => {
   renderChart()
-  window.addEventListener("resize", debouncedRender)
+ // window.addEventListener("resize", debouncedRender)
 })
 
 onUnmounted(() => {
-  window.removeEventListener("resize", debouncedRender)
+//  window.removeEventListener("resize", debouncedRender)
 })
 </script>
 
