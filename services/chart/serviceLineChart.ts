@@ -1,14 +1,22 @@
 import * as d3 from "d3"
 import generateColors from "~/utils/colorGenerate"
-
- 
+import { makeFormatLocale, makeChartLocale } from "./line/chartlocale"
+import { makeChartLineAxis } from "./line/axis"
+import { makeLineAnimation } from "./line/animation"
+import { makeChartDot } from "./line/dot"
+import { makeVLine } from "./line/grid"
+import { hideTooltip } from "./line/tooltip"
 
 /** массив цветов для линий */
 const colorSet = generateColors(100)
 
-const serviceApiData = {
-  renderLineChart(params: LineChartApi) {
-    const localeRU = d3.timeFormatLocale(useChartLocale())
+const serviceLineChart = {
+  /**
+   * функция для рисования линейного графика
+   * @param {LineChartApi} params - данные для графика
+   */
+  renderLineChart(params: LineChartApi): void {
+    const localeRU = d3.timeFormatLocale(makeChartLocale())
 
     // проверяем входные данные для графика
     if (
@@ -17,7 +25,7 @@ const serviceApiData = {
       params.linedata.length === 0
     ) {
       d3.select("").selectAll("*").remove()
-      useHideTooltip(params.tooltip)
+      hideTooltip(params.tooltip)
       return
     }
 
@@ -42,7 +50,7 @@ const serviceApiData = {
       .domain([minValue || 0, maxValue || 100])
       .range([params.height - 2 * params.margin, 0])
 
-    const formatDate = useFormatLocale(localeRU)
+    const formatDate = makeFormatLocale(localeRU)
 
     const xAxis = d3.axisBottom(x).tickFormat(formatDate)
 
@@ -65,7 +73,7 @@ const serviceApiData = {
       .attr("transform", `translate(0, 0)`)
 
     /** рисование осей координат */
-    useChartLineAxis(
+    makeChartLineAxis(
       svg,
       xAxis,
       yAxis,
@@ -76,7 +84,7 @@ const serviceApiData = {
     )
 
     /** рисование вертикальных линий  - показ при ховере */
-    useVLine(
+    makeVLine(
       svg,
       flatData,
       x,
@@ -116,13 +124,14 @@ const serviceApiData = {
         tooltip: params.tooltip,
       }
 
-      serviceApiData.renderLine(linedata)
+      serviceLineChart.renderLine(linedata)
     })
   },
 
   /**
    *
    * Функция для рисования каждой линии из входного массива
+   * @param {SingleLineApi} params - данные для линии графика
    */
   renderLine(params: SingleLineApi) {
     const datevalue = params.position.dates
@@ -136,10 +145,10 @@ const serviceApiData = {
       .attr("stroke", params.color)
       .attr("stroke-width", 2)
 
-    useLineAnimation(g, params.uniqueId)
+    makeLineAnimation(g, params.uniqueId)
 
     /** рисование точек для значений на линии графика - при ховере */
-    useChartDot(
+    makeChartDot(
       params.position.id,
       params.svg,
       datevalue,
@@ -155,4 +164,4 @@ const serviceApiData = {
   },
 }
 
-export default serviceApiData
+export default serviceLineChart
