@@ -3,11 +3,15 @@
     <h2 class="font-medium text-lg text-gray-600">
       {{ title }}
     </h2>
-
     <ChartFilter @changePeriod="changePeriod" :firstDate="firstDate" />
-    <div v-if="status === 'success'">
+    <div v-if="candles && status === 'success'">
       <!--  <div v-if="chartData && chartData.length"> -->
-      <ChartTypeLine :data="candles" :uniqueId="uniqueId" :width="width" :units="units" />
+      <ChartTypeLine
+        :data="candles"
+        :uniqueId="uniqueId"
+        :width="width"
+        :units="units"
+      />
       <!-- </div> -->
     </div>
     <div v-else>
@@ -16,18 +20,21 @@
   </div>
 </template>
 <script lang="ts" setup>
+/**
+ * компонент для вывода графика с фильтром
+ */
 const props = defineProps({
   units: {
     type: String,
-    default: ''
+    default: "",
   },
   dataHandler: {
-    type: Function,
-    default: (candles: any) => candles
+    type: Function as PropType<FTDataToChart>,
+    required: true,
   },
   title: {
     type: String,
-    required: false
+    required: false,
   },
   loadData: {
     type: Array<ILoadData>,
@@ -37,7 +44,9 @@ const props = defineProps({
     type: Number,
     default: 600,
   },
+  
 })
+// для каждого графика на страницу нужен уникальный идентификатор
 const uniqueId = createUniqueId()
 
 // показывать график с момента покупки (false) или за весь выбранный период (true)
@@ -100,8 +109,18 @@ const { data: candles, status } = await useLazyAsyncData(
   },
   {
     watch: [from],
-    transform: (candles) => {
-      return props.dataHandler(props.loadData, candles, from.value, shares.value, instrumentId.value, alltime.value)
+    // преобразуем ответ сервера в данные пригодные для построения графика
+    transform: (candles): LineData[] => {
+      const candlesToLine = {
+        loadData: props.loadData, // данные из портфеля
+        candles: candles, // данные с ценами по инструменту из ответа сервера
+        from: from.value, //левая граница диапазона дат
+        shares: shares.value, // информация об инструменте (нужно для сопоставления идентификатора инструмента в системе)
+        instrumentId: instrumentId.value, // упорядоченный список идентификаторов инструменов
+        alltime: alltime.value // флаг от которого зависит как строить график - от левой границы фильтра или с момента первой сделки по этому инструменту
+      }
+
+      return props.dataHandler(candlesToLine)
     },
   }
 )

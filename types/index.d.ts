@@ -173,3 +173,14 @@ declare interface ICandleData {
 }
 
 type APISharesResponse = APIShare[][];
+
+declare interface ICandlesToLine {
+  loadData: ILoadData[],
+  candles: ICandleData[][],
+  from: Date,
+  shares: APISharesResponse,
+  instrumentId: Array<{ id: string }>,
+  alltime: boolean
+}
+
+declare type FTDataToChart = (api: ICandlesToLine) => LineData[]
