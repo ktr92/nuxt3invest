@@ -68,17 +68,6 @@ const emit = defineEmits<{
 }>()
 
 
-/** Интерфейс данных которые будут выводиться в таблице */
-interface DataItem  {
-  category: string
-  value: number
-  startvalue?: number
-  ticker?: string
-  change?: number
-  pricechange?: number
-  share?: number
-}
-
 const props = defineProps<{
   data: DataItem[]
   colorSet: Array<string>

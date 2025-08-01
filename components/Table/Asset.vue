@@ -13,6 +13,8 @@
 </template>
 
 <script setup lang="ts">
+import appcontent from '~/services/apidata/mock';
+
 const props = defineProps({
   ticker: {
     type: String,
@@ -24,8 +26,7 @@ const props = defineProps({
   }
 })
 
-  const mainstore = useMainstore()
-  const logo = mainstore.generateLogo(props.ticker)
+  const logo = appcontent.generateLogo(props.ticker)
 </script>
 
 <style scoped>

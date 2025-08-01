@@ -41,10 +41,10 @@
           <td class="p-2">
             <TableText :text="numberFormat(item.buyprice)" />
           </td>
-          <td class="p-2">
+          <td class="p-2" v-if="item.saleprice">
             <TableText :text="numberFormat(item.saleprice)" />
           </td>
-          <td class="p-2">
+          <td class="p-2" v-if="item.saleprice">
             <TableChange v-if="item.type === 'sell'"
               :price="numberFormat((item.saleprice - item.buyprice) * item.count)"
               :change="numberFormat((item.saleprice - item.buyprice) / item.buyprice * 100)"

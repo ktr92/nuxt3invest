@@ -1,212 +1,665 @@
+/**
+ * Интерфейс для объекта с данными портфеля.
+ */
 declare interface IPortfolio {
-  id: string
-  name: string
-  depo: number
-  fee: number
-  positions: IPosition[]
+  /**
+   * Уникальный идентификатор портфеля.
+   */
+  id: string;
+
+  /**
+   * Название портфеля.
+   */
+  name: string;
+
+  /**
+   * Размер депозита в портфеле.
+   */
+  depo: number;
+
+  /**
+   * Комиссия за управление или транзакции.
+   */
+  fee: number;
+
+  /**
+   * Массив позиций в портфеле.
+   */
+  positions: IPortfolioData[];
 }
 
+/**
+ * Интерфейс для информации о позиции (общий вид).
+ */
 declare interface IPosition {
-  [index: string]: string
-  ticker: string
-  type: string
-  market: string
-  buyPrice: number
-  count: number
-  positionId: string
-  portfolioId: string
-  comm?: number
-  nkd?: number
-  nominal?: number
-  currency?: string
-  buyCurrency?: number
-  myStop?: number
-  options?: IState
-  salePrice?: number
-  saleCount?: number
-  saleCurrency?: number
-  saleNkd?: number
-  isSold?: boolean
+  /**
+   * Индексированный объект с произвольными ключами и строковыми значениями.
+   */
+  [index: string]: string;
+
+  /** Тикер инструмента. */
+  ticker: string;
+  
+  /** Тип инструмента. */
+  type: string;
+  
+  /** Рынок, на котором торгуется инструмент. */
+  market: string;
+  
+  /** Цена покупки. */
+  buyPrice: number;
+  
+  /** Количество. */
+  count: number;
+  
+  /** Идентификатор позиции. */
+  positionId: string;
+  
+  /** Идентификатор портфеля. */
+  portfolioId: string;
+  
+  /** Комиссия (опционально). */
+  comm?: number;
+  
+  /** НКД (опционально). */
+  nkd?: number;
+  
+  /** Номинал (опционально). */
+  nominal?: number;
+  
+  /** Валюта (опционально). */
+  currency?: string;
+  
+  /** Цена покупки в валюте (опционально). */
+  buyCurrency?: number;
+  
+  /** Стоп-лосс или другая цена (опционально). */
+  myStop?: number;
+  
+  /** Состояние или дополнительные параметры (опционально). */
+  options?: IState; // Предполагается, что IState определен где-то еще
+  
+  /** Цена продажи (опционально). */
+  salePrice?: number;
+  
+  /** Количество проданных единиц (опционально).*/
+ saleCount?: number;
+  
+  /** Валюта продажи (опционально).*/
+ saleCurrency?: number;
+  
+  /** НКД при продаже (опционально).*/
+ saleNkd?: number;
+  
+/** Флаг проданности позиции.*/ 
+ isSold?: boolean; 
 }
+
+/**
+ * Интерфейс для отображения информации о позиции в пользовательском интерфейсе или отчете.
+ * Используется для визуализации данных о конкретной позиции в портфеле или другом списке.
+ */
 declare interface IPositionView {
-  ticker: string
-  name: string
-  count: number
-  price: number
-  newprice: number
-  pricechange: number
-  total: number
-  change: number
-  yearchange: number
-  openDate: string
-  isin?: string
+    /**
+     * Тикер инструмента, например, "AAPL" для Apple.
+     */
+    ticker: string;
+
+    /**
+     * Название инструмента, например, "Apple Inc.".
+     */
+    name: string;
+
+    /**
+     * Количество единиц данного инструмента в портфеле или позиции.
+     */
+    count: number;
+
+    /**
+     * Текущая цена за одну единицу инструмента на момент отображения.
+     */
+    price: number;
+
+    /**
+     * Новая цена за единицу после последнего обновления данных.
+     */
+    newprice: number;
+
+    /**
+     * Изменение цены за единицу по сравнению с предыдущим значением (например, с момента покупки или последнего обновления).
+     */
+    pricechange: number;
+
+    /**
+     * Общая стоимость данной позиции в портфеле (рассчитанная как `count` умноженное на `price`).
+     */
+    total: number;
+
+    /**
+     * Общее изменение стоимости позиции по сравнению с базовым значением (например, с момента покупки).
+     */
+    change: number;
+
+    /**
+     * Годовое изменение стоимости позиции в процентах или абсолютных значениях.
+     */
+    yearchange: number;
+
+    /**
+     * Дата открытия позиции в виде строки, например, "2023-01-15".
+     */
+    openDate: string;
+
+    /**
+     * (Опционально) ISIN-код инструмента — международный идентификатор ценных бумаг.
+     */
+    isin?: string;
 }
+
+/**
+ * Интерфейс для отображения информации о сделке в пользовательском интерфейсе или отчете.
+ * Используется для визуализации данных о совершенной сделке по инструменту.
+ */
 declare interface IDealView {
-  ticker: string
-  type: string
-  name: string
-  count: number
-  buyprice: number
-  saleprice: number
-  dealdate: string
-  comment: string
+    /**
+     * Тикер инструмента, связанного с данной сделкой.
+     */
+    ticker: string;
+
+    /**
+     * Тип сделки
+     */
+    type: str
+    /**
+     * Название инструмента, связанного с этой сделкой.
+     */
+    name: string;
+
+    /**
+     * Количество единиц инструмента, участвовавших в сделке.
+     */
+    count: number;
+
+    /**
+     * Цена за единицу инструмента при покупке 
+     */
+    buyprice: number;
+
+    /**
+     * Цена за единицу при продаже. Может быть опущена, если сделка не завершена
+     */
+    saleprice?: number;
+
+    /**
+     * Дата совершения сделки в формате строки, например, "2023-12-01".
+     */
+    dealdate: string;
+
+    /**
+     * Дополнительный комментарий к сделке. Может содержать заметки или пояснения. Опционально.
+     */
+    comment?: string;
 }
+
+/**
+ * Расширение стандартного интерфейса HTMLElement для хранения дополнительной информации
+ */
 declare interface HTMLElement {
-  _unhandler?: (event: MouseEvent) => void
+    /**
+     * Пользовательское свойство для хранения функции-обработчика события MouseEvent
+   */
+  _unhandler?: (event: MouseEvent) => void;
 }
+
+/**
+ * Интерфейс для описания переключателя или элемента управления,
+ * который позволяет пользователю выбрать из нескольких вариантов.
+ */
 declare interface ISwitcher {
-  id: string
-  title: string
-  info: string
+  /**
+   * Уникальный идентификатор переключателя. Используется для связывания с элементами UI и логики приложения.
+   */
+  id: string;
+
+  /**
+   * Заголовок  переключателя, отображаемое пользователю.
+   */
+  title: string;
+
+  /**
+   * Дополнительная информация о назначении или функции переключателя,
+   * которая может отображаться как подсказка или описание.
+   */
+  info: string;
 }
+
+/**
+ * Интерфейс для описания сделки по портфелю или отдельному инструменту,
+ */
 declare interface IPortfolioDeal {
-  id: string
-  name: string
-  fee?: number
+  /**
+   * Уникальный идентификатор сделки.
+   */
+  id: string;
+
+  /**
+   * Название сделки или описание операции 
+   */
+  name: string;
+
+  /**
+   * Размер комиссии за сделку. Опционально; если не указано — считается отсутствием комиссии либо нулем.
+   */
+  fee?: number;
 }
 
-/** Интерфейс данных которые будут выводиться в диаграмме */
-declare interface DataItem {
-  category: string
-  value: number
+/**
+ * Интерфейс для объекта данных, которые будут выводиться в таблице-легенде графика.
+ */
+interface DataItem {
+  /**
+   * Категория или название элемента.
+   */
+  category: string;
+
+  /**
+   * Значение.
+   */
+  value: number;
+
+  /**
+   * Начальное значение (опционально).
+   */
+  startvalue?: number;
+
+  /**
+   * Тикер или символ (опционально).
+   */
+  ticker?: string;
+
+  /**
+   * Изменение значения (опционально).
+   */
+  change?: number;
+
+  /**
+   * Изменение цены (опционально).
+   */
+  pricechange?: number;
+
+  /**
+   * Доля или часть (опционально).
+   */
+  share?: number;
 }
 
+/**
+ * Интерфейс для параметров функции рисования линии графика.
+ */
 declare interface LineData {
+  /**
+   * Массив пар дата-значение для графика.
+   */
   dates: DatePrice[]
+
+  /**
+   * Идентификатор линии.
+   */
   id: string
+
+  /**
+   * Начальная цена (опционально).
+   */
   startprice?: number
+
+  /**
+   * Количество (опционально).
+   */
   count?: number
-  value?: number
+
+  /**
+   * Дата открытия в виде строки (опционально).
+   */
   opendate?: string
-  openprice?: number
 }
 
+/**
+ * Интерфейс для объекта точки линейного графика
+ *
+ */
 declare interface DatePrice {
+  /**
+   * Дата (ось Х)
+   */
   date: string
-  value: number
-  change?: string
-}
-/** Интерфейс подсказкок диаграммы */
 
+  /**
+   * Значение для даты (ось Y)
+   */
+  value: number
+  //change?: string
+}
+
+/**
+ *  Интерфейс для объекта подсказкок диаграммы 
+ */
 declare interface Tooltip {
+
+  /**
+   * Виден или нет
+   */
   visible: boolean
+
+  /**
+   * Коррдината по оси X
+   */
   x: number
+
+  /**
+   * Коррдината по оси Y
+   */
   y: number
+
+  /**
+   * Содержимое подсказки
+   */
   text: string
 }
 
-declare interface LineChartData {
-  svg: d3.Selection<SVGGElement, unknown, null, undefined>
-  dataitems: DataItem[]
-  x: (value: d3.NumberValue) => number
-  y: (value: d3.NumberValue) => number
-  width: number
-  height: number
-  margin: number
-  tooltip: Tooltip
-  xAxis: d3.Axis<d3.NumberValue | Date>
-  yAxis: d3.Axis<d3.NumberValue | Date>
-}
-
-interface APIInstrumentsResponse {
-  instruments: APIInstrument[];
-}
-
+/**
+ * Интерфейс данных о ценной бумаге или активе.
+ */
 interface APIShare {
+  /**
+   * ISIN-код бумаги.
+   */
   isin: string;
+
+  /**
+   * FIGI-код бумаги.
+   */
   figi: string;
+
+  /**
+   * Тикер акции или инструмента.
+   */
   ticker: string;
+
+  /**
+   * Код класса инструмента.
+   */
   classCode: string;
+
+  /**
+   * Тип инструмента (например, акция, облигация и т.д.).
+   */
   instrumentType: string;
+
+  /**
+   * Название инструмента.
+   */
   name: string;
+
+  /**
+   * Уникальный идентификатор.
+   */
   uid: string;
+
+  /**
+   * UID позиции.
+   */
   positionUid: string;
+
+  /**
+   * Вид инструмента (например, акционерный, облигационный и т.д.).
+   */
   instrumentKind: string;
+
+  /**
+   * Флаг доступности для торговых операций через API.
+   */
   apiTradeAvailableFlag: boolean;
+
+  /**
+   * Флаг для ИИС (Индивидуальный инвестиционный счет).
+   */
   forIisFlag: boolean;
+
+  /**
+   * Дата первой свечи за минутный интервал (ISO 8601).
+   */
   first1minCandleDate: string; // ISO 8601 date string
+
+  /**
+   * Дата первой дневной свечи (ISO 8601).
+   */
   first1dayCandleDate: string; // ISO 8601 date string
+
+  /**
+   * Флаг квалифицированного инвестора.
+   */
   forQualInvestorFlag: boolean;
+
+  /**
+   * Флаг выходных дней или нерабочих дней.
+   */
   weekendFlag: boolean;
+
+  /**
+   * Флаг блокировки TCA (Transaction Cost Analysis).
+   */
   blockedTcaFlag: boolean;
+
+  /**
+   * Размер лота.
+   */
   lot: number;
 }
 
-declare interface ILoadData {
-   ticker: string;
-    isin: string;
-    name: string;
-    count: number;
-    price: number;
-    newprice: number;
-    pricechange: number;
-    total: number;
-    change: number;
-    yearchange: number;
-    openDate: string;
-    share: number;
+
+/**
+ * Интерфейс для объекта с данными портфеля.
+ */
+declare interface IPortfolioData {
+  /**
+   * Тикер инструмента.
+   */
+  ticker: string;
+
+  /**
+   * ISIN-код инструмента.
+   */
+  isin: string;
+
+  /**
+   * Название инструмента.
+   */
+  name: string;
+
+  /**
+   * Количество акций(инструмента) в портфеле.
+   */
+  count: number;
+
+  /**
+   * Цена при которой инструмент быд добавлен в портфель
+   */
+  price: number;
+
+  /**
+   * Текущая цена за единицу (после обновления).
+   */
+  //newprice: number;
+
+  /**
+   * Изменение цены за единицу от покупки до текущей.
+   */
+  pricechange: number;
+
+  /**
+   * Общая стоимость портфеля по данному инструменту.
+   */
+  total: number;
+
+  /**
+   * Общее изменение стоимости (например, с учетом цены).
+   */
+  change: number;
+
+  /**
+   * Годовое изменение в процентах или абсолютных значениях.
+   */
+  yearchange: number;
+
+  /**
+   * Дата открытия позиции (в виде строки).
+   */
+  openDate: string;
+
+  /**
+   * Доля или часть портфеля, занимаемая этим инструментом.
+   */
+  share: number;
 }
 
 declare interface IPrice {
-  units: string;
-  nano: number;
+
+  units: string
+  nano: number
 }
 
 declare interface ICandleData {
-  open: IPrice;
+  open: IPrice
   high: {
-    units: string;
-    nano: number;
-  };
+    units: string
+    nano: number
+  }
   low: {
-    units: string;
-    nano: number;
-  };
+    units: string
+    nano: number
+  }
   close: {
-    units: string;
-    nano: number;
-  };
-  volume: string;
-  time: string;
-  isComplete: boolean;
-  candleSource: string;
+    units: string
+    nano: number
+  }
+  volume: string
+  time: string
+  isComplete: boolean
+  candleSource: string
 }
 
-type APISharesResponse = APIShare[][];
+type APISharesResponse = APIShare[][]
 
 declare interface ICandlesToLine {
-  loadData: ILoadData[],
-  candles: ICandleData[][],
-  from: Date,
-  shares: APISharesResponse,
-  instrumentId: Array<{ id: string }>,
+  loadData: IPortfolioData[]
+  candles: ICandleData[][]
+  from: Date
+  shares: APISharesResponse
+  instrumentId: Array<{ id: string }>
   alltime: boolean
 }
 
-declare type FTDataToChart = (api: ICandlesToLine) => LineData[]
+/**
+ * Описание типа функции, формирующей данные для графика на основе данных по инструменту из API
+ */
+declare type TransformerDataLine = (api: ICandlesToLine) => LineData[]
 
-
-
+/**
+ * Интерфейс для функции построения линейного графика
+ */
 declare interface LineChartApi {
+  /**
+   * Массив данных для каждой отдельной линии на графике.
+   */
   linedata: LineData[]
+
+  /**
+   * Подсказка для линий графика.
+   */
   tooltip: Tooltip
+
+  /**
+   * Уникальный идентификатор графика для различия от других графиков на странице.
+   */
   uniqueId: string
+
+  /**
+   * Ширина контейнера в котором рисуется график..
+   */
   width: number
+
+  /**
+   * Отступы (margin) вокруг графика.
+   */
   margin: number
+
+  /**
+   * Высота графика.
+   */
   height: number
+
+  /**
+   * Единицы измерения для вывода в подсказке (опционально).
+   */
   units?: string
 }
 
+/**
+ * Интерфейс для функции рисования отдельной линии на графике.
+ */
 declare interface SingleLineApi {
+  /**
+   * Положение линии.
+   */
   position: LineData
+
+  /**
+   * SVG-элемент из шаблона для отображения линии.
+   */
   svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>
+
+  /**
+   * Объект функции-генератора линий на основе дат-значений
+   */
   line: d3.Line<DatePrice>
+
+  /**
+   * Масштаб по датам для оси X
+   */
   x: d3.ScaleTime<number, number, never>
+
+  /**
+   * Линейный масштаб по значениям для оси Y.
+   */
   y: d3.ScaleLinear<number, number, never>
+
+  /**
+   * Ширина контейнера в котором рисуется график..
+   */
   width: number
+
+  /**
+   * Цвет линии.
+   */
   color: string
+
+  /**
+   * Уникальный идентификатор линии.
+   */
   uniqueId: string
+
+  /**
+   * Высота графика.
+   */
   height: number
+
+  /**
+   * Отступы (margin).
+   */
   margin: number
+
+  /**
+   * Информация для вывода в подсказке при наведении.
+   */
   tooltip: Tooltip
 }

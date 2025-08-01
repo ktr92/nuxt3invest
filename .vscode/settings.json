@@ -15,5 +15,10 @@
     "statusBar.foreground": "#DEE64C",
     "statusBar.border": "#66930C"
   },
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+
+  "editor.hover.enabled": true,
+  "typescript.suggest.enabled": true,
+  "editor.quickSuggestions": true
+
 }

@@ -295,33 +295,7 @@
                 </NuxtLink>
               </li>
 
-              <li>
-                <a
-                  href="#"
-                  class="group relative flex justify-center rounded-sm px-2 py-1.5 text-gray-500 hover:bg-gray-50 hover:text-gray-700"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="size-5 opacity-75"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
-
-                  <span
-                    class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded-sm bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
-                  >
-                    Дивиденды&nbsp;и&nbsp;купоны
-                  </span>
-                </a>
-              </li>
+            
             </ul>
           </div>
         </div>
@@ -347,7 +321,7 @@
               </NuxtLink>
             </li>
 
-            <template v-for="item in mainstore.getPorfolio" :key="item">
+            <template v-for="item in portfolio" :key="item">
               <MenuPortfolio :portfolioname="item.name" />
             </template>
           </ul>
@@ -357,17 +331,13 @@
   </div>
 </template>
 <script setup lang="ts">
+import appcontent from '@/services/apidata/mock'
 const mainstore = useMainstore()
 const ismenushown = computed(() => mainstore.getMenu)
 const showMenu = (): void => {
   mainstore.toggleMenu()
 }
-
-onBeforeMount(() => {
-  console.log(mainstore.getPorfolio)
-})
-
-onMounted(() => {})
+const portfolio = appcontent.getPortfolio()
 </script>
 
 <style scoped>

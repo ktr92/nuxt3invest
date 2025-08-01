@@ -65,10 +65,11 @@
 <script setup lang="ts">
 import { useForm } from "vee-validate"
 import * as yup from "yup"
+import appcontent from '@/services/apidata/mock'
 
 const mainstore = useMainstore()
 
-const deallist = mainstore.getDealTypes
+const deallist = appcontent.getDealTypes()
 const dealtype = ref("")
 const company = ref("")
 const count = ref("")
@@ -78,7 +79,7 @@ const selectportfolio = ref("")
 const isLoading = ref(false)
 const someError = ref("")
 
-const portfolioList = mainstore.getBrokerslist
+const portfolioList = appcontent.getBrokerslist()
 
 const schema = yup.object().shape({
   /* 

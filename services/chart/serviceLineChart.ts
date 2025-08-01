@@ -1,3 +1,6 @@
+/**
+ * Модуль для постоения графиков
+ */
 import * as d3 from "d3"
 import generateColors from "~/utils/colorGenerate"
 import { makeFormatLocale, makeChartLocale } from "./line/chartlocale"
@@ -34,14 +37,14 @@ const serviceLineChart = {
 
     const flatData = params.linedata.flatMap((item) => item.dates)
 
-    const minCategory = d3.min(flatData, (d) => new Date(d.date))
-    const maxCategory = d3.max(flatData, (d) => new Date(d.date))
+    const minDate = d3.min(flatData, (d) => new Date(d.date))
+    const maxDate = d3.max(flatData, (d) => new Date(d.date))
     const minValue = d3.min(flatData, (d) => d.value)
     const maxValue = d3.max(flatData, (d) => d.value)
 
     // даты нужно интерполировать на ось Х
     const x = d3.scaleTime(
-      [minCategory || new Date(), maxCategory || new Date()],
+      [minDate || new Date(), maxDate || new Date()],
       [0, params.width - 2 * params.margin]
     )
 
@@ -110,7 +113,7 @@ const serviceLineChart = {
         })
         item.dates = datesFrom
       }
-      const linedata = {
+      const lineparams = {
         position: item,
         svg,
         line,
@@ -124,7 +127,7 @@ const serviceLineChart = {
         tooltip: params.tooltip,
       }
 
-      serviceLineChart.renderLine(linedata)
+      serviceLineChart.renderLine(lineparams)
     })
   },
 

@@ -1,3 +1,6 @@
+/**
+ * Модуль для обработки данных по торговым инструментам с сервера
+ */
 import { groupBy, flatten } from "lodash-es"
 
 const serviceApiData = {
@@ -7,9 +10,9 @@ const serviceApiData = {
    * @param loadData - данные портфеля
    * @returns {Date} - самая ранняя дата
    */
-  getFirstDate(loadData: Array<ILoadData>): Date {
+  getFirstDate(loadData: Array<IPortfolioData>): Date {
     return loadData
-      .map((item: ILoadData) => new Date(item.openDate))
+      .map((item: IPortfolioData) => new Date(item.openDate))
       .reduce((a, b) => (a < b ? a : b))
   },
 
@@ -36,8 +39,8 @@ const serviceApiData = {
    * @param ticker
    * @returns
    */
-  getTickerCount(loadData: ILoadData[], ticker: string): number {
-    return loadData.filter((item: ILoadData) => item.ticker === ticker)[0].count
+  getTickerCount(loadData: IPortfolioData[], ticker: string): number {
+    return loadData.filter((item: IPortfolioData) => item.ticker === ticker)[0].count
   },
   /**
    * Получить дату открытия позиции, от которой будет строиться график
@@ -51,11 +54,11 @@ const serviceApiData = {
     alltime: boolean,
     from: Date,
     ticker: string,
-    loadData: Array<ILoadData>
+    loadData: Array<IPortfolioData>
   ): string {
     return alltime
       ? from.toISOString()
-      : loadData.filter((share: ILoadData) => share.ticker === ticker)[0]
+      : loadData.filter((share: IPortfolioData) => share.ticker === ticker)[0]
           .openDate
   },
   /**
@@ -64,7 +67,7 @@ const serviceApiData = {
    * @param loadData - данные портфеля
    * @returns - цена открытия позиции в портфеле
    */
-  getOpenPrice(loadData: Array<ILoadData>, ticker: string): number {
+  getOpenPrice(loadData: Array<IPortfolioData>, ticker: string): number {
     return loadData.filter((item) => item.ticker === ticker)[0].price
   },
 
@@ -87,7 +90,7 @@ const serviceApiData = {
    * @returns {LineData[]} - данные для постоения линейного графика
    */
   dataToChart(
-    loadData: ILoadData[],
+    loadData: IPortfolioData[],
     candles: ICandleData[][],
     from: Date,
     shares: APISharesResponse,
@@ -316,6 +319,13 @@ const serviceApiData = {
       }
     })
   },
+
+  
+ getfirstDate(loadData: IPortfolioData[]) {
+  return loadData
+    .map((item) => new Date(item.openDate))
+    .reduce((a, b) => (a < b ? a : b))
+ }
 
   /*   getEveryDate(target: DatePrice, newdate: string, olddate: string) {
     target.map()

@@ -1,10 +1,10 @@
 <template>
   <div class="w-full">
-    <TableMain :tableheader="tableHeader" :tabledata="loadData" />
-    <div v-if="loadData && loadData.length" class="w-full" ref="chartcontainer">
-    <ChartCDataTimeValue
+    <TableMain :tableheader="tableHeader" :tabledata="portfolio" />
+    <div v-if="portfolio && portfolio.length" class="w-full" ref="chartcontainer">
+    <ChartMainTimeValue
         title="Стоимость портфеля"
-        :loadData="loadData"
+        :loadData="portfolio"
         :width="width" 
         :dataHandler="serviceApiData.timeTotalHandler"
         units=" ₽"
@@ -15,11 +15,11 @@
 
 <script setup lang="ts">
 
+import appcontent  from '~/services/apidata/mock'
 import serviceApiData  from '~/services/apidata/serviceApiData'
-import loadData from '~/services/apidata/mock'
 const chartcontainer = ref<HTMLElement | null>(null)
 const { width } = useChartWidth(chartcontainer)
-
+const portfolio = appcontent.getPortfolio()[0].positions
 const tableHeader = [
   "Актив",
   "Количество",
