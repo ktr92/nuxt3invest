@@ -23,5 +23,5 @@
 <script setup lang="ts">
 
 const mainstore = useMainstore()
-const ismodalshown = computed(() => mainstore.getModal)
+const ismodalshown = computed(() => mainstore.getModal())
 </script>

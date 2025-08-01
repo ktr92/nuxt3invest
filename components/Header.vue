@@ -333,7 +333,7 @@
 <script setup lang="ts">
 import appcontent from '@/services/apidata/mock'
 const mainstore = useMainstore()
-const ismenushown = computed(() => mainstore.getMenu)
+const ismenushown = computed(() => mainstore.getMenu())
 const showMenu = (): void => {
   mainstore.toggleMenu()
 }
