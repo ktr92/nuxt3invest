@@ -28,16 +28,18 @@ interface IMenuLink {
 }
 const mainstore = useMainstore()
 
+/**
+ * Определяем функции для пунктов меню, если они соотвествуют предоставленным функциям в интерфейсе стора.
+ */
 const transformedMenu = computed(() => props.menuprop.map(item => {
   return {
-    action: item.action ? mainstore.getAction(item.action) : null,
+    action: item.action && mainstore.getAction(item.action) ? mainstore.getAction(item.action) : null,
     to: item.to ? item.to : null,
     title: item.title,
     icon: item.icon
   }
 }))
 
-console.log('transformedMenu: ', transformedMenu)
 
 const props = defineProps({
   menuprop: {

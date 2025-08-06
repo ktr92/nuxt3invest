@@ -1,43 +1,47 @@
 import { defineStore } from "pinia"
 
 export const useMainstore = defineStore("mainstore", () => {
-
   // STATE
   const ismenushown = ref(false)
   const ismodalshown = ref(false)
   // GETTERS
 
-   const getMenu = () => ismenushown.value
-   const getModal = () => ismodalshown.value
+  const getMenu = () => ismenushown.value
+  const getModal = () => ismodalshown.value
 
-   const getAction = (payload: string) => actionsMap.get(payload)
-
+  const getAction = (payload: string) => actionsMap.get(payload)
 
   // ACTIONS
-     const toggleMenu = () => {
-      ismenushown.value = !ismenushown.value
-    }
-
-    const toggleModal= () => {
-      ismodalshown.value = !ismodalshown.value
-    }
-
-    const closeMenu= () => {
-     ismenushown.value = false
-    }
-
-    const closeModal= () => {
-      ismodalshown.value = false
-    }
-
-
-    
-   const actionsMap = new Map([
-    ['toggleModal', toggleModal]
-   ])
-
-  return {
-    getMenu, getModal, toggleModal, toggleMenu, closeMenu, closeModal, getAction
+  const toggleMenu = () => {
+    ismenushown.value = !ismenushown.value
   }
 
+  const toggleModal = () => {
+    ismodalshown.value = !ismodalshown.value
+  }
+
+  const closeMenu = () => {
+    ismenushown.value = false
+  }
+
+  const closeModal = () => {
+    ismodalshown.value = false
+  }
+
+  const actionsMap = new Map([
+    ["toggleModal", toggleModal],
+    ["closeModal", closeModal],
+    ["toggleMenu", toggleMenu],
+    ["closeMenu", closeMenu],
+  ])
+
+  return {
+    getMenu,
+    getModal,
+    toggleModal,
+    toggleMenu,
+    closeMenu,
+    closeModal,
+    getAction,
+  }
 })
