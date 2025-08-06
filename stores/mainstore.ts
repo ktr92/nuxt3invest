@@ -10,8 +10,11 @@ export const useMainstore = defineStore("mainstore", () => {
    const getMenu = () => ismenushown.value
    const getModal = () => ismodalshown.value
 
+   const getAction = (payload: string) => actionsMap.get(payload)
+
+
   // ACTIONS
-     const toggleMenu= () => {
+     const toggleMenu = () => {
       ismenushown.value = !ismenushown.value
     }
 
@@ -27,8 +30,14 @@ export const useMainstore = defineStore("mainstore", () => {
       ismodalshown.value = false
     }
 
+
+    
+   const actionsMap = new Map([
+    ['toggleModal', toggleModal]
+   ])
+
   return {
-    getMenu, getModal, toggleModal, toggleMenu, closeMenu, closeModal
+    getMenu, getModal, toggleModal, toggleMenu, closeMenu, closeModal, getAction
   }
 
 })

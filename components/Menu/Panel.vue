@@ -1,6 +1,5 @@
 <template>
-  <template v-for="menu in menuprop" :key="menu">
-    <li v-if="menu">
+    <li v-for="menu in transformedMenu" :key="menu.title">
       <div
         v-if="menu.action"
         @click.prevent.stop="menu.action"
@@ -9,14 +8,13 @@
         <MenuButton :title="menu.title" :icon="menu.icon" />
       </div>
       <NuxtLink
-        v-else
+        v-else-if="menu.to"
         :to="menu.to"
         class="group relative flex justify-center rounded-sm px-2 py-1.5 text-gray-500 hover:bg-gray-50 hover:text-gray-700"
       >
         <MenuButton :title="menu.title" :icon="menu.icon" />
       </NuxtLink>
     </li>
-  </template>
 </template>
 <script setup lang="ts">
 /**
@@ -24,14 +22,30 @@
  */
 interface IMenuLink {
   title: string
-  to?: string | ""
-  icon?: string | ""
-  action?: () => void
+  to?: string 
+  icon?: string 
+  action?: string
 }
+const mainstore = useMainstore()
+
+const transformedMenu = computed(() => props.menuprop.map(item => {
+  return {
+    action: item.action ? mainstore.getAction(item.action) : null,
+    to: item.to ? item.to : null,
+    title: item.title,
+    icon: item.icon
+  }
+}))
+
+console.log('transformedMenu: ', transformedMenu)
+
 const props = defineProps({
   menuprop: {
     type: Array<IMenuLink>,
     required: true,
   },
 })
+
+
+
 </script>

@@ -9,7 +9,7 @@
           <div class="px-2">
             <MenuMain @showMenu="showMenu" />
             <ul class="space-y-1 border-t border-gray-100 pt-4">
-              <MenuPanel :menuprop="menupanel"/>
+              <MenuPanel :menuprop="appcontent.menupanel"/>
             </ul>
           </div>
         </div>
@@ -53,29 +53,6 @@ const showMenu = (): void => {
 }
 const portfolio = appcontent.getPortfolio()
 
-const menupanel = [
-  {
-    title: "Новая сделка",
-    icon: "newdeal",
-    action: mainstore.toggleModal,
-  },
-  {
-    title: "Аналитика",
-    to: "/table/",
-    icon: "table",
-  },
-
-  {
-    title: "Статистика",
-    to: "/",
-    icon: "stats",
-  },
-  {
-    title: "Журнал действий",
-    to: "/deals/",
-    icon: "deals",
-  },
-]
 </script>
 
 <style scoped>
