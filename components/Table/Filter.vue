@@ -81,9 +81,7 @@ onMounted(() => {
 ]
 
   watchEffect(() => {
-    console.log(typeFilter.value)
-    console.log(nameFilter.value)
-    console.log(datesFilter.value)
+ 
     // запрос на фильтрацию
   })
 })

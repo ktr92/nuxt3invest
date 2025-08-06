@@ -19,6 +19,10 @@
 
   "editor.hover.enabled": true,
   "typescript.suggest.enabled": true,
-  "editor.quickSuggestions": true
+  "editor.quickSuggestions": {
+    "comments": "on",
+    "strings": "on",
+    "other": "on"
+  }
 
 }
