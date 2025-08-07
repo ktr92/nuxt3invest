@@ -4,7 +4,7 @@
       <summary
         class="flex cursor-pointer items-center justify-between rounded-lg px-4 py-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
       >
-        <span class="text-sm font-medium"> {{ portfolioname }} </span>
+        <span class="text-sm font-medium"> {{ name }} </span>
 
         <span class="shrink-0 transition duration-300 group-open:-rotate-180">
           <svg
@@ -24,54 +24,41 @@
 
       <ul class="mt-2 space-y-1 px-4">
         <li>
-          <a
-            href="#"
+          <NuxtLink :to="`/${id}`"
             class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
           >
             Общее
-          </a>
+          </NuxtLink>
         </li>
 
         <li>
-          <a
+          <NuxtLink :to="`/table/${id}`"
             href="#"
             class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
           >
             Позиции
-          </a>
+          </NuxtLink>
         </li>
         <li>
-          <a
+          <NuxtLink :to="`/deals/${id}`"
             href="#"
             class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
           >
             Сделки
-          </a>
+          </NuxtLink>
         </li>
-        <li>
-          <a
-            href="#"
-            class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-          >
-            Статистика
-          </a>
-        </li>
-        <li>
-          <a
-            href="#"
-            class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-          >
-            Начисления
-          </a>
-        </li>
+        
       </ul>
     </details>
   </li>
 </template>
 
 <script setup lang="ts">
+import { NuxtLink } from '#components';
+
   const props = defineProps<{
-    portfolioname: string
+    name: string,
+    id: string
   }>()
 </script>
 

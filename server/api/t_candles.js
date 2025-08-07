@@ -1,4 +1,3 @@
-import { H3Event } from "h3"
 import { createError } from "h3"
 
 export default defineEventHandler(async (event) => {

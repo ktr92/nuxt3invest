@@ -21,7 +21,7 @@
           v-for="item in tabledata"
           :key="item.ticker"
           class="*:text-gray-900 *:first:font-medium"
-          :class="[item.type === 'sell' ? 'bg-gray-100' : '']"
+          :class="[item.type === 'sell' ? 'bg-gray-100 opacity-70' : '']"
         >
           <td class="p-2">
             <TableText :text="numberFormat(item.dealdate)" />

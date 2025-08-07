@@ -1,7 +1,7 @@
 const appcontent = {
   portfolio: [
     {
-      id: "1",
+      id: "finam",
       name: "Финам",
       depo: 500000,
       fee: 0.09,
@@ -66,6 +66,29 @@ const appcontent = {
         },
       ],
     },
+    {
+      id: "sber",
+      name: "СберИнвестиции",
+      depo: 450000,
+      fee: 0.06,
+      defaultCategory: "TQBR",
+      positions: [       
+        {
+          ticker: "BANEP",
+          isin: "RU0007976965",
+          name: "Башнефть-п",
+          count: 100,
+          price: 2040,
+          newprice: 567,
+          pricechange: 22,
+          total: 500,
+          yearchange: -20,
+          change: 10,
+          openDate: "2024-02-28",
+          share: 25,
+        },
+      ],
+    },
   ],
   logosource: "https://mybroker.storage.bcs.ru/FinInstrumentLogo/",
   dealTypes: [
@@ -123,8 +146,79 @@ const appcontent = {
     ],
   ]),
 
+  table: {
+    tableHeader: [
+      "Актив",
+      "Количество",
+      "Средняя цена",
+      "Вложено",
+      "Стоимость",
+      "Прибыль",
+      "Доходность",
+    ],
+  },
+
+  deals: {
+    tableHeader: [
+      "Дата",
+      "Операция",
+      "Актив",
+      "Количество",
+      "Цена покупки",
+      "Цена продажи",
+      "Прибыль",
+      "Комментарий",
+    ],
+
+    tableData: [
+      {
+        ticker: "HYDR",
+        type: "buy",
+        name: "Русгидро",
+        count: 1000,
+        buyprice: 0.5,
+        saleprice: 0.6,
+        dealdate: "02.04.2024",
+        comment: "не знаю зачем я это купил",
+      },
+      {
+        ticker: "ROSN",
+        type: "buy",
+        name: "Роснефть",
+        count: 12323,
+        buyprice: 500,
+        saleprice: 550,
+        dealdate: "04.05.2024",
+        comment: "жду дивиденды",
+      },
+      {
+        ticker: "LKOH",
+        type: "sell",
+        name: "Лукойл",
+        count: 444,
+        buyprice: 6000,
+        saleprice: 6300,
+        dealdate: "02.04.2024",
+        comment: "не растет закрываю",
+      },
+      {
+        ticker: "ASTR",
+        type: "buy",
+        name: "Астра",
+        count: 22,
+        buyprice: 500,
+        saleprice: 420,
+        dealdate: "02.03.2024",
+        comment: "вдруг вырастет",
+      },
+    ],
+  },
+
   getPortfolio() {
     return appcontent.portfolio
+  },
+  getPortfolioById(id: string) {
+    return appcontent.portfolio.filter(item => item.id === id)[0].positions
   },
   getIcon(key: string) {
     return appcontent.icons.get(key)

@@ -35,8 +35,8 @@
               </NuxtLink>
             </li>
 
-            <template v-for="item in portfolio" :key="item">
-              <MenuPortfolio :portfolioname="item.name" />
+            <template v-for="item in portfolio" :key="item.id">
+              <MenuPortfolio :name="item.name" :id="item.id" />
             </template>
           </ul>
         </div>
