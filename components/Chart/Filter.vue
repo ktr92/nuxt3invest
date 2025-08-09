@@ -2,7 +2,7 @@
   <div>
     <div class="flex justify-start gap-4 my-4">
       <div>
-        <fieldset class="space-y-3 flex gap-2" v-once>
+        <fieldset class="space-y-3 flex gap-2 overflow-auto max-w-full" v-once>
           <div v-for="range in datesRange" :key="`${range.id}-${uniqueId}`">
             <UIRadio v-model="selectedRange" :range="range" :uniqueprop="uniqueId"/>
           </div>

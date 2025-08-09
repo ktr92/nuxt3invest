@@ -95,6 +95,7 @@ declare interface IPosition {
  isSold?: boolean; 
 }
 
+
 /**
  * Интерфейс для отображения информации о позиции в пользовательском интерфейсе или отчете.
  * Используется для визуализации данных о конкретной позиции в портфеле или другом списке.
@@ -551,7 +552,7 @@ declare interface ICandleData {
 type APISharesResponse = APIShare[][]
 
 declare interface ICandlesToLine {
-  loadData: IPortfolioData[]
+  loadData: IPositionView[]
   candles: ICandleData[][]
   from: Date
   shares: APISharesResponse

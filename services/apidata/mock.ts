@@ -1,3 +1,5 @@
+
+
 const appcontent = {
   portfolio: [
     {
@@ -84,7 +86,7 @@ const appcontent = {
           total: 500,
           yearchange: -20,
           change: 10,
-          openDate: "2024-02-28",
+          openDate: "2024-01-28",
           share: 25,
         },
       ],
@@ -172,6 +174,7 @@ const appcontent = {
 
     tableData: [
       {
+        portfolio: 'finam',
         ticker: "HYDR",
         type: "buy",
         name: "Русгидро",
@@ -182,6 +185,7 @@ const appcontent = {
         comment: "не знаю зачем я это купил",
       },
       {
+        portfolio: 'finam',
         ticker: "ROSN",
         type: "buy",
         name: "Роснефть",
@@ -192,6 +196,7 @@ const appcontent = {
         comment: "жду дивиденды",
       },
       {
+        portfolio: 'finam',
         ticker: "LKOH",
         type: "sell",
         name: "Лукойл",
@@ -202,6 +207,18 @@ const appcontent = {
         comment: "не растет закрываю",
       },
       {
+        portfolio: 'finam',
+        ticker: "ASTR",
+        type: "buy",
+        name: "Астра",
+        count: 22,
+        buyprice: 500,
+        saleprice: 420,
+        dealdate: "02.03.2024",
+        comment: "вдруг вырастет",
+      },
+      {
+        portfolio: 'sber',
         ticker: "ASTR",
         type: "buy",
         name: "Астра",
@@ -214,10 +231,17 @@ const appcontent = {
     ],
   },
 
+  getTotalPositions() {
+    const total: IPositionView[] = []
+    appcontent.portfolio.forEach(item => {
+      total.push(...item.positions)
+    })
+    return total
+  },
   getPortfolio() {
     return appcontent.portfolio
   },
-  getPortfolioById(id: string) {
+  getPositionsById(id: string) {
     return appcontent.portfolio.filter(item => item.id === id)[0].positions
   },
   getIcon(key: string) {

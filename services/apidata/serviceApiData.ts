@@ -10,9 +10,9 @@ const serviceApiData = {
    * @param loadData - данные портфеля
    * @returns {Date} - самая ранняя дата
    */
-  getFirstDate(loadData: Array<IPortfolioData>): Date {
+  getFirstDate(loadData: Array<IPositionView>): Date {
     return loadData
-      .map((item: IPortfolioData) => new Date(item.openDate))
+      .map((item: IPositionView) => new Date(item.openDate))
       .reduce((a, b) => (a < b ? a : b))
   },
 
@@ -39,8 +39,8 @@ const serviceApiData = {
    * @param ticker
    * @returns
    */
-  getTickerCount(loadData: IPortfolioData[], ticker: string): number {
-    return loadData.filter((item: IPortfolioData) => item.ticker === ticker)[0].count
+  getTickerCount(loadData: IPositionView[], ticker: string): number {
+    return loadData.filter((item: IPositionView) => item.ticker === ticker)[0].count
   },
   /**
    * Получить дату открытия позиции, от которой будет строиться график
@@ -54,11 +54,11 @@ const serviceApiData = {
     alltime: boolean,
     from: Date,
     ticker: string,
-    loadData: Array<IPortfolioData>
+    loadData: Array<IPositionView>
   ): string {
     return alltime
       ? from.toISOString()
-      : loadData.filter((share: IPortfolioData) => share.ticker === ticker)[0]
+      : loadData.filter((share: IPositionView) => share.ticker === ticker)[0]
           .openDate
   },
   /**
@@ -67,7 +67,7 @@ const serviceApiData = {
    * @param loadData - данные портфеля
    * @returns - цена открытия позиции в портфеле
    */
-  getOpenPrice(loadData: Array<IPortfolioData>, ticker: string): number {
+  getOpenPrice(loadData: Array<IPositionView>, ticker: string): number {
     return loadData.filter((item) => item.ticker === ticker)[0].price
   },
 
@@ -90,7 +90,7 @@ const serviceApiData = {
    * @returns {LineData[]} - данные для постоения линейного графика
    */
   dataToChart(
-    loadData: IPortfolioData[],
+    loadData: IPositionView[],
     candles: ICandleData[][],
     from: Date,
     shares: APISharesResponse,
@@ -290,6 +290,7 @@ const serviceApiData = {
    * @returns
    */
   timePriceHander(candlesAPI: ICandlesToLine): LineData[] {
+
     return candlesAPI.candles.map((res: ICandleData[], index: number) => {
       const ticker = serviceApiData.getTicker(
         candlesAPI.shares,
@@ -321,7 +322,7 @@ const serviceApiData = {
   },
 
   
- getfirstDate(loadData: IPortfolioData[]) {
+ getfirstDate(loadData: IPositionView[]) {
   return loadData
     .map((item) => new Date(item.openDate))
     .reduce((a, b) => (a < b ? a : b))

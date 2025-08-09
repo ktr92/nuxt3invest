@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="bg-slate-50">
     <div class="default">
       <div class="flex gap-8">
         <ClientOnly>
@@ -47,4 +47,5 @@ const ismodalshown = computed(() => mainstore.getModal())
   left: 0;
   opacity: 1;
 }
+
 </style>

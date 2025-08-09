@@ -5,21 +5,21 @@
       <ChartMainTimeProfit :loadData="loadData" :width="width" /> -->
       <ChartMainTimeValue
         title="Стоимость портфеля"
-        :loadData="loadData"
+        :loadData="positions"
         :width="width"
         :dataHandler="serviceApiData.timeTotalHandler"
         units=" ₽"
       />
       <ChartMainTimeValue
         title="Доходность открытых позиций"
-        :loadData="loadData"
+        :loadData="positions"
         :width="width"
         :dataHandler="serviceApiData.timeprofitHandler"
         units="%"
       />
       <ChartMainTimeValue
         title="Стоимость открытых позиций"
-        :loadData="loadData"
+        :loadData="positions"
         :width="width"
         :dataHandler="serviceApiData.timePriceHander"
         units=" ₽"
@@ -33,11 +33,9 @@
  * Страница с графиками
  */
 import serviceApiData from "~/services/apidata/serviceApiData"
-import appcontent from "~/services/apidata/mock"
 
 // достаем данные пользователя
-const loadData = appcontent.getPortfolio()[0].positions
-
+const { positions } = useGetPositions()
 /* // сохраняем состояние в хранилище
 const contentStore = useContentStore()
 contentStore.setUserContent(loadData)

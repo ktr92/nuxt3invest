@@ -37,7 +37,7 @@ const props = defineProps({
     required: false,
   },
   loadData: {
-    type: Array<IPortfolioData>,
+    type: Array<IPositionView>,
     required: true,
   },
   width: {
@@ -73,7 +73,7 @@ const firstDate = computed(() =>
 // находим информацию по нашим акциям. Для дальнейшей работы нужнен идентификатор FIGI который кроме как через api нигде не найти.
 const { data: shares } = await useAsyncData(`instruments-${uniqueId}`, () => {
   return Promise.all([
-    ...props.loadData.map((item: IPortfolioData) => {
+    ...props.loadData.map((item: IPositionView) => {
       return $fetch("/api/tinsrumentid", {
         body: {
           isin: item.isin,
