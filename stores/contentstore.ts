@@ -5,6 +5,7 @@ export const useContentStore = defineStore("contentstore", () => {
   // STATE
   const loadData = ref<IPortfolio[]>([])
   const currentPortfolio = ref<IPortfolioData[]>([])
+  const shareslist = ref<APIShare[]>([])
 
   // GETTERS
   const getUserContent = () => computed(() => loadData)
@@ -14,6 +15,7 @@ export const useContentStore = defineStore("contentstore", () => {
   const getChartData = () => {
     return currentPortfolio.value
   }
+
 
   // ACTIONS
   const setUserContent = (payload: IPortfolio[]) => {
@@ -27,6 +29,8 @@ export const useContentStore = defineStore("contentstore", () => {
       currentPortfolio.value = payload
     }
   }
+
+
 
   return {
     getUserContent,

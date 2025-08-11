@@ -490,7 +490,7 @@ declare interface IPortfolioData {
   /**
    * Текущая цена за единицу (после обновления).
    */
-  //newprice: number;
+  newprice: number;
 
   /**
    * Изменение цены за единицу от покупки до текущей.

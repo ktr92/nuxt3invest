@@ -32,7 +32,7 @@
             <TableText :text="numberFormat(item.price * item.count)" />
           </td>
           <td class="p-2">
-            <TableTextdouble :boldtext="numberFormat(item.newprice * item.count)" :text="numberFormat(item.newprice)" />
+            <TableTextdouble :boldtext="numberFormat(item.newprice || 1 * item.count)" :text="numberFormat(item.newprice || 1)" />
           </td>  
           <td class="p-2">
             <TableChange

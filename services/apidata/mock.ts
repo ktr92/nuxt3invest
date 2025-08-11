@@ -1,5 +1,3 @@
-
-
 const appcontent = {
   portfolio: [
     {
@@ -74,7 +72,7 @@ const appcontent = {
       depo: 450000,
       fee: 0.06,
       defaultCategory: "TQBR",
-      positions: [       
+      positions: [
         {
           ticker: "BANEP",
           isin: "RU0007976965",
@@ -174,7 +172,7 @@ const appcontent = {
 
     tableData: [
       {
-        portfolio: 'finam',
+        portfolio: "finam",
         ticker: "HYDR",
         type: "buy",
         name: "Русгидро",
@@ -185,7 +183,7 @@ const appcontent = {
         comment: "не знаю зачем я это купил",
       },
       {
-        portfolio: 'finam',
+        portfolio: "finam",
         ticker: "ROSN",
         type: "buy",
         name: "Роснефть",
@@ -196,7 +194,7 @@ const appcontent = {
         comment: "жду дивиденды",
       },
       {
-        portfolio: 'finam',
+        portfolio: "finam",
         ticker: "LKOH",
         type: "sell",
         name: "Лукойл",
@@ -207,7 +205,7 @@ const appcontent = {
         comment: "не растет закрываю",
       },
       {
-        portfolio: 'finam',
+        portfolio: "finam",
         ticker: "ASTR",
         type: "buy",
         name: "Астра",
@@ -218,7 +216,7 @@ const appcontent = {
         comment: "вдруг вырастет",
       },
       {
-        portfolio: 'sber',
+        portfolio: "sber",
         ticker: "ASTR",
         type: "buy",
         name: "Астра",
@@ -233,7 +231,7 @@ const appcontent = {
 
   getTotalPositions() {
     const total: IPositionView[] = []
-    appcontent.portfolio.forEach(item => {
+    appcontent.portfolio.forEach((item) => {
       total.push(...item.positions)
     })
     return total
@@ -242,7 +240,7 @@ const appcontent = {
     return appcontent.portfolio
   },
   getPositionsById(id: string) {
-    return appcontent.portfolio.filter(item => item.id === id)[0].positions
+    return appcontent.portfolio.filter((item) => item.id === id)[0].positions
   },
   getIcon(key: string) {
     return appcontent.icons.get(key)
@@ -261,6 +259,26 @@ const appcontent = {
         fee: item.fee,
       }
     })
+  },
+
+  // получить список figi по портфелю
+  async getFigilist(portfolio: IPortfolio) {
+    const { data: shares } = await useAsyncData(
+      portfolio.id,
+      () => {
+        const positionsPromises = portfolio.positions.map(
+          async (item: IPositionView) => {
+            return await $fetch("/api/tinsrumentid", {
+              body: { isin: item.isin },
+              method: "POST",
+            })
+          }
+        )
+        return Promise.all(positionsPromises)
+      }
+    )
+
+    return shares.value
   },
 }
 
