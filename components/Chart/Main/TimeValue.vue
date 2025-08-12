@@ -20,6 +20,8 @@
   </div>
 </template>
 <script lang="ts" setup>
+import serviceApiData from "~/services/apidata/serviceApiData"
+
 /**
  * компонент для вывода графика с фильтром
  */
@@ -44,7 +46,6 @@ const props = defineProps({
     type: Number,
     default: 600,
   },
-  
 })
 // для каждого графика на страницу нужен уникальный идентификатор
 const uniqueId = createUniqueId()
@@ -71,7 +72,12 @@ const firstDate = computed(() =>
 )
 
 // находим информацию по нашим акциям. Для дальнейшей работы нужнен идентификатор FIGI который кроме как через api нигде не найти.
-const { data: shares } = await useAsyncData(`instruments-${uniqueId}`, () => {
+const shares = await serviceApiData.getInstrimentsInfo(
+  `instruments-${uniqueId}`,
+  props.loadData
+)
+
+/* const { data: shares } = await useAsyncData(`instruments-${uniqueId}`, () => {
   const isinlist = props.loadData.map((item: IPositionView) => {
       return $fetch("/api/tinsrumentid", {
         body: {
@@ -81,7 +87,7 @@ const { data: shares } = await useAsyncData(`instruments-${uniqueId}`, () => {
       })
     })
   return Promise.all(isinlist)
-})
+}) */
 /*  console.log('shares :', shares.value)
  */
 
@@ -89,8 +95,9 @@ const { data: shares } = await useAsyncData(`instruments-${uniqueId}`, () => {
 const { data: candles, status } = await useLazyAsyncData(
   `candles-${uniqueId}`,
   () => {
-    return Promise.all([
-      ...shares.value.map((item: any) => {
+    let sharesPromise: Promise<ICandleData[]>[] = []
+    if (shares.value) {
+      sharesPromise = shares.value.map((item: any) => {
         instrumentId.value.push({
           id: item[0].figi,
         })
@@ -103,22 +110,23 @@ const { data: candles, status } = await useLazyAsyncData(
           },
           method: "POST",
         })
-      }),
-    ])
+      })
+    }
+    return Promise.all(sharesPromise)
   },
   {
     watch: [from],
     // преобразуем ответ сервера в данные пригодные для построения графика
     transform: (candles): LineData[] => {
-      const candlesToLine = {
+      const candlesToLine: ICandlesToLine = {
         loadData: props.loadData, // данные из портфеля
         candles: candles, // данные с ценами по инструменту из ответа сервера
         from: from.value, //левая граница диапазона дат
-        shares: shares.value, // информация об инструменте (нужно для сопоставления идентификатора инструмента в системе)
+        shares: shares.value || [], // информация об инструменте (нужно для сопоставления идентификатора инструмента в системе)
         instrumentId: instrumentId.value, // упорядоченный список идентификаторов инструменов
-        alltime: alltime.value // флаг от которого зависит как строить график - от левой границы фильтра или с момента первой сделки по этому инструменту
+        alltime: alltime.value, // флаг от которого зависит как строить график - от левой границы фильтра или с момента первой сделки по этому инструменту
       }
-
+      
       return props.dataHandler(candlesToLine)
     },
   }

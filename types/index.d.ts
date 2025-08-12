@@ -664,3 +664,48 @@ declare interface SingleLineApi {
    */
   tooltip: Tooltip
 }
+
+/**
+ * Интерфейс для портфеля с последними ценами инструментов
+ */
+declare interface IPortfolioPrices {
+  id: string
+  depo?: number
+  name?: string
+  priceslist: ILastPriceItem[]
+}
+
+/**
+ * Представляет структуру данных о цене с дополнительной информацией.
+ */
+interface ILastPriceItem {
+  /**
+   * FIGI идентификатор инструмента.
+   * @example "BBG004731354"
+   */
+  figi: string;
+
+  /**
+   * Объект с ценой.
+   */
+  price: Price;
+
+  /**
+   * Время получения данных в формате ISO 8601.
+   * @example "2025-08-12T13:25:55.311011Z"
+   */
+  time: string;
+
+  /**
+   * Уникальный идентификатор инструмента.
+   * @example "fd417230-19cf-4e7b-9623-f7c9ca18ec6b"
+   */
+  instrumentUid: string;
+
+  /**
+   * Тип последней цены.
+   * @example "LAST_PRICE_EXCHANGE"
+   */
+  lastPriceType: string;
+}
+

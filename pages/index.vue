@@ -13,7 +13,9 @@
           <div class="flex justify-between w-full">
             <div>
               <div class="text-gray-600">Стоимость</div>
-              <div class="font-semibold text-gray-600 text-lg">{{ totalSumm(portfolio__totallist[index]) }} ₽</div>
+              <div class="font-semibold text-gray-600 text-lg">
+                {{ totalSumm(portfolio__totallist[index]) }} ₽
+              </div>
             </div>
             <div class="text-right">
               <TableChange
@@ -33,54 +35,25 @@
 import appcontent from "~/services/apidata/mock"
 import serviceApiData from "~/services/apidata/serviceApiData"
 
+// список портфелей
 const portfolio_list = appcontent.getPortfolio()
-// список данных по инструментам портфеля
-const portfolio_apilist = await Promise.all(
-  portfolio_list.map(async (item) => {
-    const figilist = await appcontent.getFigilist(item)
 
-    const priceslist: any = await $fetch("/api/t_prices", {
-      body: {
-        "instrumentId": figilist.map((figi: any) => figi[0].figi )
-      },
-      method: "POST",
-    })
+// получаем текущие цены по списку портфелей
+const portfolio__totallist = await serviceApiData.getPortfolioLast(portfolio_list)
 
 
-    return {
-      priceslist,
-      id: item.id,
-    }
-  })
-)
-
-const portfolio__totallist = portfolio_apilist.map((item, index) => {
-  return {
-    id: item.id,
-    depo: portfolio_list.filter(portfolio => portfolio.id === item.id)[0].depo,
-    priceslist: item.priceslist.map((price: any, subindex: number) => {
-      return {
-        count: portfolio_list[index].positions[subindex].count,
-        price: serviceApiData.formatPrice(price.price),
-        value: portfolio_list[index].positions[subindex].count * serviceApiData.formatPrice(price.price),
-       
-      }
-    })
-    }
-
-})
 
 // из депо вычесть сумму покупок
 const totalSumm = (portfolio: any) => {
   let summ = portfolio.depo
-  portfolio.priceslist.map((item: any) => { 
-    return summ += item.value }
-  )
+  portfolio.priceslist.map((item: any) => {
+    return (summ += item.value)
+  })
 
-  return summ
+  return numberFormat(summ)
 }
 
-portfolio__totallist.forEach(item => {
+portfolio__totallist.forEach((item) => {
   console.log(item)
 })
 

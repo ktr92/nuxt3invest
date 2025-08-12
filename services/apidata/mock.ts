@@ -118,7 +118,7 @@ const appcontent = {
 
     {
       title: "Статистика",
-      to: "/",
+      to: "/stats/finam",
       icon: "stats",
     },
     {
@@ -261,25 +261,7 @@ const appcontent = {
     })
   },
 
-  // получить список figi по портфелю
-  async getFigilist(portfolio: IPortfolio) {
-    const { data: shares } = await useAsyncData(
-      portfolio.id,
-      () => {
-        const positionsPromises = portfolio.positions.map(
-          async (item: IPositionView) => {
-            return await $fetch("/api/tinsrumentid", {
-              body: { isin: item.isin },
-              method: "POST",
-            })
-          }
-        )
-        return Promise.all(positionsPromises)
-      }
-    )
 
-    return shares.value
-  },
 }
 
 export default appcontent

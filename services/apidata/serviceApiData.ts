@@ -40,7 +40,8 @@ const serviceApiData = {
    * @returns
    */
   getTickerCount(loadData: IPositionView[], ticker: string): number {
-    return loadData.filter((item: IPositionView) => item.ticker === ticker)[0].count
+    return loadData.filter((item: IPositionView) => item.ticker === ticker)[0]
+      .count
   },
   /**
    * Получить дату открытия позиции, от которой будет строиться график
@@ -148,7 +149,7 @@ const serviceApiData = {
       // если пропущен день, то добавляем предыдущий вчерашний день в массив до тех пор пока разницы в днях от текущей даты то предыдущей не станет 1. Разница в днях может быть только 1, но от сервера будут пропущены выходные и праздничные дни когда нет торгов.
       if (datediff > 1) {
         while (datediff > 1) {
-          const newdate = serviceApiData.getYesterday(itemdate);
+          const newdate = serviceApiData.getYesterday(itemdate)
           resultEach.push({
             value: prevValue,
             date: newdate,
@@ -290,7 +291,6 @@ const serviceApiData = {
    * @returns
    */
   timePriceHander(candlesAPI: ICandlesToLine): LineData[] {
-
     return candlesAPI.candles.map((res: ICandleData[], index: number) => {
       const ticker = serviceApiData.getTicker(
         candlesAPI.shares,
@@ -321,12 +321,121 @@ const serviceApiData = {
     })
   },
 
-  
- getfirstDate(loadData: IPositionView[]) {
-  return loadData
-    .map((item) => new Date(item.openDate))
-    .reduce((a, b) => (a < b ? a : b))
- }
+  getfirstDate(loadData: IPositionView[]) {
+    return loadData
+      .map((item) => new Date(item.openDate))
+      .reduce((a, b) => (a < b ? a : b))
+  },
+  /**
+   * получить данные по позициям портфеля
+   * @param id - идентификатор запроса
+   * @param positions - список позиций портфеля
+   * @returns
+   */
+  async getInstrimentsInfo(id: string, positions: IPositionView[]) {
+    const { data: shares } = await useAsyncData<APISharesResponse>(id, () => {
+      const positionsPromises = positions.map((item: IPositionView) => {
+        return $fetch("/api/tinsrumentid", {
+          body: { isin: item.isin },
+          method: "POST",
+        })
+      })
+      return Promise.all(positionsPromises)
+    })
+    return shares
+  },
+
+
+  /**
+   * получить цены последних сделок для всех позиций данного портфеля
+   * @param portfolio 
+   * @returns 
+   */
+  async fetchLastPrices(portfolio: IPortfolio) {
+    // сначала получаем информацию по инструменту для последующего запроса
+    const instruments_info = await serviceApiData.getInstrimentsInfo(
+      portfolio.id,
+      portfolio.positions
+    )
+
+    if (!instruments_info.value) {
+      return
+    }
+    const instruments_figi = instruments_info.value.map(
+      (figi: any) => figi[0].figi
+    )
+    // получаем цены на основе идентифкаторов инструментов
+    const { data: priceslist } = await useAsyncData<IPortfolioPrices[]>(
+      portfolio.id,
+      () => {
+        return $fetch("/api/t_prices", {
+          body: {
+            instrumentId: instruments_figi,
+          },
+          method: "POST",
+        })
+      },
+      {
+        transform: (priceslist) => {
+          return priceslist
+        },
+      }
+    )
+  },
+
+  /**
+   * получить последние цены по позициям каждого портфеля 
+   * @param portfolio_list - список портфелей
+   * @returns
+   */
+  async getLastPrices(portfolio_list: IPortfolio[]) {
+    const portfolio_promises = portfolio_list.map(async (item) => {
+      // получаем идентификаторы инструментов
+      const priceslist = await serviceApiData.fetchLastPrices(item)
+      // возвращаем цены позиций, идентификатор портфеля, депозит портфеля и имя портфеля
+      return {
+        priceslist,
+        id: item.id,
+        depo: item.depo,
+        name: item.name,
+      }
+    })
+
+    return await Promise.all(portfolio_promises)
+  },
+
+  /**
+   * получить данные портфелей с текущими ценами
+   */
+  async getPortfolioLast(portfolio_list: IPortfolio[]) {
+    // получаем цены по позициям
+    const portfolio_apilist = await serviceApiData.getLastPrices(portfolio_list)
+
+    // объединяем данные по последним ценам с данными из портфеля
+    const portfolio__totallist = portfolio_apilist.map((item, index) => {
+      if (item) {
+        const current_item = portfolio_list.filter(
+          (portfolio) => portfolio.id === item.id
+        )[0]
+        return {
+          id: item.id,
+          name: item.name,
+          depo: item.depo,
+          priceslist: item.priceslist.map((price: any, subindex: number) => {
+            return {
+              count: current_item.positions[subindex].count,
+              price: serviceApiData.formatPrice(price.price),
+              value:
+                current_item.positions[subindex].count *
+                serviceApiData.formatPrice(price.price),
+            }
+          }),
+        }
+      }
+    })
+
+    return portfolio__totallist
+  },
 
   /*   getEveryDate(target: DatePrice, newdate: string, olddate: string) {
     target.map()
