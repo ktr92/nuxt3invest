@@ -345,96 +345,148 @@ const serviceApiData = {
     return shares
   },
 
-
   /**
-   * получить цены последних сделок для всех позиций данного портфеля
-   * @param portfolio 
-   * @returns 
+   * получить массив FIGI из набора данных об инструментах
+   * @param instrument
    */
-  async fetchLastPrices(portfolio: IPortfolio) {
-    // сначала получаем информацию по инструменту для последующего запроса
-    const instruments_info = await serviceApiData.getInstrimentsInfo(
-      portfolio.id,
-      portfolio.positions
-    )
-
-    if (!instruments_info.value) {
-      return
-    }
-    const instruments_figi = instruments_info.value.map(
-      (figi: any) => figi[0].figi
-    )
-    // получаем цены на основе идентифкаторов инструментов
-    const { data: priceslist } = await useAsyncData<IPortfolioPrices[]>(
-      portfolio.id,
-      () => {
-        return $fetch("/api/t_prices", {
-          body: {
-            instrumentId: instruments_figi,
-          },
-          method: "POST",
-        })
-      },
-      {
-        transform: (priceslist) => {
-          return priceslist
-        },
-      }
-    )
+  getFigiList(instruments: APIShare[][]) {
+    return instruments.map((instrument: APIShare[]) => instrument[0].figi)
   },
 
   /**
-   * получить последние цены по позициям каждого портфеля 
+   * получить цены последних сделок для всех позиций данного портфеля
+   * @param portfolio
+   * @returns
+   */
+  async fetchLastPrices(
+    portfolio: IPortfolio
+  ): Promise<ILastPriceItem | undefined> {
+    try {
+      // сначала получаем информацию по инструменту для последующего запроса
+      const instruments_info = await serviceApiData.getInstrimentsInfo(
+        portfolio.id,
+        portfolio.positions
+      )
+
+      if (!instruments_info.value) {
+        throw new Error("could not fetch instrument info")
+      }
+      // для запроса нужны идентификаторы FIGI
+      const instruments_figi = serviceApiData.getFigiList(
+        instruments_info.value
+      )
+
+      // получаем цены на основе идентифкаторов инструментов
+      const priceslist: ILastPriceItem = await $fetch("/api/t_prices", {
+        body: {
+          instrumentId: instruments_figi,
+        },
+        method: "POST",
+      })
+
+      return priceslist
+    } catch (error) {
+      console.error(error)
+      return undefined
+    }
+  },
+
+  /**
+   * получить последние цены по позициям каждого портфеля
    * @param portfolio_list - список портфелей
    * @returns
    */
-  async getLastPrices(portfolio_list: IPortfolio[]) {
-    const portfolio_promises = portfolio_list.map(async (item) => {
-      // получаем идентификаторы инструментов
-      const priceslist = await serviceApiData.fetchLastPrices(item)
-      // возвращаем цены позиций, идентификатор портфеля, депозит портфеля и имя портфеля
+  async getLastPrices(
+    portfolio_list: IPortfolio[]
+  ): Promise<IPortfolioPrices[]> {
+    try {
+      const portfolio_promises = portfolio_list.map(
+        async (item): Promise<IPortfolioPrices> => {
+          const priceslist = await serviceApiData.fetchLastPrices(item)
+          const normalizedPricesList: ILastPriceItem[] = Array.isArray(
+            priceslist
+          ) ? priceslist : priceslist ? [priceslist] : []
+                    return {
+            ...item,
+            priceslist: normalizedPricesList,
+          }
+        }
+      )
+
+      const result = await Promise.all(portfolio_promises)
+      return result
+    } catch (error) {
+      console.error(error)
+      return []
+    }
+  },
+
+  /**
+   * рассчитать стоимость позиций по ценам отдельных инструментов
+   * @param item
+   * @param current_item
+   * @returns
+   */
+  transfromPricesList(
+    item: ILastPriceItem[],
+    current_item: IPortfolio
+  ): IPortfolioSummTotal[] {
+    return item.map((price: ILastPriceItem, subindex: number) => {
       return {
-        priceslist,
-        id: item.id,
-        depo: item.depo,
-        name: item.name,
+        count: current_item.positions[subindex].count,
+        price: serviceApiData.formatPrice(price.price),
+        value:
+          current_item.positions[subindex].count *
+          serviceApiData.formatPrice(price.price),
       }
     })
-
-    return await Promise.all(portfolio_promises)
   },
 
   /**
    * получить данные портфелей с текущими ценами
+   * @param {IPortfolio[]} portfolio_list
+   * @returns {IPortfolioView[]}
    */
-  async getPortfolioLast(portfolio_list: IPortfolio[]) {
-    // получаем цены по позициям
-    const portfolio_apilist = await serviceApiData.getLastPrices(portfolio_list)
+  async getPortfolioLast(
+    portfolio_list: IPortfolio[]
+  ): Promise<IPortfolioView[]> {
+    try {
+      let portfolio_view: IPortfolioView[] = []
 
-    // объединяем данные по последним ценам с данными из портфеля
-    const portfolio__totallist = portfolio_apilist.map((item, index) => {
-      if (item) {
-        const current_item = portfolio_list.filter(
-          (portfolio) => portfolio.id === item.id
-        )[0]
+      const portfolio_lastprices = await serviceApiData.getLastPrices(
+        portfolio_list
+      )
+
+      portfolio_view = portfolio_lastprices.map(item => {
+        const lastprices = serviceApiData.transfromPricesList(item.priceslist, item)
         return {
-          id: item.id,
-          name: item.name,
-          depo: item.depo,
-          priceslist: item.priceslist.map((price: any, subindex: number) => {
-            return {
-              count: current_item.positions[subindex].count,
-              price: serviceApiData.formatPrice(price.price),
-              value:
-                current_item.positions[subindex].count *
-                serviceApiData.formatPrice(price.price),
-            }
-          }),
+          ...item,
+          lastprices,
+          total: serviceApiData.calcPortfolioSumm(item, lastprices)
         }
-      }
+      })
+
+      console.log(portfolio_lastprices)
+
+      return portfolio_view
+    } catch (error) {
+      console.error(error)
+      return []
+    }
+  },
+
+  /**
+   * рассчитать и вернуть суммарную стоимость текущих позиций портфеля
+   * @param portfolio
+   * @returns
+   */
+  calcPortfolioSumm(portfolio: IPortfolioPrices, lastprices: IPortfolioSummTotal[]) {
+    let summ = portfolio.depo
+    lastprices.map((item) => {
+      return (summ += Number(item.value))
     })
 
-    return portfolio__totallist
+    return numberFormat(summ)
   },
 
   /*   getEveryDate(target: DatePrice, newdate: string, olddate: string) {

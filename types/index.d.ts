@@ -565,6 +565,7 @@ declare interface ICandlesToLine {
  */
 declare type TransformerDataLine = (api: ICandlesToLine) => LineData[]
 
+
 /**
  * Интерфейс для функции построения линейного графика
  */
@@ -668,10 +669,7 @@ declare interface SingleLineApi {
 /**
  * Интерфейс для портфеля с последними ценами инструментов
  */
-declare interface IPortfolioPrices {
-  id: string
-  depo?: number
-  name?: string
+declare interface IPortfolioPrices extends IPortfolio {
   priceslist: ILastPriceItem[]
 }
 
@@ -707,5 +705,16 @@ interface ILastPriceItem {
    * @example "LAST_PRICE_EXCHANGE"
    */
   lastPriceType: string;
+}
+
+declare interface IPortfolioView extends IPortfolio { 
+  lastprices: IPortfolioSummTotal[]
+  total: string | number
+}
+
+declare interface IPortfolioSummTotal {
+  count: number | string
+  price: number | string
+  value: number | string
 }
 
