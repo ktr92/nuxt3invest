@@ -46,8 +46,8 @@
           </td>
           <td class="p-2" v-if="item.saleprice">
             <TableChange v-if="item.type === 'sell'"
-              :price="numberFormat((item.saleprice - item.buyprice) * item.count)"
-              :change="numberFormat((item.saleprice - item.buyprice) / item.buyprice * 100)"
+              :price="(item.saleprice - item.buyprice) * item.count"
+              :change="(item.saleprice - item.buyprice) / item.buyprice * 100"
             />
 
           </td>

@@ -21,13 +21,13 @@
               <div>
                 <div class="text-gray-600">Стоимость</div>
                 <div class="font-semibold text-gray-600 text-lg">
-                  {{ portfolio.total }} ₽
+                  {{ numberFormat(portfolio.total) }} ₽
                 </div>
               </div>
               <div class="text-right">
                 <TableChange
-                  :price="300"
-                  :change="23"
+                  :price="portfolio.change"
+                  :change="portfolio.changePercent"
                   date="от суммы пополнений"
                 />
               </div>
@@ -54,6 +54,7 @@ const portfolio_list = appcontent.getPortfolio()
 const portfolio__totallist = await serviceApiData.getPortfolioLast(
   portfolio_list
 )
+
 
 console.log("portfolio__totallist: ", portfolio__totallist)
 </script>

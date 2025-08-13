@@ -422,7 +422,7 @@ const serviceApiData = {
   },
 
   /**
-   * рассчитать стоимость позиций по ценам отдельных инструментов
+   * рассчитать изменение позиций по ценам отдельных инструментов
    * @param item
    * @param current_item
    * @returns
@@ -432,12 +432,14 @@ const serviceApiData = {
     current_item: IPortfolio
   ): IPortfolioSummTotal[] {
     return item.map((price: ILastPriceItem, subindex: number) => {
+
+      // изменение цены позиции
+      const value = current_item.positions[subindex].count * (serviceApiData.formatPrice(price.price) -  current_item.positions[subindex].price)
+
       return {
         count: current_item.positions[subindex].count,
         price: serviceApiData.formatPrice(price.price),
-        value:
-          current_item.positions[subindex].count *
-          serviceApiData.formatPrice(price.price),
+        value,
       }
     })
   },
@@ -457,16 +459,7 @@ const serviceApiData = {
         portfolio_list
       )
 
-      portfolio_view = portfolio_lastprices.map(item => {
-        const lastprices = serviceApiData.transfromPricesList(item.priceslist, item)
-        return {
-          ...item,
-          lastprices,
-          total: serviceApiData.calcPortfolioSumm(item, lastprices)
-        }
-      })
-
-      console.log(portfolio_lastprices)
+      portfolio_view = serviceApiData.calcPortfolioChange(portfolio_lastprices)
 
       return portfolio_view
     } catch (error) {
@@ -486,8 +479,30 @@ const serviceApiData = {
       return (summ += Number(item.value))
     })
 
-    return numberFormat(summ)
+    return summ
   },
+
+  /**
+   * рассчитать изменение стоимости портфеля
+   * @param portfolio 
+   * @returns 
+   */
+  calcPortfolioChange(portfolio: IPortfolioPrices[]) {
+    return portfolio.map(item => {
+        const lastprices = serviceApiData.transfromPricesList(item.priceslist, item)
+        const total = serviceApiData.calcPortfolioSumm(item, lastprices)
+        const change = total - item.depo
+        const changePercent = change / item.depo * 100
+        return {
+          ...item,
+          lastprices,
+          total,
+          change,
+          changePercent
+        }
+      })
+  } 
+
 
   /*   getEveryDate(target: DatePrice, newdate: string, olddate: string) {
     target.map()

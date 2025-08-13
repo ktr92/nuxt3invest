@@ -5,7 +5,7 @@
         class="text-md font-medium text-gray-900"
         :class="[ispositive ? 'text-green-600' : 'text-red-600']"
       >
-        {{ ispositive ? '+' : '' }}{{ price }} ₽
+        {{ ispositive ? '+' : '' }}{{ numberFormat(price.toFixed(2)) }} ₽
       </p>
     </div>
 
@@ -45,7 +45,7 @@
       </svg>
 
       <p class="flex gap-2 text-sm">
-        <span class="font-bold" v-if="change"> {{ change }} %</span>
+        <span class="font-bold" v-if="change"> {{ change.toFixed(2) }} %</span>
 
         <span class="text-gray-500" v-if="date"> {{ date }} </span>
       </p>
@@ -56,11 +56,11 @@
 <script setup lang="ts">
 const props = defineProps({
   price: {
-    type: [String, Number],
+    type: [Number],
     default: "",
   },
   change: {
-    type: [String, Number],
+    type: [Number],
     default: "",
   },
   date: {
@@ -70,7 +70,7 @@ const props = defineProps({
 })
 
 const ispositive = computed(() => {
-  let priceNumber = props.change
+  let priceNumber = props.price
   if (typeof priceNumber === "string") {
     priceNumber = parseFloat(priceNumber)
   }

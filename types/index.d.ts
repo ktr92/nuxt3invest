@@ -709,7 +709,9 @@ interface ILastPriceItem {
 
 declare interface IPortfolioView extends IPortfolio { 
   lastprices: IPortfolioSummTotal[]
-  total: string | number
+  total: number
+  change: number
+  changePercent: number
 }
 
 declare interface IPortfolioSummTotal {

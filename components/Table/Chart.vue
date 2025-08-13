@@ -22,7 +22,7 @@
                
                  <td class="p-2" v-if="item.pricechange">
                   <TableChange
-                    :price="numberFormat(item.pricechange) + ' ₽'"
+                    :price="item.pricechange"
                     :change="item.change"
                   />
                 </td>
@@ -43,8 +43,8 @@
             
               <td class="p-2 bg-gray-50">
                 <TableChange
-                    :price="numberFormat(totalChange) + ' ₽'"
-                    :change="totalPercent.toFixed(2) + ' %'"
+                    :price="totalChange"
+                    :change="totalPercent"
                   />
               </td>
               <td class="p-2 bg-gray-50"></td>
