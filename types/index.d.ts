@@ -124,27 +124,27 @@ declare interface IPositionView {
     /**
      * Новая цена за единицу после последнего обновления данных.
      */
-    newprice: number;
+    newprice?: number;
 
     /**
      * Изменение цены за единицу по сравнению с предыдущим значением (например, с момента покупки или последнего обновления).
      */
-    pricechange: number;
+    pricechange?: number;
 
     /**
      * Общая стоимость данной позиции в портфеле (рассчитанная как `count` умноженное на `price`).
      */
-    total: number;
+    total?: number;
 
     /**
      * Общее изменение стоимости позиции по сравнению с базовым значением (например, с момента покупки).
      */
-    change: number;
+    change?: number;
 
     /**
      * Годовое изменение стоимости позиции в процентах или абсолютных значениях.
      */
-    yearchange: number;
+    yearchange?: number;
 
     /**
      * Дата открытия позиции в виде строки, например, "2023-01-15".
@@ -490,12 +490,12 @@ declare interface IPortfolioData {
   /**
    * Текущая цена за единицу (после обновления).
    */
-  newprice: number;
+  newprice?: number;
 
   /**
    * Изменение цены за единицу от покупки до текущей.
    */
-  pricechange: number;
+  pricechange?: number;
 
   /**
    * Общая стоимость портфеля по данному инструменту.
@@ -505,12 +505,12 @@ declare interface IPortfolioData {
   /**
    * Общее изменение стоимости (например, с учетом цены).
    */
-  change: number;
+  change?: number;
 
   /**
    * Годовое изменение в процентах или абсолютных значениях.
    */
-  yearchange: number;
+ // yearchange: number;
 
   /**
    * Дата открытия позиции (в виде строки).
@@ -520,7 +520,7 @@ declare interface IPortfolioData {
   /**
    * Доля или часть портфеля, занимаемая этим инструментом.
    */
-  share: number;
+  share?: number;
 }
 
 declare interface IPrice {
@@ -714,9 +714,29 @@ declare interface IPortfolioView extends IPortfolio {
   changePercent: number
 }
 
+declare interface IPortfolioState extends IPortfolioView {
+
+}
+
+declare interface DataItem {
+  category: string
+  value: number
+  startvalue?: number
+  ticker?: string
+  change?: number
+  pricechange?: number
+  share?: number
+}
+
 declare interface IPortfolioSummTotal {
-  count: number | string
-  price: number | string
-  value: number | string
+  count: number 
+  /**
+   * новая цена
+   */
+  price: number 
+  /**
+   * изменение цены
+   */
+  value: number
 }
 

@@ -24,10 +24,10 @@
 
       <ul class="mt-2 space-y-1 px-4">
         <li>
-          <NuxtLink :to="`/${id}`"
+          <NuxtLink :to="`/stats/${id}`"
             class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
           >
-            Общее
+            Statistics
           </NuxtLink>
         </li>
 
@@ -36,7 +36,7 @@
             href="#"
             class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
           >
-            Позиции
+            Positions
           </NuxtLink>
         </li>
         <li>
@@ -44,7 +44,7 @@
             href="#"
             class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
           >
-            Сделки
+            Deals
           </NuxtLink>
         </li>
         

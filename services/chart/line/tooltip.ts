@@ -25,7 +25,7 @@ function makeDateValueTooltip  (
   })
 
   return `<div class="text-white font-black;">
-  ${new Date(currentdate).toLocaleString("ru", {
+  ${new Date(currentdate).toLocaleString("en", {
     day: "numeric",
     month: "long",
     year: "numeric",

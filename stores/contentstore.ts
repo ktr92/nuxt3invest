@@ -7,6 +7,8 @@ export const useContentStore = defineStore("contentstore", () => {
   const currentPortfolio = ref<IPortfolioData[]>([])
   const shareslist = ref<APIShare[]>([])
 
+ /*  const portfoliostate = ref<IPortfolioState[]>([]) */
+
   // GETTERS
   const getUserContent = () => computed(() => loadData)
   const getUserPortfolio = (payload: string) => {
@@ -15,6 +17,10 @@ export const useContentStore = defineStore("contentstore", () => {
   const getChartData = () => {
     return currentPortfolio.value
   }
+
+/*   const getPortfolioState = () => {
+    return portfoliostate.value
+  } */
 
 
   // ACTIONS
@@ -30,6 +36,12 @@ export const useContentStore = defineStore("contentstore", () => {
     }
   }
 
+ /*  const setPortfolioState = (payload: IPortfolioState[]) => {
+    if (payload && payload.length) {
+      portfoliostate.value = payload
+    }
+  } */
+
 
 
   return {
@@ -38,5 +50,6 @@ export const useContentStore = defineStore("contentstore", () => {
     getChartData,
     setUserContent,
     setChartData,
+  /*   setPortfolioState */
   }
 })

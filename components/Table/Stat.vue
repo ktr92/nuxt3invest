@@ -31,10 +31,10 @@
           <td class="p-2">
             <TableText :text="numberFormat(item.price * item.count)" />
           </td>
-          <td class="p-2">
+          <td class="p-2" v-if="item.newprice">
             <TableTextdouble :boldtext="numberFormat(item.newprice * item.count)" :text="numberFormat(item.newprice)" />
           </td>  
-          <td class="p-2">
+          <td class="p-2" v-if="item.pricechange">
             <TableChange
               :price="item.pricechange"
               :change="item.change"

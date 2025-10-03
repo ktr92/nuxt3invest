@@ -2,7 +2,7 @@ const appcontent = {
   portfolio: [
     {
       id: "finam",
-      name: "Финам",
+      name: "Investment Portfolio ",
       depo: 500000,
       fee: 0.09,
       defaultCategory: "TQBR",
@@ -11,47 +11,41 @@ const appcontent = {
           ticker: "ROSN",
           isin: "RU000A0J2Q06",
           name: "Роснефть",
-          count: 1,
-          price: 458.25,
-          newprice: 380,
-          pricechange: -40,
+          count: 100,
+          price: 400,
+         
           total: 500,
-          change: -6,
-          yearchange: 11,
-          openDate: "2024-01-18",
+         
+          openDate: "2023-01-18",
           share: 30,
         },
         {
           ticker: "SBER",
           isin: "RU0009029540",
           name: "Сбербанк",
-          count: 1,
-          price: 319.1,
-          newprice: 567,
-          pricechange: 22,
+          count: 100,
+          price: 300,
+        
           total: 500,
-          yearchange: -20,
-          change: 10,
-          openDate: "2024-11-02",
+         
+          openDate: "2025-03-02",
           share: 25,
         },
         {
           ticker: "BANEP",
           isin: "RU0007976965",
           name: "Башнефть-п",
-          count: 1,
-          price: 1000,
-          newprice: 567,
-          pricechange: 22,
+          count: 100,
+          price: 800,
+        
           total: 500,
-          yearchange: -20,
-          change: 10,
-          openDate: "2025-02-28",
+         
+          openDate: "2025-01-28",
           share: 25,
         },
       ],
     },
-    {
+    /* {
       id: "sber",
       name: "СберИнвестиции",
       depo: 450000,
@@ -64,50 +58,53 @@ const appcontent = {
           name: "Башнефть-п",
           count: 100,
           price: 2040,
-          newprice: 567,
-          pricechange: 22,
+         
           total: 500,
-          yearchange: -20,
-          change: 10,
+        
           openDate: "2024-01-28",
           share: 25,
         },
       ],
-    },
+    }, */
   ],
   logosource: "https://mybroker.storage.bcs.ru/FinInstrumentLogo/",
   dealTypes: [
     {
       id: "buy",
-      title: "Покупка",
+      title: "Buy",
       info: "",
     },
     {
       id: "sell",
-      title: "Продажа",
+      title: "Sell",
       info: "",
     },
   ],
 
   menupanel: [
     {
-      title: "Новая сделка",
+      title: "Home",
+      icon: "stats",
+      to: "/",
+    },
+    {
+      title: "New deal",
       icon: "newdeal",
       action: "toggleModal",
     },
     {
-      title: "Аналитика",
+      title: "All positions",
       to: "/table/",
       icon: "table",
     },
 
-    {
+   /*  {
       title: "Статистика",
       to: "/stats/finam",
       icon: "stats",
-    },
+    }, */
     {
-      title: "Журнал действий",
+      title: "All deals",
       to: "/deals/",
       icon: "deals",
     },
@@ -133,40 +130,30 @@ const appcontent = {
 
   table: {
     tableHeader: [
-      "Актив",
-      "Количество",
-      "Средняя цена",
-      "Вложено",
-      "Стоимость",
-      "Прибыль",
-      "Доходность",
+      "Asset",
+      "Count",
+      "Average price",
+      "Invested",
+      "Cost",
+      "Profit",
+   /*    "Доходность", */
     ],
   },
 
   deals: {
     tableHeader: [
-      "Дата",
-      "Операция",
-      "Актив",
-      "Количество",
-      "Цена покупки",
-      "Цена продажи",
-      "Прибыль",
-      "Комментарий",
+      "Date",
+      "Operation",
+      "Asset",
+      "Count",
+      "Buy price",
+      "Sale price",
+      "Profit",
+      "Comment",
     ],
 
     tableData: [
-      {
-        portfolio: "finam",
-        ticker: "HYDR",
-        type: "buy",
-        name: "Русгидро",
-        count: 1000,
-        buyprice: 0.5,
-        saleprice: 0.6,
-        dealdate: "02.04.2024",
-        comment: "не знаю зачем я это купил",
-      },
+      
       {
         portfolio: "finam",
         ticker: "ROSN",
@@ -174,9 +161,8 @@ const appcontent = {
         name: "Роснефть",
         count: 12323,
         buyprice: 500,
-        saleprice: 550,
         dealdate: "04.05.2024",
-        comment: "жду дивиденды",
+        comment: "why not",
       },
       {
         portfolio: "finam",
@@ -187,7 +173,18 @@ const appcontent = {
         buyprice: 6000,
         saleprice: 6300,
         dealdate: "02.04.2024",
-        comment: "не растет закрываю",
+        comment: "it is enought for me",
+      },
+      {
+        portfolio: "finam",
+        ticker: "ASTR",
+        type: "sell",
+        name: "Астра",
+        count: 22,
+        buyprice: 500,
+        saleprice: 420,
+        dealdate: "02.03.2024",
+        comment: "it was no good",
       },
       {
         portfolio: "finam",
@@ -196,26 +193,34 @@ const appcontent = {
         name: "Астра",
         count: 22,
         buyprice: 500,
-        saleprice: 420,
-        dealdate: "02.03.2024",
-        comment: "вдруг вырастет",
+        dealdate: "01.03.2024",
+        comment: "",
       },
       {
-        portfolio: "sber",
-        ticker: "ASTR",
+        portfolio: "finam",
+        ticker: "SBER",
         type: "buy",
-        name: "Астра",
-        count: 22,
-        buyprice: 500,
-        saleprice: 420,
+        name: "Сбербанк",
+        count: 122,
+        buyprice: 300,
         dealdate: "02.03.2024",
-        comment: "вдруг вырастет",
+        comment: "good annual operating report.",
+      },
+      {
+        portfolio: "finam",
+        ticker: "LKOH",
+        type: "buy",
+        name: "Лукойл",
+        count: 444,
+        buyprice: 6000,
+        dealdate: "12.03.2024",
+        comment: "good news about it.",
       },
     ],
   },
 
   getTotalPositions() {
-    const total: IPositionView[] = []
+    const total: IPortfolioData[] = []
     appcontent.portfolio.forEach((item) => {
       total.push(...item.positions)
     })

@@ -35,7 +35,7 @@
                   
                 </td>
               <td class="p-2 bg-gray-50">
-                Всего
+                Total
               </td>
                <td class="p-2 bg-gray-50 ">
                   <TableTextdouble :boldtext="numberFormat(totalSumm + ' ₽')" :text="numberFormat(totalStart + ' ₽')" />
@@ -47,7 +47,9 @@
                     :change="totalPercent"
                   />
               </td>
-              <td class="p-2 bg-gray-50"></td>
+              <td class="p-2 bg-gray-50">
+                100%
+              </td>
             </tr>
           </tbody>
 

@@ -8,10 +8,10 @@
             range
             auto-apply
             :enable-time-picker="false"
-            placeholder="Выберите даты"
+            placeholder="Select dates"
             locale="ru"
-            cancelText="Отмена"
-            selectText="Выбрать"            
+            cancelText="Cancel"
+            selectText="Select"            
             clearable  
             format="dd.MM.yyyy"    
             no-today
@@ -23,7 +23,7 @@
 
       <UISelect v-model="typeFilter" :items="dealType" />
 
-      <UIInput v-model="nameFilter" type="text" placeholder="Найти..." />
+      <UIInput v-model="nameFilter" type="text" placeholder="Search..." />
     </div>
   </div>
 </template>
@@ -36,15 +36,15 @@ import {addDays} from 'date-fns/addDays';
 const dealType = [
   {
     id: "all",
-    name: "Все операции",
+    name: "All operations",
   },
   {
     id: "sell",
-    name: "Продажи",
+    name: "Sell",
   },
   {
     id: "buy",
-    name: "Покупки",
+    name: "Buy",
   },
 ]
 
@@ -61,22 +61,22 @@ onMounted(() => {
     date: addDays(new Date(), 1),
     type: 'dot',
      color: 'red',
-    tooltip: [{ text: '3 продажи', color: 'green' }],
+    tooltip: [{ text: '3 sales', color: 'green' }],
   },
   {
     date: addDays(new Date(), 2),
     type: 'line',
     color: 'orange',
     tooltip: [
-      { text: '1 продажа', color: 'red' },
-      { text: '2 покупки', color: 'green' },
+      { text: '1 sale', color: 'red' },
+      { text: '2 purchase', color: 'green' },
     ],
   },
   {
     date: addDays(new Date(), 3),
     type: 'dot',
     color: 'green',
-     tooltip: [{ text: '1 покупка', color: 'green' }],
+     tooltip: [{ text: '1 purchase', color: 'green' }],
   },
 ]
 

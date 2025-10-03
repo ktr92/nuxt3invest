@@ -41,16 +41,6 @@
 import * as d3 from "d3"
 import generateColors from "~/utils/colorGenerate"
 
-/** Интерфейс данных которые будут выводиться в диаграмме */
-interface DataItem {
-  category: string
-  value: number
-  startvalue?: number
-  ticker?: string
-  change?: number
-  pricechange?: number
-  share?: number
-}
 
 const props = defineProps<{
   data: DataItem[]
@@ -59,9 +49,9 @@ const props = defineProps<{
 }>()
 
 /** параметры контейнера для графика */
-const width = props.width ?? 600
-const height = props.height ?? 600
-const margin = 30
+const width = props.width ?? 400
+const height = props.height ?? 400
+const margin = 20
 
 /** для круговой диаграммы нужен радиус */
 const radius = Math.min(width / 2 - margin * 2, height / 2 - 2 * margin)

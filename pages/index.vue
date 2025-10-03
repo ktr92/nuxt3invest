@@ -9,33 +9,13 @@
         :key="portfolio?.id"
       >
         <div v-if="portfolio">
-          <div class="bg-white shadow-md p-4 rounded-s-md">
-            <NuxtLink :to="`/table/${portfolio.id}`">
-              <div
-                class="font-semibold mb-4 text-xl text-gray-600 hover:text-blue-600 transition-all"
-              >
-                {{ portfolio.name }}
-              </div>
-            </NuxtLink>
-            <div class="flex justify-between w-full">
-              <div>
-                <div class="text-gray-600">Стоимость</div>
-                <div class="font-semibold text-gray-600 text-lg">
-                  {{ numberFormat(portfolio.total) }} ₽
-                </div>
-              </div>
-              <div class="text-right">
-                <TableChange
-                  :price="portfolio.change"
-                  :change="portfolio.changePercent"
-                  date="от суммы пополнений"
-                />
-              </div>
-            </div>
-          </div>
+          <Stat :portfolio="portfolio" />
         </div>
       </div>
     </div>
+
+     <StatCharts />
+    
   </div>
 </template>
 
@@ -55,6 +35,4 @@ const portfolio__totallist = await serviceApiData.getPortfolioLast(
   portfolio_list
 )
 
-
-console.log("portfolio__totallist: ", portfolio__totallist)
 </script>

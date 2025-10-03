@@ -5,13 +5,13 @@
         :items="deallist"
         v-model="dealtype"
         :disabled="isLoading"
-        inputheader="Тип сделки"
+        inputheader="Deal type"
         inputid="dealtype"
       ></UISwitcher>
     </div>
     <div class="mb-4 w-full">
       <UISelect
-        labeltext="Портфель"
+        labeltext="Portfolio"
         v-model="selectportfolio"
         :items="portfolioList"
       />
@@ -22,8 +22,8 @@
         name="company"
         v-model="company"
         :disabled="isLoading"
-        labeltext="Актив/Компания"
-        placeholder="Начните вводить тикер или название компании..."
+        labeltext="Subject"
+        placeholder="Enter company name or ticker..."
       ></UIInput>
     </div>
     <div class="mb-4 w-full flex gap-2">
@@ -31,13 +31,13 @@
         name="count"
         v-model="count"
         :disabled="isLoading"
-        labeltext="Количество"
+        labeltext="Count"
       ></UIInput>
       <UIInput
         name="price"
         v-model="price"
         :disabled="isLoading"
-        labeltext="Цена"
+        labeltext="Price"
       ></UIInput>
     </div>
     <div class="mb-4 w-full">
@@ -45,8 +45,8 @@
         name="comment"
         v-model="comment"
         :disabled="isLoading"
-        labeltext="Примечание"
-        placeholder="Начните вводить тикер или название компании..."
+        labeltext="Comment"
+        placeholder=""
       ></UIInput>
     </div>
     <div class="mb-0 mt-8 w-full flex gap-2">

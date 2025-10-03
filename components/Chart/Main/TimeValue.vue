@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full my-8">
+  <div class="w-full my-8 bg-white p-2 rounded shadow-sm">
     <h2 class="font-medium text-lg text-gray-600">
       {{ title }}
     </h2>
@@ -39,7 +39,7 @@ const props = defineProps({
     required: false,
   },
   loadData: {
-    type: Array<IPositionView>,
+    type: Array<IPortfolioData>,
     required: true,
   },
   width: {
@@ -90,7 +90,6 @@ const shares = await serviceApiData.getInstrimentsInfo(
 }) */
 /*  console.log('shares :', shares.value)
  */
-
 // получаем данные для свечек за выбранный период
 const { data: candles, status } = await useLazyAsyncData(
   `candles-${uniqueId}`,

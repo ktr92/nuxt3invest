@@ -31,7 +31,7 @@
                 to="/"
                 class="block rounded-lg bg-blue-100 px-4 py-2 text-sm font-medium text-blue-700 hover:bg-blue-500 hover:text-white"
               >
-                Общее
+                Total
               </NuxtLink>
             </li>
 

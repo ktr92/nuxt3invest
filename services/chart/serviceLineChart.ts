@@ -1,9 +1,9 @@
 /**
- * Модуль для постоения графиков
+ * Модуль для построения графиков
  */
 import * as d3 from "d3"
 import generateColors from "~/utils/colorGenerate"
-import { makeFormatLocale, makeChartLocale } from "./line/chartlocale"
+//import { makeFormatLocale, makeChartLocale } from "./line/chartlocale"
 import { makeChartLineAxis } from "./line/axis"
 import { makeLineAnimation } from "./line/animation"
 import { makeChartDot } from "./line/dot"
@@ -19,7 +19,7 @@ const serviceLineChart = {
    * @param {LineChartApi} params - данные для графика
    */
   renderLineChart(params: LineChartApi): void {
-    const localeRU = d3.timeFormatLocale(makeChartLocale())
+    //const localeRU = d3.timeFormatLocale(makeChartLocale())
 
     // проверяем входные данные для графика
     if (
@@ -53,9 +53,9 @@ const serviceLineChart = {
       .domain([minValue || 0, maxValue || 100])
       .range([params.height - 2 * params.margin, 0])
 
-    const formatDate = makeFormatLocale(localeRU)
+    //const formatDate = makeFormatLocale(localeRU)
 
-    const xAxis = d3.axisBottom(x).tickFormat(formatDate)
+    const xAxis = d3.axisBottom(x)/* .tickFormat(formatDate) */
 
     const yAxis = d3.axisLeft(y)
 

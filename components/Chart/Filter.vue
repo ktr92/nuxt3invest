@@ -1,24 +1,22 @@
 <template>
   <div>
-    <div class="flex justify-start gap-4 my-4">
-      <div>
-        <fieldset class="space-y-3 flex gap-2 overflow-auto max-w-full" v-once>
-          <div v-for="range in datesRange" :key="`${range.id}-${uniqueId}`">
+    <div class="flex justify-start gap-4 my-4  bg-slate-50 shadow-xs rounded">
+        <fieldset class="space-y-3 flex gap-2 overflow-auto max-w-full p-1 items-center" v-once>
+          <div v-for="range in datesRange" :key="`${range.id}-${uniqueId}`" class="md:mb-0">
             <UIRadio v-model="selectedRange" :range="range" :uniqueprop="uniqueId"/>
           </div>
         </fieldset>
-      </div>
-      <div class="w-auto" v-if="selectedRange === 'custom'">
+      <div class="w-auto flex items-center" v-if="selectedRange === 'custom'">
         <ClientOnly>
           <Datepicker
             v-model="datesFilter"
             range
             auto-apply
             :enable-time-picker="false"
-            placeholder="Выбрать даты"
-            locale="ru"
-            cancelText="Отмена"
-            selectText="Выбрать"
+            placeholder="Select dates"
+            locale="en"
+            cancelText="Cancel"
+            selectText="Select"
             clearable
             format="dd.MM.yyyy"
             no-today
@@ -44,31 +42,31 @@ const props = defineProps({
 const datesRange = [
   {
     id: "alltime",
-    name: "за все время",
+    name: "TOTAL",
   },
   {
     id: "ytd",
-    name: "с начала года",
+    name: "SINCE 1 JAN",
   },
   {
     id: "1y",
-    name: "1 год",
+    name: "LAST 12 MONTHS",
   },
   {
     id: "6m",
-    name: "полгода",
+    name: "LAST 6 MONTHS",
   },
   {
     id: "3m",
-    name: "3 месяца",
+    name: "LAST 3 MONTHS",
   },
   {
     id: "1m",
-    name: "1 месяц",
+    name: "LAST MONTH",
   },
   {
     id: "1w",
-    name: "1 неделя",
+    name: "LAST WEEK",
   },
   /*  {
     id: "1d",
@@ -76,7 +74,7 @@ const datesRange = [
   }, */
   {
     id: "custom",
-    name: "другой период",
+    name: "select dates",
   },
 ]
 const emit = defineEmits(["changePeriod"])

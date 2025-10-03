@@ -24,12 +24,7 @@
 
 <script setup lang="ts">
 import * as d3 from 'd3'
-import { ref, onMounted, watch, nextTick, reactive } from 'vue'
-
-interface DataItem {
-  category: string
-  value: number
-}
+import generateColors from "~/utils/colorGenerate"
 
 const props = defineProps<{
   data: DataItem[]
@@ -39,7 +34,7 @@ const props = defineProps<{
 
 const width = props.width ?? 500
 const height = props.height ?? 300
-const margin = { top: 20, right: 20, bottom: 40, left: 40 }
+const margin = { top: 20, right: 20, bottom: 40, left: 70 }
 
 const chart = ref<SVGSVGElement | null>(null)
 const container = ref<HTMLDivElement | null>(null)
@@ -50,6 +45,9 @@ const tooltip = reactive({
   y: 0,
   text: '',
 })
+const colorSet = generateColors(props.data.length)
+const colorHover = ["rgb(59, 130, 246)"]
+const color = d3.scaleOrdinal(colorSet)
 
 const renderChart = () => {
   if (!chart.value || !container.value) return
@@ -96,11 +94,12 @@ const renderChart = () => {
     .append('rect')
       .attr('class', 'bar')
       .attr('x', d => x(d.category) ?? 0)
-      .attr('y', d => y(d.value))
+      .attr('y', innerHeight)
+      .attr('height', 0)
       .attr('width', x.bandwidth())
-      .attr('fill', '#3b82f6')
+      .attr('fill', (d) => color(d.category))
       .on('mouseenter', function(event, d) {
-        d3.select(this).attr('fill', '#2563eb') // ярче цвет
+        d3.select(this).attr('fill', 'rgb(59, 130, 246)') // ярче цвет
         tooltip.text = `${d.category}: ${d.value}`
         tooltip.visible = true
         const [mouseX, mouseY] = d3.pointer(event, container.value)
@@ -112,14 +111,15 @@ const renderChart = () => {
         tooltip.x = mouseX
         tooltip.y = mouseY
       })
-      .on('mouseleave', function() {
-        d3.select(this).attr('fill', '#3b82f6') // возвращаем обычный цвет
+      .on('mouseleave', function(event, d) {
+        d3.select(this).attr('fill', color(d.category)) // возвращаем обычный цвет
         tooltip.visible = false
       })
       .transition()
       .ease(d3.easeLinear)
       .duration(500)
       .delay(50)
+      .attr('y', d => y(d.value))
       .attr('height', d => innerHeight - y(d.value))
 
 }

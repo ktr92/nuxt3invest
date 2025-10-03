@@ -1,7 +1,6 @@
 <template>
   <div class="overflow-x-auto w-full tablemain min-h-full">
-
-    <TableFilter  />
+    <TableFilter />
 
     <table class="min-w-full divide-y-2 divide-gray-200">
       <thead class="ltr:text-left rtl:text-right">
@@ -41,18 +40,24 @@
           <td class="p-2">
             <TableText :text="numberFormat(item.buyprice)" />
           </td>
-          <td class="p-2" v-if="item.saleprice">
-            <TableText :text="numberFormat(item.saleprice)" />
+          <td class="p-2">
+            <template v-if="item.saleprice">
+              <TableText :text="numberFormat(item.saleprice)" />
+            </template>
           </td>
-          <td class="p-2" v-if="item.saleprice">
-            <TableChange v-if="item.type === 'sell'"
-              :price="(item.saleprice - item.buyprice) * item.count"
-              :change="(item.saleprice - item.buyprice) / item.buyprice * 100"
-            />
-
+          <td class="p-2">
+            <template v-if="item.saleprice">
+              <TableChange
+                v-if="item.type === 'sell'"
+                :price="(item.saleprice - item.buyprice) * item.count"
+                :change="
+                  ((item.saleprice - item.buyprice) / item.buyprice) * 100
+                "
+              />
+            </template>
           </td>
-           <td class="p-2 w-[240px] max-w-full">
-            <TableText :text="item.comment"  />
+          <td class="p-2 w-[240px] max-w-full">
+            <TableText :text="item.comment" />
           </td>
         </tr>
       </tbody>
@@ -74,7 +79,6 @@ const props = defineProps({
   },
 })
 
-
 const itemtypeClass = (type: string) => {
   switch (type) {
     case "buy":
@@ -88,9 +92,9 @@ const itemtypeClass = (type: string) => {
 const itemtypeName = (type: string) => {
   switch (type) {
     case "buy":
-      return "Покупка"
+      return "Buy"
     case "sell":
-      return "Продажа"
+      return "Sell"
     default:
       return ""
   }

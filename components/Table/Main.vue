@@ -31,21 +31,21 @@
           <td class="p-2">
             <TableText :text="numberFormat(item.price * item.count)" />
           </td>
-          <td class="p-2">
-            <TableTextdouble :boldtext="numberFormat(item.newprice || 1 * item.count)" :text="numberFormat(item.newprice || 1)" />
+          <td class="p-2" v-if="item.newprice">
+            <TableTextdouble :boldtext="numberFormat(item.newprice * item.count)" :text="numberFormat(item.newprice)" />
           </td>  
-          <td class="p-2">
+          <td class="p-2" v-if="item.pricechange">
             <TableChange
-              :price="item.pricechange"
+              :price="item.pricechange * item.count"
               :change="item.change"
               :date="item.openDate"
             />
           </td>
-          <td class="p-2">
+          <!-- <td class="p-2">
             <TableChange
               :change="item.yearchange"
             />
-          </td>
+          </td> -->
         </tr>
       </tbody>
     </table>

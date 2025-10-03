@@ -1,7 +1,7 @@
 /**
  * Модуль для обработки данных по торговым инструментам с сервера
  */
-import { groupBy, flatten } from "lodash-es"
+import { groupBy, flatten, last } from "lodash-es"
 
 const serviceApiData = {
   /**
@@ -332,9 +332,9 @@ const serviceApiData = {
    * @param positions - список позиций портфеля
    * @returns
    */
-  async getInstrimentsInfo(id: string, positions: IPositionView[]) {
+  async getInstrimentsInfo(id: string, positions: IPortfolioData[]) {
     const { data: shares } = await useAsyncData<APISharesResponse>(id, () => {
-      const positionsPromises = positions.map((item: IPositionView) => {
+      const positionsPromises = positions.map((item: IPortfolioData) => {
         return $fetch("/api/tinsrumentid", {
           body: { isin: item.isin },
           method: "POST",
@@ -405,8 +405,12 @@ const serviceApiData = {
           const priceslist = await serviceApiData.fetchLastPrices(item)
           const normalizedPricesList: ILastPriceItem[] = Array.isArray(
             priceslist
-          ) ? priceslist : priceslist ? [priceslist] : []
-                    return {
+          )
+            ? priceslist
+            : priceslist
+            ? [priceslist]
+            : []
+          return {
             ...item,
             priceslist: normalizedPricesList,
           }
@@ -432,9 +436,11 @@ const serviceApiData = {
     current_item: IPortfolio
   ): IPortfolioSummTotal[] {
     return item.map((price: ILastPriceItem, subindex: number) => {
-
       // изменение цены позиции
-      const value = current_item.positions[subindex].count * (serviceApiData.formatPrice(price.price) -  current_item.positions[subindex].price)
+      const value =
+        current_item.positions[subindex].count *
+        (serviceApiData.formatPrice(price.price) -
+          current_item.positions[subindex].price)
 
       return {
         count: current_item.positions[subindex].count,
@@ -469,11 +475,14 @@ const serviceApiData = {
   },
 
   /**
-   * рассчитать и вернуть суммарную стоимость текущих позиций портфеля
+   * рассчитать суммарную стоимость текущих позиций портфеля
    * @param portfolio
    * @returns
    */
-  calcPortfolioSumm(portfolio: IPortfolioPrices, lastprices: IPortfolioSummTotal[]) {
+  calcPortfolioSumm(
+    portfolio: IPortfolioPrices,
+    lastprices: IPortfolioSummTotal[]
+  ) {
     let summ = portfolio.depo
     lastprices.map((item) => {
       return (summ += Number(item.value))
@@ -484,25 +493,88 @@ const serviceApiData = {
 
   /**
    * рассчитать изменение стоимости портфеля
-   * @param portfolio 
-   * @returns 
+   * @param portfolio
+   * @returns
    */
   calcPortfolioChange(portfolio: IPortfolioPrices[]) {
-    return portfolio.map(item => {
-        const lastprices = serviceApiData.transfromPricesList(item.priceslist, item)
-        const total = serviceApiData.calcPortfolioSumm(item, lastprices)
-        const change = total - item.depo
-        const changePercent = change / item.depo * 100
+    return portfolio.map((item) => {
+      const lastprices = serviceApiData.transfromPricesList(
+        item.priceslist,
+        item
+      )
+      const total = serviceApiData.calcPortfolioSumm(item, lastprices)
+      const change = total - item.depo
+      const changePercent = (change / item.depo) * 100
+      return {
+        ...item,
+        lastprices,
+        total,
+        change,
+        changePercent,
+      }
+    })
+  },
+  /**
+   * рассчитать изменение одной позиции
+   * @param portfolio
+   * @returns
+   */
+  async calcPositionChange(portfolio: IPortfolio) {
+    const lastprices = await serviceApiData.getLastPrices([portfolio])
+
+                 console.log(lastprices)
+
+    const lastprices_tf = lastprices.map((item) => {
+      return {
+        ...item,
+        lastprices: serviceApiData.transfromPricesList(
+          item.priceslist,
+          portfolio
+        ),
+      }
+    })
+
+    return lastprices_tf
+  },
+
+  async getPositionsWithPrices(
+    portfolio_list: IPortfolio[],
+    portfolio_id: string
+  ): Promise<IPositionView[]> {
+
+    const portfolio__totallist = await serviceApiData.getLastPrices(
+      portfolio_list
+    )
+    const portfolio__positions = portfolio__totallist.filter(
+      (item) => portfolio_id.length ? item.id === portfolio_id : item
+    )
+
+    if (portfolio__positions.length) {
+      const portfolio__lastprices = await serviceApiData.calcPositionChange(
+        portfolio__positions[0]
+      )
+
+
+      const result = portfolio__lastprices[0].positions.map((item, index) => {
+
+        const currentitem = portfolio__lastprices[0].lastprices[index]
+
+
+        const pricechange = currentitem.price - item.price
         return {
           ...item,
-          lastprices,
-          total,
-          change,
-          changePercent
+          newprice: currentitem.price,
+          pricechange,
+          change: (pricechange / item.price) * 100,
         }
       })
-  } 
+      return result
 
+    } else {
+
+      return []
+    }
+  },
 
   /*   getEveryDate(target: DatePrice, newdate: string, olddate: string) {
     target.map()

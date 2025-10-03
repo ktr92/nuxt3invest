@@ -3,7 +3,7 @@
     <ClientOnly>
       <label
         :for="`${range.id}-${uniqueId}`"
-        class="flex items-center justify-between gap-4 rounded border bg-white border-transparent p-1 text-xs font-medium transition-colors hover:bg-gray-100 has-checked:border-blue-700 has-checked:ring-1 has-checked:ring-blue-700 cursor-pointer"
+        class="flex items-center justify-between gap-4 rounded border  border-transparent p-1 text-xs font-medium transition-colors hover:bg-gray-100 has-checked:border-blue-700 has-checked:ring-1 has-checked:ring-blue-700 cursor-pointer"
       >
         <p class="text-gray-700 text-nowrap">{{ range.name }}</p>
 

@@ -5,7 +5,7 @@
         class="text-md font-medium text-gray-900"
         :class="[ispositive ? 'text-green-600' : 'text-red-600']"
       >
-        {{ ispositive ? '+' : '' }}{{ numberFormat(price.toFixed(2)) }} ₽
+        {{ ispositive ? "+" : "" }}{{ numberFormat(price.toFixed(2)) }} ₽
       </p>
     </div>
 
@@ -45,7 +45,14 @@
       </svg>
 
       <p class="flex gap-2 text-sm">
-        <span class="font-bold" v-if="change"> {{ change.toFixed(2) }} %</span>
+        <span
+          class="font-bold"
+          v-if="change"
+          :class="[ispositive ? 'text-green-600' : 'text-red-600']"
+        >
+          {{ ispositive ? "+" : ""
+          }}{{ numberFormat(change.toFixed(2)) }} %</span
+        >
 
         <span class="text-gray-500" v-if="date"> {{ date }} </span>
       </p>
@@ -69,8 +76,10 @@ const props = defineProps({
   },
 })
 
+const price = computed(() => (props.price ? Number(props.price) : 0))
+
 const ispositive = computed(() => {
-  let priceNumber = props.price
+  let priceNumber = props.change
   if (typeof priceNumber === "string") {
     priceNumber = parseFloat(priceNumber)
   }
