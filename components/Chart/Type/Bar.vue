@@ -24,6 +24,7 @@
 
 <script setup lang="ts">
 import * as d3 from 'd3'
+import { makeChartLineAxis, styleAxis } from '~/services/chart/line/axis';
 import generateColors from "~/utils/colorGenerate"
 
 const props = defineProps<{
@@ -70,6 +71,7 @@ const renderChart = () => {
   const g = svg.append('g')
     .attr('transform', `translate(${margin.left},${margin.top})`)
 
+
   const x = d3.scaleBand()
     .domain(props.data.map(d => d.category))
     .range([0, innerWidth])
@@ -80,47 +82,83 @@ const renderChart = () => {
     .nice()
     .range([innerHeight, 0])
 
-  g.append('g')
+
+
+  const gxAxis = g.append('g')
     .attr('transform', `translate(0,${innerHeight})`)
     .call(d3.axisBottom(x))
 
-  g.append('g')
-    .call(d3.axisLeft(y))
+  const gyAxis = g.append('g')
+    .call(d3.axisLeft(y).ticks(10)
+      .tickFormat(d => d === null ? '' : numberFormat(Math.round(Number(d)), 0).toString()))
 
-  // Bars with mouse events
-  g.selectAll('.bar')
-    .data(props.data)
-    .enter()
-    .append('rect')
-      .attr('class', 'bar')
-      .attr('x', d => x(d.category) ?? 0)
-      .attr('y', innerHeight)
-      .attr('height', 0)
-      .attr('width', x.bandwidth())
-      .attr('fill', (d) => color(d.category))
-      .on('mouseenter', function(event, d) {
-        d3.select(this).attr('fill', 'rgb(59, 130, 246)') // ярче цвет
-        tooltip.text = `${d.category}: ${d.value}`
-        tooltip.visible = true
-        const [mouseX, mouseY] = d3.pointer(event, container.value)
-        tooltip.x = mouseX
-        tooltip.y = mouseY
-      })
-      .on('mousemove', function(event) {
-        const [mouseX, mouseY] = d3.pointer(event, container.value)
-        tooltip.x = mouseX
-        tooltip.y = mouseY
-      })
-      .on('mouseleave', function(event, d) {
-        d3.select(this).attr('fill', color(d.category)) // возвращаем обычный цвет
-        tooltip.visible = false
-      })
-      .transition()
-      .ease(d3.easeLinear)
-      .duration(500)
-      .delay(50)
-      .attr('y', d => y(d.value))
-      .attr('height', d => innerHeight - y(d.value))
+  styleAxis(gxAxis, gyAxis)
+
+
+// Функция для построения path с закруглёнными верхними углами
+function roundedTopRect(x: number, y: number, width: number, height: number, radius: number) {
+  if (height < 0) height = 0; // предосторожность
+  if (height < radius) radius = height; // если высота очень маленькая — уменьшаем радиус
+
+  return `
+    M${x},${y + height} 
+    L${x},${y + radius}
+    Q${x},${y} ${x + radius},${y} 
+    L${x + width - radius},${y}
+    Q${x + width},${y} ${x + width},${y + radius}
+    L${x + width},${y + height}
+    Z
+  `;
+}
+
+// Начальная высота и y для анимации (0-высота, y = innerHeight)
+g.selectAll('.bar')
+  .data(props.data)
+  .enter()
+  .append('path')
+    .attr('class', 'bar')
+    .attr('fill', d => color(d.category))
+    .attr('d', d => roundedTopRect(
+      x(d.category) ?? 0,
+      innerHeight,
+      x.bandwidth(),
+      0,
+      10
+    ))
+    .on('mouseenter', function(event, d) {
+      d3.select(this).attr('fill', 'rgb(59, 130, 246)')
+      tooltip.text = `${d.category}: ${d.value}`
+      tooltip.visible = true
+      const [mouseX, mouseY] = d3.pointer(event, container.value)
+      tooltip.x = mouseX
+      tooltip.y = mouseY
+    })
+    .on('mousemove', function(event) {
+      const [mouseX, mouseY] = d3.pointer(event, container.value)
+      tooltip.x = mouseX
+      tooltip.y = mouseY
+    })
+    .on('mouseleave', function(event, d) {
+      d3.select(this).attr('fill', color(d.category))
+      tooltip.visible = false
+    })
+    // Анимация
+    .transition()
+    .ease(d3.easeLinear)
+    .duration(300)
+    .attrTween('d', function(d) {
+      const ix = d3.interpolateNumber(0, innerHeight - y(d.value));
+      return function(t) {
+        const height = ix(t);
+        return roundedTopRect(
+          x(d.category) ?? 0,
+          innerHeight - height,
+          x.bandwidth(),
+          height,
+          12
+        );
+      };
+    });
 
 }
 

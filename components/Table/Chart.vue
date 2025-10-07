@@ -1,5 +1,5 @@
 <template>
-      <div class="legendblock w-full py-14 px-10" ref="legendblock">
+      <div class="legendblock w-full lg:py-14 lg:px-10" ref="legendblock">
         <table class="w-full">
           <tbody>
             <tr 
@@ -17,7 +17,7 @@
                   <TableAsset :name="item.category" :ticker="item.ticker" />
                 </td>
                 <td class="p-2" v-if="item.startvalue">
-                  <TableTextdouble :boldtext="numberFormat(item.value + ' ₽')" :text="numberFormat(item.startvalue + ' ₽')" />
+                  <TableTextdouble :boldtext="numberFormat(item.value + ' ₽')" :text="numberFormat(item.startvalue + ' ₽')"  />
                 </td>
                
                  <td class="p-2" v-if="item.pricechange">

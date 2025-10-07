@@ -2,7 +2,7 @@
   <div>
     <div v-if="price">
       <p
-        class="text-md font-medium text-gray-900"
+        class="text-md font-medium text-gray-900 text-nowrap"
         :class="[ispositive ? 'text-green-600' : 'text-red-600']"
       >
         {{ ispositive ? "+" : "" }}{{ numberFormat(price.toFixed(2)) }} ₽
@@ -10,7 +10,7 @@
     </div>
 
     <div
-      class="mt-1 flex gap-1"
+      class="mt-1 flex gap-1 justify-end"
       :class="[ispositive ? 'text-green-600' : 'text-red-600']"
     >
       <svg
@@ -44,19 +44,20 @@
         ></path>
       </svg>
 
-      <p class="flex gap-2 text-sm">
-        <span
-          class="font-bold"
+      <div class="flex gap-2 text-sm">
+        <div
+          class="font-bold text-nowrap "
           v-if="change"
           :class="[ispositive ? 'text-green-600' : 'text-red-600']"
         >
           {{ ispositive ? "+" : ""
-          }}{{ numberFormat(change.toFixed(2)) }} %</span
+          }}{{ numberFormat(change.toFixed(2)) }} %</div
         >
 
-        <span class="text-gray-500" v-if="date"> {{ date }} </span>
-      </p>
+      </div>
     </div>
+            <div class="text-gray-500 text-nowrap text-xs  text-slate-400" v-if="date"> {{ date }} </div>
+
   </div>
 </template>
 

@@ -1,7 +1,7 @@
 <template>
   <div class="w-full">
     <div
-      class="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8 py-8"
+      class="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3 lg:gap-4 py-4"
       v-if="portfolio__totallist?.length"
     >
       <div

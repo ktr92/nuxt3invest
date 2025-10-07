@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white shadow-md p-4 rounded-s-md">
+  <div class="bg-white shadow-md p-4 rounded-lg">
   
       <div
         class="font-semibold mb-4 text-xl text-gray-600"
@@ -10,7 +10,7 @@
     <div class="flex justify-between w-full">
       <div>
         <div class="text-gray-600">Value</div>
-        <div class="font-semibold text-gray-600 text-lg">
+        <div class="font-semibold text-gray-600 text-lg text-nowrap">
           {{ numberFormat(portfolio.total) }} ₽
         </div>
       </div>

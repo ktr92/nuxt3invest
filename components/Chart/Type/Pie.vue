@@ -1,7 +1,7 @@
 <template>
   <div ref="container" class="chart-wrapper w-full" style="position: relative">
-    <div class="flex w-full">
-      <div class="chartblock">
+    <div class="lg:flex justify-center w-full">
+      <div class="chartblock flex justify-center w-full">
         <svg ref="chart" :width="width" :height="height"></svg>
         <div
           v-if="tooltip.visible"

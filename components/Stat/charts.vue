@@ -4,8 +4,23 @@
       <!--   <ChartMainTimePrice :loadData="loadData" :width="width" />
       <ChartMainTimeProfit :loadData="loadData" :width="width" /> -->
 
-      <ChartTypePie :data="chartData" />
-      <ChartTypeBar :data="chartData" />
+      <div class="2xl:grid grid-cols-3 items-center">
+        <div>
+          <div class="lg:grid grid-cols-2 2xl:block justify-center">
+            <div class=" flex justify-center">
+              <ChartTypeBar :data="chartData" />
+            </div>
+            <div class=" flex justify-center">
+              <ChartTypeBar :data="chartData" />
+            </div>
+          </div>
+        </div>
+        <div class="col-span-2">
+          <ChartTypePie :data="chartData" />
+        </div>
+      </div>
+      <!-- /.grid grid-cols-2 -->
+
       <ChartMainTimeValue
         title="Profitability of open positions"
         :loadData="positions"
@@ -43,25 +58,12 @@ contentStore.setChartData(currentPortfolio)
 const chartcontainer = ref<HTMLDivElement | null>(null)
 const { width } = useChartWidth(chartcontainer)
 
-
 const loadData = [
-  {
-    ticker: "HYDR",
-    name: "Русгидро",
-    count: 6000000,
-    price: 0.5,
-    newprice: 0.6,
-    pricechange: 0.1,
-    total: 500,
-    change: 11,
-    yearchange: 12,
-    openDate: "02.01.2024",
-    share: 20
-  },
+ 
   {
     ticker: "ROSN",
     name: "Роснефть",
-    count: 12323,
+    count: 123,
     price: 420,
     newprice: 380,
     pricechange: -40,
@@ -69,12 +71,12 @@ const loadData = [
     change: -6,
     yearchange: 11,
     openDate: "02.03.2024",
-    share: 30
+    share: 30,
   },
   {
     ticker: "LKOH",
     name: "Лукойл",
-    count: 444,
+    count: 44,
     price: 6500,
     newprice: 6700,
     pricechange: 200,
@@ -82,12 +84,12 @@ const loadData = [
     change: 22,
     yearchange: 32,
     openDate: "22.11.2024",
-    share: 25
+    share: 25,
   },
   {
     ticker: "ASTR",
     name: "Астра",
-    count: 33213,
+    count: 332,
     price: 545,
     newprice: 567,
     pricechange: 22,
@@ -95,12 +97,12 @@ const loadData = [
     change: 10,
     yearchange: -20,
     openDate: "23.01.2025",
-    share: 25
+    share: 25,
   },
 ]
 
 const chartData = computed(() => {
-  return loadData.map(item => {
+  return loadData.map((item) => {
     return {
       category: item.name,
       value: item.count * item.newprice,
@@ -108,9 +110,8 @@ const chartData = computed(() => {
       startvalue: item.count * item.price,
       pricechange: item.count * item.newprice - item.count * item.price,
       change: item.change,
-      share: item.share
+      share: item.share,
     }
   })
-  
 })
 </script>
