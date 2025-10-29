@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "rebuild": "npm install --build-from-source; npm rebuild",
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
