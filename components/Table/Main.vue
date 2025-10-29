@@ -61,7 +61,7 @@ const props = defineProps({
     required: true,
   },
   tabledata: {
-    type: Array<IPositionView>,
+    type: Array<IPortfolioData>,
     required: true
   }
 })

@@ -50,9 +50,9 @@
       ></UIInput>
     </div>
     <div class="mb-0 mt-8 w-full flex gap-2">
-      <UIButton @click="onSubmit" :liquid="true"> Сохранить </UIButton>
+      <UIButton @click="onSubmit" :liquid="true">Save</UIButton>
       <UIButton @click="onCancel" :liquid="true" class="bg-gray-300"
-        >Отменить</UIButton
+        >Cancel</UIButton
       >
 
       <!-- <button type="submit" class="w-full">

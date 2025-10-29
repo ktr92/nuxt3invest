@@ -23,24 +23,24 @@ const appcontent = {
           ticker: "SBER",
           isin: "RU0009029540",
           name: "Сбербанк",
-          count: 100,
-          price: 300,
+          count: 120,
+          price: 280,
         
           total: 500,
          
-          openDate: "2025-03-02",
+          openDate: "2024-03-02",
           share: 25,
         },
         {
-          ticker: "BANEP",
-          isin: "RU0007976965",
-          name: "Башнефть-п",
-          count: 100,
-          price: 800,
+          ticker: "LKOH",
+          isin: "RU0009024277",
+          name: "Лукойл",
+          count: 8,
+          price: 5000,
         
           total: 500,
          
-          openDate: "2025-01-28",
+          openDate: "2024-01-28",
           share: 25,
         },
       ],

@@ -13,7 +13,7 @@ import serviceApiData from "~/services/apidata/serviceApiData"
 
 
 
-const positions = ref<IPositionView[]>([])
+const positions = ref<IPortfolioData[]>([])
 const route = useRoute()
 const portfolio_id = route.params.id as string
 const portfolio_list = appcontent.getPortfolio()

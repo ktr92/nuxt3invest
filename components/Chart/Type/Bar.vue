@@ -28,10 +28,12 @@ import { makeChartLineAxis, styleAxis } from '~/services/chart/line/axis';
 import generateColors from "~/utils/colorGenerate"
 
 const props = defineProps<{
-  data: DataItem[]
+  loadData: IPortfolioData[]
   width?: number
   height?: number
 }>()
+
+
 
 const width = props.width ?? 500
 const height = props.height ?? 300
@@ -46,14 +48,14 @@ const tooltip = reactive({
   y: 0,
   text: '',
 })
-const colorSet = generateColors(props.data.length)
+const colorSet = generateColors(props.loadData.length)
 const colorHover = ["rgb(59, 130, 246)"]
 const color = d3.scaleOrdinal(colorSet)
 
 const renderChart = () => {
   if (!chart.value || !container.value) return
 
-  if (!props.data || !Array.isArray(props.data) || props.data.length === 0) {
+  if (!props.loadData || !Array.isArray(props.loadData) || props.loadData.length === 0) {
     d3.select(chart.value).selectAll('*').remove()
     tooltip.visible = false
     return
@@ -73,12 +75,12 @@ const renderChart = () => {
 
 
   const x = d3.scaleBand()
-    .domain(props.data.map(d => d.category))
+    .domain(props.loadData.map(d => d.name))
     .range([0, innerWidth])
     .padding(0.1)
 
   const y = d3.scaleLinear()
-    .domain([0, d3.max(props.data, d => d.value) ?? 0])
+    .domain([0, d3.max(props.loadData, d => d.newprice) ?? 0])
     .nice()
     .range([innerHeight, 0])
 
@@ -113,13 +115,13 @@ function roundedTopRect(x: number, y: number, width: number, height: number, rad
 
 // Начальная высота и y для анимации (0-высота, y = innerHeight)
 g.selectAll('.bar')
-  .data(props.data)
+  .data(props.loadData)
   .enter()
   .append('path')
     .attr('class', 'bar')
-    .attr('fill', d => color(d.category))
+    .attr('fill', d => color(d.name))
     .attr('d', d => roundedTopRect(
-      x(d.category) ?? 0,
+      x(d.name) ?? 0,
       innerHeight,
       x.bandwidth(),
       0,
@@ -127,7 +129,7 @@ g.selectAll('.bar')
     ))
     .on('mouseenter', function(event, d) {
       d3.select(this).attr('fill', 'rgb(59, 130, 246)')
-      tooltip.text = `${d.category}: ${d.value}`
+      tooltip.text = `${d.name}: ${d.newprice}`
       tooltip.visible = true
       const [mouseX, mouseY] = d3.pointer(event, container.value)
       tooltip.x = mouseX
@@ -139,7 +141,7 @@ g.selectAll('.bar')
       tooltip.y = mouseY
     })
     .on('mouseleave', function(event, d) {
-      d3.select(this).attr('fill', color(d.category))
+      d3.select(this).attr('fill', color(d.name))
       tooltip.visible = false
     })
     // Анимация
@@ -147,11 +149,11 @@ g.selectAll('.bar')
     .ease(d3.easeLinear)
     .duration(300)
     .attrTween('d', function(d) {
-      const ix = d3.interpolateNumber(0, innerHeight - y(d.value));
+      const ix = d3.interpolateNumber(0, innerHeight - y(d.newprice as number));
       return function(t) {
         const height = ix(t);
         return roundedTopRect(
-          x(d.category) ?? 0,
+          x(d.name) ?? 0,
           innerHeight - height,
           x.bandwidth(),
           height,
@@ -166,7 +168,7 @@ onMounted(() => {
   nextTick(() => renderChart())
 })
 
-watch(() => props.data, () => {
+watch(() => props.loadData, () => {
   nextTick(() => renderChart())
 }, { deep: true, immediate: true })
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full">
+  <div class="w-full pb-12">
     <div
       class="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3 lg:gap-4 py-4"
       v-if="portfolio__totallist?.length"
@@ -14,8 +14,22 @@
       </div>
     </div>
 
-     <StatCharts />
+    <StatCharts />
+
+    <div class="w-fill">
+      <TableMain
+      :tableheader="appcontent.table.tableHeader"
+      :tabledata="portfolio_list[0].positions"
+    />
+    </div>
     
+
+    <div class="w-full mt-8">
+      <TableDeals
+        :tableheader="appcontent.deals.tableHeader"
+        :tabledata="appcontent.deals.tableData"
+      />
+    </div>
   </div>
 </template>
 
@@ -34,5 +48,4 @@ const portfolio_list = appcontent.getPortfolio()
 const portfolio__totallist = await serviceApiData.getPortfolioLast(
   portfolio_list
 )
-
 </script>

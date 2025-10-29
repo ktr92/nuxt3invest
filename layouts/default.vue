@@ -6,11 +6,14 @@
           <Header />
         </ClientOnly>
 
-        <slot />
+        <div class="pl-12 w-full">
+          <slot />
+        </div>
+        
         
         <ClientOnly>
           <div>
-            <Modal modal-title="Новая сделка" v-if="ismodalshown">
+            <Modal modal-title="New Deal" v-if="ismodalshown">
               <FormDeal />
             </Modal>
           </div>

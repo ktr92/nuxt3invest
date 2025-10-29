@@ -3,7 +3,7 @@
     <span
       class="grid size-10 place-content-center rounded-lg bg-gray-100 text-xs text-gray-600"
     >
-      L
+      A
     </span>
   </div>
 </template>

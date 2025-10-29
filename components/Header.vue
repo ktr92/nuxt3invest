@@ -1,10 +1,10 @@
 <template>
   <div class="flex">
     <div
-      class="flex h-screen w-16 flex-col justify-between border-e border-gray-100 bg-white z-5 relative"
+      class="flex h-screen w-16 flex-col justify-between border-e border-gray-100 bg-white z-5 relative md:fixed"
     >
       <div>
-        <MenuTop />
+        <!-- <MenuTop /> -->
         <div class="border-t border-gray-100">
           <div class="px-2">
             <MenuMain @showMenu="showMenu" />

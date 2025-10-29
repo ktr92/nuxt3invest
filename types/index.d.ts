@@ -124,7 +124,7 @@ declare interface IPositionView {
     /**
      * Новая цена за единицу после последнего обновления данных.
      */
-    newprice?: number;
+    newprice: number;
 
     /**
      * Изменение цены за единицу по сравнению с предыдущим значением (например, с момента покупки или последнего обновления).
@@ -134,7 +134,7 @@ declare interface IPositionView {
     /**
      * Общая стоимость данной позиции в портфеле (рассчитанная как `count` умноженное на `price`).
      */
-    total?: number;
+    total: number;
 
     /**
      * Общее изменение стоимости позиции по сравнению с базовым значением (например, с момента покупки).
@@ -154,7 +154,7 @@ declare interface IPositionView {
     /**
      * (Опционально) ISIN-код инструмента — международный идентификатор ценных бумаг.
      */
-    isin?: string;
+    isin: string;
 }
 
 /**
@@ -552,7 +552,7 @@ declare interface ICandleData {
 type APISharesResponse = APIShare[][]
 
 declare interface ICandlesToLine {
-  loadData: IPositionView[]
+  loadData: IPortfolioData[]
   candles: ICandleData[][]
   from: Date
   shares: APISharesResponse

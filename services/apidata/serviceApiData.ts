@@ -10,9 +10,9 @@ const serviceApiData = {
    * @param loadData - данные портфеля
    * @returns {Date} - самая ранняя дата
    */
-  getFirstDate(loadData: Array<IPositionView>): Date {
+  getFirstDate(loadData: Array<IPortfolioData>): Date {
     return loadData
-      .map((item: IPositionView) => new Date(item.openDate))
+      .map((item: IPortfolioData) => new Date(item.openDate))
       .reduce((a, b) => (a < b ? a : b))
   },
 
@@ -39,8 +39,8 @@ const serviceApiData = {
    * @param ticker
    * @returns
    */
-  getTickerCount(loadData: IPositionView[], ticker: string): number {
-    return loadData.filter((item: IPositionView) => item.ticker === ticker)[0]
+  getTickerCount(loadData: IPortfolioData[], ticker: string): number {
+    return loadData.filter((item: IPortfolioData) => item.ticker === ticker)[0]
       .count
   },
   /**
@@ -55,11 +55,11 @@ const serviceApiData = {
     alltime: boolean,
     from: Date,
     ticker: string,
-    loadData: Array<IPositionView>
+    loadData: Array<IPortfolioData>
   ): string {
     return alltime
       ? from.toISOString()
-      : loadData.filter((share: IPositionView) => share.ticker === ticker)[0]
+      : loadData.filter((share: IPortfolioData) => share.ticker === ticker)[0]
           .openDate
   },
   /**
@@ -68,7 +68,7 @@ const serviceApiData = {
    * @param loadData - данные портфеля
    * @returns - цена открытия позиции в портфеле
    */
-  getOpenPrice(loadData: Array<IPositionView>, ticker: string): number {
+  getOpenPrice(loadData: Array<IPortfolioData>, ticker: string): number {
     return loadData.filter((item) => item.ticker === ticker)[0].price
   },
 
@@ -91,7 +91,7 @@ const serviceApiData = {
    * @returns {LineData[]} - данные для постоения линейного графика
    */
   dataToChart(
-    loadData: IPositionView[],
+    loadData: IPortfolioData[],
     candles: ICandleData[][],
     from: Date,
     shares: APISharesResponse,
@@ -321,7 +321,7 @@ const serviceApiData = {
     })
   },
 
-  getfirstDate(loadData: IPositionView[]) {
+  getfirstDate(loadData: IPortfolioData[]) {
     return loadData
       .map((item) => new Date(item.openDate))
       .reduce((a, b) => (a < b ? a : b))
@@ -333,6 +333,7 @@ const serviceApiData = {
    * @returns
    */
   async getInstrimentsInfo(id: string, positions: IPortfolioData[]) {
+
     const { data: shares } = await useAsyncData<APISharesResponse>(id, () => {
       const positionsPromises = positions.map((item: IPortfolioData) => {
         return $fetch("/api/tinsrumentid", {
@@ -374,6 +375,44 @@ const serviceApiData = {
       // для запроса нужны идентификаторы FIGI
       const instruments_figi = serviceApiData.getFigiList(
         instruments_info.value
+      )
+
+      // получаем цены на основе идентифкаторов инструментов
+      const priceslist: ILastPriceItem = await $fetch("/api/t_prices", {
+        body: {
+          instrumentId: instruments_figi,
+        },
+        method: "POST",
+      })
+
+      return priceslist
+    } catch (error) {
+      console.error(error)
+      return undefined
+    }
+  },
+  /**
+   * получить цены последних сделок для всех позиций данного портфеля
+   * @param portfolio
+   * @returns
+   */
+  async fetchLastDealPrice(
+    portfolio: IPortfolioData[],
+    uniqueId: string
+  ): Promise<ILastPriceItem | undefined> {
+    try {
+      // сначала получаем информацию по инструменту для последующего запроса
+        const shares = await serviceApiData.getInstrimentsInfo(
+          `instruments-${uniqueId}`,
+          portfolio
+        )
+
+      if (!shares.value) {
+        throw new Error("could not fetch instrument info")
+      }
+      // для запроса нужны идентификаторы FIGI
+      const instruments_figi = serviceApiData.getFigiList(
+        shares.value
       )
 
       // получаем цены на основе идентифкаторов инструментов
@@ -539,20 +578,21 @@ const serviceApiData = {
 
   async getPositionsWithPrices(
     portfolio_list: IPortfolio[],
-    portfolio_id: string
-  ): Promise<IPositionView[]> {
+    portfolio_id?: string
+  ): Promise<IPortfolioData[]> {
 
     const portfolio__totallist = await serviceApiData.getLastPrices(
       portfolio_list
     )
-    const portfolio__positions = portfolio__totallist.filter(
+    const portfolio__positions = portfolio_id ? portfolio__totallist.filter(
       (item) => portfolio_id.length ? item.id === portfolio_id : item
-    )
+    ) : portfolio__totallist
 
     if (portfolio__positions.length) {
       const portfolio__lastprices = await serviceApiData.calcPositionChange(
         portfolio__positions[0]
       )
+
 
 
       const result = portfolio__lastprices[0].positions.map((item, index) => {
